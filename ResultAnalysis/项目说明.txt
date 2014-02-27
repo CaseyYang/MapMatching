@@ -1,0 +1,27 @@
+本项目用于把地图匹配结果转化为json格式的数组，保存在生成的MapMatching.js文件中，可以在Google Map/Open Street Map上进行可视化。
+json格式为
+data = [
+	{
+		"city":"城市名（英语）",
+		"trajPoints":[
+			{"x":经度坐标,"y":纬度坐标},
+			……
+		],
+		"matchedEdges":[
+			{
+				"numOfFigures":路段折线数,
+				"figures":[
+					{"x":经度坐标,"y":纬度坐标},
+					……
+				]
+			},
+			……
+		]
+	},
+	……
+]
+说明：
+trajPoints保存原始轨迹的轨迹点坐标；
+matchedEdges保存trajPoints中对应轨迹点的匹配路段；
+numOfFigures表示匹配路段的折线数（若匹配失败，折线数为0，也不存在figures数组）；
+figures保存匹配路段的几何形状，即WA_Geometry.txt文件中对应条目的每个坐标。
