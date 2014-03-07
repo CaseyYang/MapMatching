@@ -125,6 +125,7 @@ void trajSplit(double maxSpeed){
 
 //计算轨迹平均采样率
 void CalculateAverageSampleRate(){
+	double totalAverageSampleRate = 0;
 	for (list<Traj*>::iterator iter = trajList.begin();iter!=trajList.end();iter++){
 		double formerTrajPointTimeStamp = -1;
 		double averageSampleRate = 0;
@@ -135,8 +136,10 @@ void CalculateAverageSampleRate(){
 			formerTrajPointTimeStamp = (*trajPointIter)->time;
 		}
 		averageSampleRate /= ((*iter)->size() - 1);
-		cout << "采样率：" << averageSampleRate << endl;
+		totalAverageSampleRate += averageSampleRate;
 	}
+	totalAverageSampleRate /= trajList.size();
+	cout << "平均采样率：" << totalAverageSampleRate << endl;
 }
 
 int main(){

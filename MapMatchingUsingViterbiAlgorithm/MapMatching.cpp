@@ -4,8 +4,9 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\SingaporeData\\GISCUP2012_Data\\";
-Map map = Map(rootFilePath, 500);
+string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\SingaporeData\\";
+Map routeNetwork = Map(rootFilePath, 500);
+std::map<pair<int, int>, double> shortestDistPair = std::map<pair<int, int>, double>();//保存计算过的两点间最短距离，键pair对表示起点和终点，值表示两点间最短距离
 //ofstream logOutput;
 
 //在不同采样率（1~30s/点）下各种beta数值，打表得出= =
@@ -72,6 +73,35 @@ int GetStartColumnIndex(vector<Score> &row){
 //	return resultIndex;
 //}
 
+//若相邻匹配路段不连接，则在两个路段间插入其最短路径通过的路段
+list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
+	list<Edge*> result = list<Edge*>();
+	Edge* lastEdge = NULL;
+	for (list<Edge*>::iterator iter = mapMatchingResult.begin(); iter != mapMatchingResult.end(); iter++)
+	{
+		if (lastEdge == NULL){
+			lastEdge = *iter;
+			result.push_back(*iter);
+			continue;
+		}
+		else{
+			if ((*iter) == NULL){
+				continue;
+			}
+			else{
+				if (lastEdge != *iter&&lastEdge->endNodeId != (*iter)->startNodeId){
+					list<Edge*> shortestPath = list<Edge*>();
+					routeNetwork.shortestPathLength(lastEdge->endNodeId, (*iter)->startNodeId, shortestPath);
+					result.insert(result.end(), shortestPath.begin(), shortestPath.end());
+					result.push_back(*iter);
+					lastEdge = *iter;
+				}
+			}
+		}
+	}
+	return result;
+}
+
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
 	//beta值by宋壬初
@@ -100,7 +130,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		//long double currentMaxProb = -1e10;//当前最大概率
 		vector<Score> scores = vector<Score>();//当前轨迹点的Score集合
 		vector<Edge*> canadidateEdges;
-		map.getNearEdges((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, RANGEOFCANADIDATEEDGES, canadidateEdges);//获得所有在指定范围内的候选路段集合
+		routeNetwork.getNearEdges((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, RANGEOFCANADIDATEEDGES, canadidateEdges);//获得所有在指定范围内的候选路段集合
 		long double *emissionProbs = new long double[canadidateEdges.size()];//保存这些候选路段的放射概率
 		int currentCanadidateEdgeIndex = 0;//当前候选路段的索引
 		//cout << "进入循环前" << endl;
@@ -108,10 +138,9 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		//for (vector<Edge*>::iterator canadidateEdgeIter = canadidateEdges.begin(); canadidateEdgeIter != canadidateEdges.end(); canadidateEdgeIter++)
 		for each (Edge* canadidateEdge in canadidateEdges)
 		{
-			//Edge* canadidateEdge = *canadidateEdgeIter;
 			int preColumnIndex = -1;//保存当前候选路段的前序路段的列索引
 			double currentDistLeft = 0;//当前轨迹点在候选路段上的投影点距路段起点的距离
-			double DistBetweenTrajPointAndEdge = map.distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, canadidateEdge, currentDistLeft);
+			double DistBetweenTrajPointAndEdge = routeNetwork.distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, canadidateEdge, currentDistLeft);
 			//计算这些候选路段的放射概率
 			if (cutFlag){
 				//基于隐马尔科夫模型的计算当前轨迹点对应每个候选路段的放射概率
@@ -139,7 +168,15 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 					}
 					else
 					{
-						routeNetworkDistBetweenTwoEdges = map.shortestPathLength(scoreMatrix[currentTrajPointIndex - 1][i].edge->startNodeId, canadidateEdge->startNodeId, currentDistLeft, formerDistLeft, deltaT);
+						pair<int, int> odPair = make_pair(scoreMatrix[currentTrajPointIndex - 1][i].edge->startNodeId, canadidateEdge->startNodeId);
+						if (shortestDistPair.find(odPair) != shortestDistPair.end()){
+							routeNetworkDistBetweenTwoEdges = shortestDistPair[odPair];
+						}
+						else{
+							list<Edge*> shortestPath = list<Edge*>();
+							routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(scoreMatrix[currentTrajPointIndex - 1][i].edge->startNodeId, canadidateEdge->startNodeId, shortestPath, currentDistLeft, formerDistLeft, deltaT);
+							shortestDistPair[odPair] = routeNetworkDistBetweenTwoEdges;
+						}
 						routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoEdges + currentDistLeft - formerDistLeft;
 					}
 					//两轨迹点间的直接距离
@@ -194,9 +231,6 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		delete[]emissionProbs;
 		formerTrajPoint = (*trajectoryIterator);
 		currentTrajPointIndex++;
-		if (currentTrajPointIndex % 100 == 0){
-		cout << "第" << currentTrajPointIndex << "个轨迹点处理完毕！" << endl;
-		}
 		//system("pause");
 		//归一化
 		for (int i = 0; i < scores.size(); i++)
@@ -231,7 +265,6 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			}
 		}
 	}
-
 	//调试代码：输出最终的概率矩阵：如果有某个轨迹点的所有候选路段的整体概率均为均为无穷小/无穷大，那可能就不正常，需要进一步检查该行概率的得到过程
 	//for (int i = 0; i < scoreMatrix.size(); i++){
 	//	logOutput << scoreMatrix.at(i).size() << "\t";
@@ -243,6 +276,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	//调试结束
 
 	return mapMatchingResult;
+	//return linkMatchedResult(mapMatchingResult);
 }
 
 void main(){
@@ -252,15 +286,17 @@ void main(){
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		list<Edge*> resultList = MapMatching(*(*trajIter));
-		ofstream MatchedEdgeOutput(rootFilePath+"test_output\\" + outputFileNames[trajIndex]);
+		ofstream MatchedEdgeOutput(rootFilePath + "test_output\\" + outputFileNames[trajIndex]);
 		Traj::iterator trajPointIter = (*trajIter)->begin();
 		for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 			if (*edgeIter != NULL){
 				int currentIndex = (*edgeIter)->id;
-				MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
+				//MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
+				MatchedEdgeOutput << "86400," << currentIndex << ",1.0" << endl;
 			}
 			else{
-				MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
+				//MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
+				MatchedEdgeOutput << "86400," << -1 << ",1.0" << endl;
 			}
 		}
 		MatchedEdgeOutput.close();

@@ -55,7 +55,7 @@ void scanTrajFolder(string folderDir, list<Traj*> &trajList, vector<string> &out
 
 //读入指定路径和文件名集合中所有轨迹匹配结果文件，保存在resultList中
 void readResultFiles(string folderDir, vector<string> &outputFileNames, list<MatchedTraj> &resultList){
-	string outputDirectory = "test_input";
+	string outputDirectory = "test_output";
 	for each (string outputFileName in outputFileNames)
 	{
 		ifstream fin(folderDir + outputDirectory + "\\" + outputFileName);

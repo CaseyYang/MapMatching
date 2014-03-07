@@ -25,13 +25,13 @@ void ReadOneResultFile(string filePath){
 
 //把地图匹配结果转换成能够可视化的JSON文件格式
 void MatchedTrajToJson(){
-	ofstream fout("MapMatching.js");
-	fout << "data = [" << endl;
+	ofstream fout("MapMatchingData.js");
+	fout << "mapMatchingData = [" << endl;
 	int trajIndex = 0;
 	list<MatchedTraj>::iterator resultListIter = resultList.begin();
 	for each (Traj* traj in trajList)
 	{
-		fout << "{\"city:\":\"Singapore\",\"trajPoints\":[";
+		fout << "{\"city\":\"Singapore\",\"trajPoints\":[";
 		int trajPointIndex = 0;
 		for each (GeoPoint* trajPoint in *traj)
 		{
@@ -118,5 +118,5 @@ void main(){
 	scanTrajFolder(rootFilePath, trajList, outputFileNames);
 	readResultFiles(rootFilePath, outputFileNames, resultList);
 	MatchedTrajToJson();
-	MatchedTrajConnection();
+	//MatchedTrajConnection();
 }

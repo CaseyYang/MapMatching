@@ -32,7 +32,7 @@ void scanTrajFolder(string folderDir, list<Traj*> &trajList, vector<string> &out
 	* |-output
 	*   |-output_000011.txt ...
 	*/
-	string completeInputFilesPath = folderDir + "test_input\\" + "*.txt";
+	string completeInputFilesPath = folderDir + "input\\" + "*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
@@ -42,7 +42,7 @@ void scanTrajFolder(string folderDir, list<Traj*> &trajList, vector<string> &out
 	else {
 		do {
 			string inputFileName = fileInfo.name;
-			trajList.push_back(readOneTrajectory(folderDir + "test_input\\" + inputFileName));
+			trajList.push_back(readOneTrajectory(folderDir + "input\\" + inputFileName));
 			string outputFileName = inputFileName.substr(6, inputFileName.size() - 10);
 			outputFileName = "output_" + outputFileName + ".txt";
 			outputFileNames.push_back(outputFileName);
