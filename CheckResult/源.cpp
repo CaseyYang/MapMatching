@@ -4,7 +4,6 @@
 #include <io.h>
 #include<list>
 using namespace std;
-
 list<list<int>> matchedResultList = list<list<int>>();
 list<list<int>> matchedAnswerList = list<list<int>>();
 
