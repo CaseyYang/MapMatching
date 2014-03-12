@@ -47,7 +47,7 @@ double EmissionProb(double t, double dist){
 int GetStartColumnIndex(vector<Score> &row){
 	int resultIndex = -1;
 	long double currentMaxProb = -1;
-	for (int i = 0; i < row.size(); i++){
+	for (size_t i = 0; i < row.size(); i++){
 		if (currentMaxProb < row.at(i).score){
 			currentMaxProb = row.at(i).score;
 			resultIndex = i;

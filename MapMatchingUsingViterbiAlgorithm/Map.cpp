@@ -634,7 +634,6 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 
 //移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
 double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist){
-	int i;
 	double tmpSideLen = 0;
 	double result = 1e80, tmp = 0;
 	double x = -1, y = -1;
@@ -1103,9 +1102,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	//////////////////////////////////////////////////////////////////////////
 	///对edge路中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
 	//////////////////////////////////////////////////////////////////////////
-	if (edge == NULL)
-		return;
-	bool crossRow;
+	if (edge == NULL){ return; }
 	GeoPoint* pt1 = fromPT;
 	GeoPoint* pt2 = toPt;
 	double x1 = pt1->lon - minLon;
@@ -1143,7 +1140,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double A = y2 - y1;
 	double B = -(x2 - x1);
 	double C = -B * y1 - A * x1;
-	int i, j;
+	int i;
 	//pt1,pt2都在一个cell中
 	if (row1 == row2 && col1 == col2)
 	{

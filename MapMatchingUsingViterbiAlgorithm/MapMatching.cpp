@@ -41,7 +41,7 @@ double EmissionProb(double t, double dist){
 int GetStartColumnIndex(vector<Score> &row){
 	int resultIndex = -1;
 	long double currentMaxProb = 1e10;
-	for (int i = 0; i < row.size(); i++){
+	for (size_t i = 0; i < row.size(); i++){
 		if (currentMaxProb > row.at(i).score){
 			currentMaxProb = row.at(i).score;
 			resultIndex = i;
@@ -138,7 +138,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 					}
 					//double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
 					long double transactionProb = (long double)routeNetworkDistBetweenTwoTrajPoints*COEFFICIENT_FOR_TRANSATIONPROB;//转移概率
-					long double tmpTotalProbForTransaction = formerCanadidateEdge.score * transactionProb;
+					long double tmpTotalProbForTransaction = formerCanadidateEdge.score + transactionProb;
 					if (currentMaxProbTmp > tmpTotalProbForTransaction){//保留当前转移概率和已知最小转移概率中较小者（由于取log的缘故）
 						currentMaxProbTmp = tmpTotalProbForTransaction;
 						preColumnIndex = formerCanadidateEdgeIndex;
@@ -155,9 +155,9 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			currentCanadidateEdgeIndex++;
 		}
 		delete[]emissionProbs;
-		formerTrajPoint = (*trajectoryIterator);
+		formerTrajPoint = *trajectoryIterator;
 		currentTrajPointIndex++;
-		for (int i = 0; i < scores.size(); i++)	{ scores[i].score /= currentMaxProb; }//归一化		
+		//for (int i = 0; i < scores.size(); i++)	{ scores[i].score /= currentMaxProb; }//归一化		
 		scoreMatrix.push_back(scores);//把该轨迹点的Scores数组放入scoreMatrix中
 		if (scores.size() == 0){//若scores数组为空，则说明没有一个达标的候选路段，cutFlag设为true，后续轨迹作为新轨迹进行匹配
 			cutFlag = true;

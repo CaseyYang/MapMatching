@@ -634,7 +634,6 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 
 //移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
 double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist){
-	int i;
 	double tmpSideLen = 0;
 	double result = 1e80, tmp = 0;
 	double x = -1, y = -1;

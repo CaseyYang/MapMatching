@@ -4,7 +4,6 @@
 #include "ReadInTrajs.h"
 using namespace std;
 
-#define NUMFORTEST 10*10
 
 string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\";
 Map routeNetwork(rootFilePath, 500);
