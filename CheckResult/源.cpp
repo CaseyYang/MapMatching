@@ -55,25 +55,28 @@ void ReadFolder(string folderDir)
 
 //比较匹配结果和答案
 void Check(){
+	double averageErrorRate = 0;
 	list<list<int>>::iterator resultIter = matchedResultList.begin();
 	list<list<int>>::iterator answerIter = matchedAnswerList.begin();
-	int wrongCount = 0;
-	for (; resultIter != matchedResultList.end(); resultIter++){
+	for (; resultIter != matchedResultList.end(); resultIter++, answerIter++){
+		int wrongCount = 0;
 		list<int>::iterator resultEdgeIter = resultIter->begin();
 		list<int>::iterator answerEdgeIter = answerIter->begin();
-		for (; resultEdgeIter != resultIter->end(); resultEdgeIter++){
+		for (; resultEdgeIter != resultIter->end(); resultEdgeIter++, answerEdgeIter++){
 			if ((*resultEdgeIter) != (*answerEdgeIter)){
 				wrongCount++;
 			}
-			answerEdgeIter++;
 		}
-		answerIter++;
-		cout << (wrongCount + 0.0) / resultIter->size() << endl;
+		double tmpRate = (wrongCount + 0.0) / resultIter->size();
+		cout << tmpRate << endl;
+		averageErrorRate += tmpRate;
 	}
+	averageErrorRate /= matchedResultList.size();
+	cout << "平均错误率：" << averageErrorRate << endl;
 }
 
 int main(){
-	ReadFolder("");
+	ReadFolder("D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\");
 	Check();
 	return 0;
 }

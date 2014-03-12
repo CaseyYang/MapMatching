@@ -1,6 +1,3 @@
-/* 
- * Last Updated at [2014/1/24 18:16] by wuhao
- */
 #include "GeoPoint.h"
 #include <math.h>
 
@@ -22,8 +19,10 @@ GeoPoint::GeoPoint(double lat, double lon)
 
 double GeoPoint::distM(double lat1, double lon1, double lat2, double lon2)
 {
-	
-	return sqrt((lat1 - lat2) * (lat1 - lat2) + (lon1 - lon2) * (lon1 - lon2)) * GeoPoint::geoScale;
+	double deltaLat = lat1 - lat2;
+	double deltaLong = (lon2 - lon1)*cos(lat1 * PI180);
+	return LENGTH_PER_RAD*sqrt(deltaLat*deltaLat + deltaLong*deltaLong);
+	//return sqrt((lat1 - lat2) * (lat1 - lat2) + (lon1 - lon2) * (lon1 - lon2)) * GeoPoint::geoScale;
 }
 
 double GeoPoint::distM(GeoPoint pt1, GeoPoint pt2)
