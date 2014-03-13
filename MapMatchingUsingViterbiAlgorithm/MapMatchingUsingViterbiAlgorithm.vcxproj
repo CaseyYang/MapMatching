@@ -88,7 +88,7 @@
     <ClInclude Include="ReadInTrajs.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="项目说明.txt" />
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

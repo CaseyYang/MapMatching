@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="项目说明.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Map.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -44,5 +41,8 @@
     <ClCompile Include="Map.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>
