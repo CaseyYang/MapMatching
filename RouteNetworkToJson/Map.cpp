@@ -632,44 +632,6 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 	return minDist;
 }
 
-//移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
-double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist){
-	double tmpSideLen = 0;
-	double result = 1e80, tmp = 0;
-	double x = -1, y = -1;
-	for (Figure::iterator figIter = edge->figure->begin(); figIter != edge->figure->end(); figIter++){
-		if (x != -1 && y != -1){
-			double x2 = (*figIter)->lat;
-			double y2 = (*figIter)->lon;
-			double dist = GeoPoint::distM(x, y, lat, lon);//circleDistance(x, y, nodeX, nodeY);
-			if (dist<result){
-				result = dist;
-				tmpSideLen = tmp;
-			}
-			double vecX1 = x2 - x;
-			double vecY1 = y2 - y;
-			double vecX2 = lat - x;
-			double vecY2 = lon - y;
-			double vecX3 = lat - x2;
-			double vecY3 = lon - y2;
-			if (vecX1*vecX2 + vecY1*vecY2>0 && -vecX1*vecX3 - vecY1*vecY3 > 0 && (vecX1 != 0 || vecY1 != 0)){
-				double rate = ((lat - x2)*vecX1 + (lon - y2)*vecY1) / (-vecX1*vecX1 - vecY1*vecY1);
-				double nearX = rate*x + (1 - rate)*x2, nearY = rate*y + (1 - rate)*y2;
-				double dist = GeoPoint::distM(nearX, nearY, lat, lon);
-				if (dist < result){
-					result = dist;
-					tmpSideLen = tmp + GeoPoint::distM(x, y, nearX, nearY);
-				}
-			}
-			tmp += GeoPoint::distM(x, y, x2, y2);
-		}
-		x = (*figIter)->lat;
-		y = (*figIter)->lon;
-	}
-	prjDist = tmpSideLen;
-	return result;
-}
-
 //判断startNodeId与endNodeId之间有无边,没有边返回-1，有边返回edgeId
 int Map::hasEdge(int startNodeId, int endNodeId) const
 {
@@ -905,7 +867,7 @@ double Map::shortestPathLength(int ID1, int ID2, list<Edge*> &shortestPath, doub
 		NODE_DIJKSTRA x = Q.top();
 		Q.pop();
 		int u = x.t;
-		if (x.dist > deltaT*MAXSPEED){
+		if (x.dist + dist1 - dist2 > deltaT*MAXSPEED){
 			return INF;
 		}
 		if (flag[u]) {
@@ -1102,7 +1064,9 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	//////////////////////////////////////////////////////////////////////////
 	///对edge路中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
 	//////////////////////////////////////////////////////////////////////////
-	if (edge == NULL){ return; }
+	if (edge == NULL)
+		return;
+	bool crossRow;
 	GeoPoint* pt1 = fromPT;
 	GeoPoint* pt2 = toPt;
 	double x1 = pt1->lon - minLon;
@@ -1140,7 +1104,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double A = y2 - y1;
 	double B = -(x2 - x1);
 	double C = -B * y1 - A * x1;
-	int i;
+	int i, j;
 	//pt1,pt2都在一个cell中
 	if (row1 == row2 && col1 == col2)
 	{

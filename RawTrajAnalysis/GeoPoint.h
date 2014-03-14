@@ -1,7 +1,7 @@
-/* 
- * Last Updated at [2014/1/24 18:15] by wuhao
- */
 #pragma once
+#define PI180 0.0174532925199432957694
+#define LENGTH_PER_RAD 111226.29021121707545
+
 #define INVALID_TIME -1
 
 class GeoPoint

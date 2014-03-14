@@ -79,8 +79,6 @@ public:
 	double distM(double lat, double lon, Edge* edge) const;
 	//同上，同时记录投影点到edge起点的距离存入prjDist，无投影则记为0
 	double distM(double lat, double lon, Edge* edge, double& prjDist) const;
-	//移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
-	double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist);
 	//判断startNodeId与endNodeId之间有无边,没有边返回-1，有边返回edgeId
 	int hasEdge(int startNodeId, int endNodeId) const;
 	//插入一个新结点,返回新结点id
@@ -107,23 +105,23 @@ public:
 	double gridSizeDeg;
 	double strictThreshold = 0;
 	list<Edge*>* **grid;
-	//singapore half
-	//double minLat = 1.22;
-	//double maxLat = 1.5;
-	//double minLon = 103.620;
-	//double maxLon = 104.0;
+	/*singapore half
+	double minLat = 1.22;
+	double maxLat = 1.5;
+	double minLon = 103.620;
+	double maxLon = 104.0;*/
 
 	//singapore full
-	//double minLat = 0.99999;
-	//double maxLat = 1.6265;
-	//double minLon = 103.548;
-	//double maxLon = 104.1155;
+	double minLat = 0.99999;
+	double maxLat = 1.6265;
+	double minLon = 103.548;
+	double maxLon = 104.1155;
 
 	//washington full
-	double minLat = 45.0;
-	double maxLat = 49.5;
-	double minLon = -125.0;
-	double maxLon = -116.5;
+	//double minLat = 45.0;
+	//double maxLat = 49.5;
+	//double minLon = -125.0;
+	//double maxLon = -116.5;
 
 	int getRowId(double lat) const;
 	int getColId(double lon) const;

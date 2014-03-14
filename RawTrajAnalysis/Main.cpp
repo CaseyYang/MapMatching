@@ -4,10 +4,9 @@
 #include "ReadInTrajs.h"
 using namespace std;
 
-#define NUMFORTEST 10*10
 
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\SingaporeData\\";
-Map map(rootFilePath, 500);
+string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\";
+Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 
 
@@ -64,10 +63,11 @@ void CalculateParametersForViterbiAlgorithm(){
 		int indexOfTrajPoints = 0;
 		for (list<GeoPoint*>::iterator trajPointIter = (*trajIter)->begin(); trajPointIter != (*trajIter)->end(); trajPointIter++){
 			double shortestDist = 100000000.0;
-			Edge* nearestEdge = map.getNearestEdge((*trajPointIter)->lat, (*trajPointIter)->lon, shortestDist);
+			Edge* nearestEdge = routeNetwork.getNearestEdge((*trajPointIter)->lat, (*trajPointIter)->lon, shortestDist);
 			if (nearestEdge != NULL){
 				if (!isStart){
-					dist2.push_back(abs(GeoPoint::distM(formerTrajPoint, (*trajPointIter)) - map.shortestPathLength(formerEdge->startNodeId, nearestEdge->startNodeId)));
+					list<Edge*> shortestPath;
+					dist2.push_back(abs(GeoPoint::distM(formerTrajPoint, (*trajPointIter)) - routeNetwork.shortestPathLength(formerEdge->startNodeId, nearestEdge->startNodeId, shortestPath)));
 				}
 				dist1.push_back(shortestDist);
 				formerTrajPoint = (*trajPointIter);
@@ -84,9 +84,11 @@ void CalculateParametersForViterbiAlgorithm(){
 		}
 	}
 	sigma /= trajList.size();
+	cout.precision(11);
 	cout << "sigma = " << sigma << endl;
 	beta /= trajList.size();
 	cout << "beta = " << beta << endl;
+	cout << "2*(sigma^2)/beta = " << 2 * sqrt(sigma) / beta << endl;
 }
 
 string ToString(int i){
@@ -125,7 +127,8 @@ void trajSplit(double maxSpeed){
 
 //计算轨迹平均采样率
 void CalculateAverageSampleRate(){
-	for (list<Traj*>::iterator iter = trajList.begin();iter!=trajList.end();iter++){
+	double totalAverageSampleRate = 0;
+	for (list<Traj*>::iterator iter = trajList.begin(); iter != trajList.end(); iter++){
 		double formerTrajPointTimeStamp = -1;
 		double averageSampleRate = 0;
 		for (Traj::iterator trajPointIter = (*iter)->begin(); trajPointIter != (*iter)->end(); trajPointIter++){
@@ -135,14 +138,17 @@ void CalculateAverageSampleRate(){
 			formerTrajPointTimeStamp = (*trajPointIter)->time;
 		}
 		averageSampleRate /= ((*iter)->size() - 1);
-		cout << "采样率：" << averageSampleRate << endl;
+		totalAverageSampleRate += averageSampleRate;
 	}
+	totalAverageSampleRate /= trajList.size();
+	cout << "平均采样率：" << totalAverageSampleRate << endl;
 }
 
 int main(){
 	vector<string> outputFileNames;
 	scanTrajFolder(rootFilePath, trajList, outputFileNames);
 	cout << "文件读入完毕！" << endl;
-	CalculateAverageSampleRate();
+	CalculateParametersForViterbiAlgorithm();
+	//CalculateAverageSampleRate();
 	return 0;
 }

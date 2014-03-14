@@ -1102,7 +1102,9 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	//////////////////////////////////////////////////////////////////////////
 	///对edge路中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
 	//////////////////////////////////////////////////////////////////////////
-	if (edge == NULL){ return; }
+	if (edge == NULL)
+		return;
+	bool crossRow;
 	GeoPoint* pt1 = fromPT;
 	GeoPoint* pt2 = toPt;
 	double x1 = pt1->lon - minLon;
@@ -1140,7 +1142,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double A = y2 - y1;
 	double B = -(x2 - x1);
 	double C = -B * y1 - A * x1;
-	int i;
+	int i, j;
 	//pt1,pt2都在一个cell中
 	if (row1 == row2 && col1 == col2)
 	{

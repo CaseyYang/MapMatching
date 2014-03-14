@@ -21,10 +21,10 @@
     <ClCompile Include="ReadInTrajs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="源.cpp">
+    <ClCompile Include="GeoPoint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GeoPoint.cpp">
+    <ClCompile Include="Main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -40,6 +40,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="项目说明.txt" />
+    <Text Include="ReadMe.txt" />
   </ItemGroup>
 </Project>

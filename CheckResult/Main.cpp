@@ -1,12 +1,14 @@
 #include<iostream>
 #include<fstream>
+#include<string>
 #include <direct.h>
 #include <io.h>
 #include<list>
 using namespace std;
 
-list<list<int>> matchedResultList = list<list<int>>();
-list<list<int>> matchedAnswerList = list<list<int>>();
+list<string> fileNameList = list<string>();//保存文件名集合
+list<list<int>> matchedResultList = list<list<int>>();//保存匹配结果集合
+list<list<int>> matchedAnswerList = list<list<int>>();//保存答案集合
 
 //读入给定路径的一个地图匹配结果文件
 list<int> ReadOneResultFile(string filePath){
@@ -45,6 +47,7 @@ void ReadFolder(string folderDir)
 			string inputFileName = fileInfo.name;
 			matchedResultList.push_back(ReadOneResultFile(folderDir + "output\\" + inputFileName));
 			string answerFileName = inputFileName.substr(6, inputFileName.size() - 10);
+			fileNameList.push_back(answerFileName);
 			answerFileName = "output_" + answerFileName + ".txt";
 			matchedAnswerList.push_back(ReadOneResultFile(folderDir + "answer\\" + inputFileName));
 		} while (_findnext(lf, &fileInfo) == 0);
@@ -55,25 +58,29 @@ void ReadFolder(string folderDir)
 
 //比较匹配结果和答案
 void Check(){
+	double averageErrorRate = 0;
 	list<list<int>>::iterator resultIter = matchedResultList.begin();
 	list<list<int>>::iterator answerIter = matchedAnswerList.begin();
-	int wrongCount = 0;
-	for (; resultIter != matchedResultList.end(); resultIter++){
+	list<string>::iterator fileNameIter = fileNameList.begin();
+	for (; resultIter != matchedResultList.end(); resultIter++, answerIter++, fileNameIter++){
+		int wrongCount = 0;
 		list<int>::iterator resultEdgeIter = resultIter->begin();
 		list<int>::iterator answerEdgeIter = answerIter->begin();
-		for (; resultEdgeIter != resultIter->end(); resultEdgeIter++){
+		for (; resultEdgeIter != resultIter->end(); resultEdgeIter++, answerEdgeIter++){
 			if ((*resultEdgeIter) != (*answerEdgeIter)){
 				wrongCount++;
 			}
-			answerEdgeIter++;
 		}
-		answerIter++;
-		cout << (wrongCount + 0.0) / resultIter->size() << endl;
+		double tmpRate = (wrongCount + 0.0) / resultIter->size();
+		cout << (*fileNameIter) << ": " << tmpRate << endl;
+		averageErrorRate += tmpRate;
 	}
+	averageErrorRate /= matchedResultList.size();
+	cout << "平均错误率：" << averageErrorRate << endl;
 }
 
 int main(){
-	ReadFolder("");
+	ReadFolder("D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\");
 	Check();
 	return 0;
 }
