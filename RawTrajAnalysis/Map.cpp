@@ -131,7 +131,7 @@ void Map::open(string folderDir, int gridWidth)
 			continue;
 		}
 		Figure* figure = new Figure();
-		for (int i = 4; i < substrs.size() - 1; i += 2)
+		for (size_t i = 4; i < substrs.size() - 1; i += 2)
 		{
 			double lat, lon;
 			lat = atof(substrs[i].c_str());
@@ -174,7 +174,7 @@ void Map::open(string folderDir, int gridWidth)
 	//初始化邻接表
 	count = 0;
 	int edgesCount = 0;
-	for (int i = 0; i < edges.size(); i++)
+	for (size_t i = 0; i < edges.size(); i++)
 	{
 		AdjNode* head = new AdjNode();
 		head->endPointId = i;
@@ -246,11 +246,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 			}
 		}
 	}
-	for (int i = 0; i < result.size(); i++)
+	for (size_t i = 0; i < result.size(); i++)
 	{
 		result[i]->visited = false;
 	}
-	for (int i = 0; i < fail.size(); i++)
+	for (size_t i = 0; i < fail.size(); i++)
 	{
 		fail[i]->visited = false;
 	}
@@ -297,17 +297,17 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 			}
 		}
 	}
-	for (int i = 0; i < dest.size(); i++)
+	for (size_t i = 0; i < dest.size(); i++)
 	{
 		dest[i]->visited = false;
 	}
-	for (int i = 0; i < fail.size(); i++)
+	for (size_t i = 0; i < fail.size(); i++)
 	{
 		fail[i]->visited = false;
 	}
 }
 
-void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
+void Map::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///找出离(lat, lon)距离最近的k个边，按照从近到远的距离存入dest中
@@ -379,13 +379,13 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 			break;
 	}
 	sort(candidates.begin(), candidates.end(), smallerInDist);
-	for (int i = 0; i < k; i++)
+	for (size_t i = 0; i < k; i++)
 	{
 		dest.push_back(candidates[i].first);
 	}
 
 	//还原所有边的visitFlag
-	for (int i = 0; i < candidates.size(); i++)
+	for (size_t i = 0; i < candidates.size(); i++)
 	{
 		candidates[i].first->visited = false;
 	}
@@ -456,7 +456,7 @@ Edge* Map::getNearestEdge(double lat, double lon, double &shortestDist) {
 }
 
 //找出距离(lat, lon)点最近的k条路段
-vector<Edge*> Map::getKNearEdges(double lat, double lon, int k){
+vector<Edge*> Map::getKNearEdges(double lat, double lon, size_t k){
 	const int rowPt = getRowId(lat);
 	const int colPt = getColId(lon);
 	int range = 0;
@@ -634,7 +634,6 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 
 //移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
 double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist){
-	int i;
 	double tmpSideLen = 0;
 	double result = 1e80, tmp = 0;
 	double x = -1, y = -1;
@@ -1103,9 +1102,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	//////////////////////////////////////////////////////////////////////////
 	///对edge路中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
 	//////////////////////////////////////////////////////////////////////////
-	if (edge == NULL)
-		return;
-	bool crossRow;
+	if (edge == NULL){ return; }
 	GeoPoint* pt1 = fromPT;
 	GeoPoint* pt2 = toPt;
 	double x1 = pt1->lon - minLon;
@@ -1143,7 +1140,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double A = y2 - y1;
 	double B = -(x2 - x1);
 	double C = -B * y1 - A * x1;
-	int i, j;
+	int i;
 	//pt1,pt2都在一个cell中
 	if (row1 == row2 && col1 == col2)
 	{
@@ -1249,8 +1246,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 
 void Map::createGridIndexForEdge(Edge *edge)
 {
-	if (edge == NULL)
-		return;
+	if (edge == NULL){ return; }
 	Figure::iterator ptIter = edge->figure->begin();
 	Figure::iterator nextPtIter = edge->figure->begin(); nextPtIter++;
 	while (nextPtIter != edge->figure->end())

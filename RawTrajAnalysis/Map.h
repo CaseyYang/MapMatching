@@ -70,11 +70,11 @@ public:
 	//找出所有距离(lat, lon)点严格小于threshold米的所有Edge*，保存在dest容器内
 	void getNearEdges(double lat, double lon, double threshold, vector<Edge*>& dest); //推荐版本
 	//返回离(lat, lon)点距离最近的k条路段，存入dest
-	void getNearEdges(double lat, double lon, int k, vector<Edge*>& dest);
+	void getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest);
 	//返回距离(lat, lon)点最近的Edge*
 	Edge* getNearestEdge(double lat, double lon, double &shortestDist);
 	//找出距离(lat, lon)点最近的k条路段
-	vector<Edge*> getKNearEdges(double lat, double lon, int k);
+	vector<Edge*> getKNearEdges(double lat, double lon, size_t k);
 	//返回(lat,lon)点到edge的距离，单位为米
 	double distM(double lat, double lon, Edge* edge) const;
 	//同上，同时记录投影点到edge起点的距离存入prjDist，无投影则记为0
