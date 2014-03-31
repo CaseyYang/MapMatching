@@ -4,7 +4,7 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -223,7 +223,17 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			//输出格式：前序edgeId 当前edgeId 前序采样点纬度 前序采样点经度 当前采样点纬度 当前采样点经度 转移概率
 			list<GeoPoint*>::reverse_iterator tmpRIter = rIter;
 			tmpRIter++;
-			foutForBaiduLBS << scoreMatrix[i][startColumnIndex].preColumnIndex << " " << scoreMatrix[i][startColumnIndex].edge << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
+			if (tmpRIter != trajectory.rend()){
+				if (scoreMatrix[i][startColumnIndex].preColumnIndex != -1){
+					foutForBaiduLBS << scoreMatrix[i][startColumnIndex].preColumnIndex << " " << scoreMatrix[i][startColumnIndex].edge->id << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
+				}
+				else{
+					foutForBaiduLBS << "-1 " << scoreMatrix[i][startColumnIndex].edge->id << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
+				}
+			}
+			else{
+				foutForBaiduLBS << "-1 " << scoreMatrix[i][startColumnIndex].edge->id << " -1 -1 " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
+			}
 			/*为百度LBS所做的修改*/
 			mapMatchingResult.push_front(scoreMatrix[i][startColumnIndex].edge);
 			startColumnIndex = scoreMatrix[i][startColumnIndex].preColumnIndex;

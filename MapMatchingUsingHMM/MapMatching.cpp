@@ -4,7 +4,7 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -87,7 +87,7 @@ list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
 
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
-	int sampleRate = (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1);//计算轨迹平均采样率
+	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
 	cout << "采样率：" << sampleRate << endl;
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用

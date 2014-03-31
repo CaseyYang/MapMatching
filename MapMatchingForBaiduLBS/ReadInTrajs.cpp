@@ -32,7 +32,7 @@ void scanTrajFolder(string folderDir, list<Traj*> &trajList, vector<string> &out
 	* |-output
 	*   |-output_000011.txt ...
 	*/
-	string inputDirectory = "input";
+	string inputDirectory = "test_input";
 	string completeInputFilesPath = folderDir + inputDirectory + "\\" + "*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -55,7 +55,7 @@ void scanTrajFolder(string folderDir, list<Traj*> &trajList, vector<string> &out
 
 //读入指定路径和文件名集合中所有轨迹匹配结果文件，保存在resultList中
 void readResultFiles(string folderDir, vector<string> &outputFileNames, list<MatchedTraj> &resultList){
-	string outputDirectory = "output";
+	string outputDirectory = "test_output";
 	for each (string outputFileName in outputFileNames)
 	{
 		ifstream fin(folderDir + outputDirectory + "\\" + outputFileName);

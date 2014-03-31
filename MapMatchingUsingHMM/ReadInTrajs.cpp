@@ -32,7 +32,7 @@ void scanTrajFolder(string folderDir, list<Traj*> &trajList, vector<string> &out
 	* |-output
 	*   |-output_000011.txt ...
 	*/
-	string inputDirectory = "input";
+	string inputDirectory = "test_input";
 	string completeInputFilesPath = folderDir + inputDirectory + "\\" + "*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
