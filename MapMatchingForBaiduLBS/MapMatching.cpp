@@ -27,14 +27,28 @@ const double BETA_ARR[31] = {
 struct Score//代表某个轨迹点对应的一个候选路段
 {
 	Edge* edge;//候选路段的指针
+	/*为百度LBS所做的修改*/
+	double distBetweenTrajPointAndEdge;//轨迹点到候选路段的投影距离
+	double emissionProb;//记录轨迹点到候选路段的放射概率
+	double distBetweenTwoTrajPoints;//轨迹点和前序轨迹点的球面距离
+	double routeNetworkDistBetweenTwoTrajPoints;//记录该候选路段和前序路段的路网距离
+	long double transactionProb;//候选路段所具有的转移概率
+	/*为百度LBS所做的修改*/
 	long double score;//候选路段所具有的整体概率
 	int preColumnIndex;//候选路段的前序路段的列索引
 	double distLeft;//轨迹点的投影点到候选路段起点的距离
-	Score(Edge* edge, long double score, int pre, double distLeft){
+	Score(Edge* edge, long double score, int pre, double distLeft, double distBetweenTrajPointAndEdge = 0, double emissionProb = 0, double distBetweenTwoTrajPoints = 0, double routeNetworkDistBetweenTwoTrajPoints = 0, double transactionProb = 0){
 		this->edge = edge;
 		this->score = score;
 		this->preColumnIndex = pre;
 		this->distLeft = distLeft;
+		/*为百度LBS所做的修改*/
+		this->distBetweenTrajPointAndEdge = distBetweenTrajPointAndEdge;
+		this->emissionProb = emissionProb;
+		this->distBetweenTwoTrajPoints = distBetweenTwoTrajPoints;
+		this->routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoTrajPoints;
+		this->transactionProb = transactionProb;
+		/*为百度LBS所做的修改*/
 	}
 };
 
@@ -98,7 +112,6 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	int currentTrajPointIndex = 0;//当前轨迹点的索引	
 	for (list<GeoPoint*>::iterator trajectoryIterator = trajectory.begin(); trajectoryIterator != trajectory.end(); trajectoryIterator++)//遍历每个轨迹点
 	{
-		double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
 		double deltaT = -1;//当前序轨迹点存在时，deltaT表示前后两轨迹点间的时间差
 		if (formerTrajPoint != NULL){ deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; }
 		long double currentMaxProb = -1e10;//当前最大整体概率，初始值为-1e10
@@ -109,15 +122,30 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		int currentCanadidateEdgeIndex = 0;//当前候选路段的索引
 		for each (Edge* canadidateEdge in canadidateEdges)
 		{
+			/*为百度LBS所做的修改*/
+			double distBetweenTrajPointAndEdgeForBaiduLBS = -1;
+			double emissionProbForBaiduLBS = -1;
+			double distBetweenTrajPointsForBaiduLBS = -1;
+			double distBetweenEdgeForBaiduLBS = -1;
+			long double transactionProbForBaiduLBS = -1;
+			/*为百度LBS所做的修改*/
 			int preColumnIndex = -1;//保存当前候选路段的前序路段的列索引
 			double currentDistLeft = 0;//当前轨迹点在候选路段上的投影点距路段起点的距离
-			double DistBetweenTrajPointAndEdge = routeNetwork.distMFromTransplantFromSRC((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, canadidateEdge, currentDistLeft);
+			double distBetweenTrajPointAndEdge = routeNetwork.distMFromTransplantFromSRC((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, canadidateEdge, currentDistLeft);
 			//计算这些候选路段的放射概率
-			emissionProbs[currentCanadidateEdgeIndex] = EmissionProb(1, DistBetweenTrajPointAndEdge);
+			emissionProbs[currentCanadidateEdgeIndex] = EmissionProb(1, distBetweenTrajPointAndEdge);
+			/*为百度LBS所做的修改*/
+			distBetweenTrajPointAndEdgeForBaiduLBS = distBetweenTrajPointAndEdge;
+			emissionProbForBaiduLBS = emissionProbs[currentCanadidateEdgeIndex];
+			/*为百度LBS所做的修改*/
 			if (!cutFlag){
 				//当前采样点不是轨迹第一个点或匹配中断后的第一个点，则计算转移概率
-				long double currentMaxProbTmp = -1e10;//当前最大转移概率，初始值为-1e10				
+				long double currentMaxProbTmp = -1e10;//当前最大转移概率，初始值为-1e10
 				int formerCanadidateEdgeIndex = 0;
+				double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
+				/*为百度LBS所做的修改*/
+				distBetweenTrajPointsForBaiduLBS = distBetweenTwoTrajPoints;
+				/*为百度LBS所做的修改*/
 				for each(Score formerCanadidateEdge in scoreMatrix.back()){
 					double formerDistLeft = formerCanadidateEdge.distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
 					double formerDistToEnd = formerCanadidateEdge.edge->lengthM - formerDistLeft;//前一个轨迹点在候选路段上的投影点距路段终点的距离
@@ -152,6 +180,10 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 					if (currentMaxProbTmp < tmpTotalProbForTransaction){//保留当前转移概率和已知最大转移概率中较大者
 						currentMaxProbTmp = tmpTotalProbForTransaction;
 						preColumnIndex = formerCanadidateEdgeIndex;
+						/*为百度LBS所做的修改*/
+						distBetweenEdgeForBaiduLBS = routeNetworkDistBetweenTwoTrajPoints;
+						transactionProbForBaiduLBS = transactionProb;
+						/*为百度LBS所做的修改*/
 					}
 					formerCanadidateEdgeIndex++;
 				}
@@ -159,7 +191,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 				emissionProbs[currentCanadidateEdgeIndex] *= currentMaxProbTmp;
 			}
 			/*若需要提升代码运行速度，则只把整体概率大于MINPROB的候选路段放入当前轨迹点的Score集合中；否则把所有候选路段放入Score集合中*/
-			scores.push_back(Score(canadidateEdge, emissionProbs[currentCanadidateEdgeIndex], preColumnIndex, currentDistLeft));
+			scores.push_back(Score(canadidateEdge, emissionProbs[currentCanadidateEdgeIndex], preColumnIndex, currentDistLeft, distBetweenTrajPointsForBaiduLBS, distBetweenEdgeForBaiduLBS, transactionProbForBaiduLBS));
 			//得到当前最大整体概率，以便归一化
 			if (currentMaxProb < emissionProbs[currentCanadidateEdgeIndex]){ currentMaxProb = emissionProbs[currentCanadidateEdgeIndex]; }
 			currentCanadidateEdgeIndex++;
@@ -181,8 +213,18 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 
 	//得到全局匹配路径
 	int startColumnIndex = GetStartColumnIndex(scoreMatrix.back());//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
-	for (int i = scoreMatrix.size() - 1; i >= 0; i--){
+	/*为百度LBS所做的修改*/
+	list<GeoPoint*>::reverse_iterator rIter = trajectory.rbegin();
+	ofstream foutForBaiduLBS = ofstream("prob.txt");
+	/*为百度LBS所做的修改*/
+	for (int i = scoreMatrix.size() - 1; i >= 0; i--, rIter++){
 		if (startColumnIndex != -1){
+			/*为百度LBS所做的修改*/
+			//输出格式：前序edgeId 当前edgeId 前序采样点纬度 前序采样点经度 当前采样点纬度 当前采样点经度 转移概率
+			list<GeoPoint*>::reverse_iterator tmpRIter = rIter;
+			tmpRIter++;
+			foutForBaiduLBS << scoreMatrix[i][startColumnIndex].preColumnIndex << " " << scoreMatrix[i][startColumnIndex].edge << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
+			/*为百度LBS所做的修改*/
 			mapMatchingResult.push_front(scoreMatrix[i][startColumnIndex].edge);
 			startColumnIndex = scoreMatrix[i][startColumnIndex].preColumnIndex;
 		}
@@ -194,6 +236,9 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			}
 		}
 	}
+	/*为百度LBS所做的修改*/
+	foutForBaiduLBS.close();
+	/*为百度LBS所做的修改*/
 	//调试代码：输出最终的概率矩阵：如果有某个轨迹点的所有候选路段的整体概率均为均为无穷小/无穷大，那可能就不正常，需要进一步检查该行概率的得到过程
 	//for (int i = 0; i < scoreMatrix.size(); i++){
 	//	logOutput << scoreMatrix.at(i).size() << "\t";

@@ -5,7 +5,7 @@
 using namespace std;
 
 
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 
@@ -144,11 +144,41 @@ void CalculateAverageSampleRate(){
 	cout << "平均采样率：" << totalAverageSampleRate << endl;
 }
 
+
+//读入文件流，把原始轨迹转为Json文件
+//格式为：data={"rawTrajsId":XXX, "points":[{"x":XXX,"y":XXX,"t":XXX},……]}
+void RawTrajToJson(string filePath){
+	ifstream fin(filePath);
+	ofstream fout("RawTrajData.js");
+	fout.precision(20);
+	int timeStamp;
+	double x, y;
+	bool start = true;
+	string city = "Shanghai";
+	fout << "data = {" << endl;
+	fout << "\"city\":\""<<city<<"\",\"rawTrajsId\":\"" << filePath << "\",\"points\":[" << endl;
+	while (fin>>timeStamp){
+		fin >> y >> x;
+		if (!start){
+			fout << "," << endl<<"{";
+		}
+		else{
+			fout << "{";
+			start = false;
+		}
+		fout << "\"x\":" << x << ",\"y\":" << y << ",\"t\":" << timeStamp << "}";
+	}
+	fout << "]}" << endl;
+	fin.close();
+	fout.close();
+}
+
 int main(){
 	vector<string> outputFileNames;
-	scanTrajFolder(rootFilePath, trajList, outputFileNames);
-	cout << "文件读入完毕！" << endl;
-	CalculateParametersForViterbiAlgorithm();
+	//scanTrajFolder(rootFilePath, trajList, outputFileNames);
+	//cout << "文件读入完毕！" << endl;
+	//CalculateParametersForViterbiAlgorithm();
 	//CalculateAverageSampleRate();
+	RawTrajToJson("2014-03-25 16_44_11.txt");
 	return 0;
 }
