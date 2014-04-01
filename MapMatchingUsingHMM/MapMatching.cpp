@@ -98,6 +98,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	int currentTrajPointIndex = 0;//当前轨迹点的索引	
 	for (list<GeoPoint*>::iterator trajectoryIterator = trajectory.begin(); trajectoryIterator != trajectory.end(); trajectoryIterator++)//遍历每个轨迹点
 	{
+		double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
 		double deltaT = -1;//当前序轨迹点存在时，deltaT表示前后两轨迹点间的时间差
 		if (formerTrajPoint != NULL){ deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; }
 		long double currentMaxProb = -1e10;//当前最大整体概率，初始值为-1e10
@@ -115,8 +116,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			emissionProbs[currentCanadidateEdgeIndex] = EmissionProb(1, DistBetweenTrajPointAndEdge);
 			if (!cutFlag){
 				//当前采样点不是轨迹第一个点或匹配中断后的第一个点，则计算转移概率
-				long double currentMaxProbTmp = -1e10;//当前最大转移概率，初始值为-1e10
-				double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
+				long double currentMaxProbTmp = -1e10;//当前最大转移概率，初始值为-1e10				
 				int formerCanadidateEdgeIndex = 0;
 				for each(Score formerCanadidateEdge in scoreMatrix.back()){
 					double formerDistLeft = formerCanadidateEdge.distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
