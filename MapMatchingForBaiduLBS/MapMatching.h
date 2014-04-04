@@ -5,7 +5,7 @@
 #include <io.h>
 #include <vector>
 #include "GeoPoint.h"
-#include "Map.h"
+#include "baiduMap.h"
 using namespace std;
 
 
@@ -17,5 +17,5 @@ using namespace std;
 #define RANGEOFCANADIDATEEDGES 50.0 //候选路段选取范围
 #define MINPROB 1e-150 //整体概率的下限
 
-extern Map map;
+extern BaiduMap map;
 extern list<Edge*> MapMatching(list<GeoPoint*> &trajectory);

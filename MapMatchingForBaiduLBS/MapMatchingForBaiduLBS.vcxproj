@@ -76,16 +76,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="baiduMap.cpp" />
     <ClCompile Include="GeoPoint.cpp" />
-    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapDrawer.cpp" />
     <ClCompile Include="MapMatching.cpp" />
-    <ClCompile Include="ReadInTrajs.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="baiduMap.h" />
+    <ClInclude Include="baiduTrajReader.h" />
     <ClInclude Include="GeoPoint.h" />
-    <ClInclude Include="Map.h" />
+    <ClInclude Include="MapDrawer.h" />
     <ClInclude Include="MapMatching.h" />
-    <ClInclude Include="ReadInTrajs.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="项目说明.txt" />

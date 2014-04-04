@@ -15,30 +15,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Map.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MapMatching.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ReadInTrajs.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="GeoPoint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="MapDrawer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="baiduMap.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Map.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="MapMatching.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ReadInTrajs.h">
+    <ClInclude Include="GeoPoint.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GeoPoint.h">
+    <ClInclude Include="baiduTrajReader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MapDrawer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="baiduMap.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

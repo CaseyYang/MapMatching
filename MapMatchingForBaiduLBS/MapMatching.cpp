@@ -1,16 +1,29 @@
+#include <sstream>
 #include "MapMatching.h"
-#include "ReadInTrajs.h"
+#include "baiduMap.h"
+#include "baiduTrajReader.h"
+#include "MapDrawer.h"
 
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
-Map routeNetwork = Map(rootFilePath, 1000);
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\LBS_DATASET\\";
+BaiduMap routeNetwork = BaiduMap(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
 //类似的，当已保存的最短距离不是INF，而遇到某个更小的deltaT时，最短距离可能就是INF了
 std::map<pair<int, int>, pair<double, double>> shortestDistPair = std::map<pair<int, int>, pair<double, double>>();
 //ofstream logOutput;
+
+
+/*为百度LBS所做的修改*/
+MapDrawer md;
+double minLat = 31.853;
+double maxLat = 31.893;
+double minLon = 117.250;
+double maxLon = 117.336;
+/*为百度LBS所做的修改*/
+
 
 //在不同采样率（1~30s/点）下各种beta数值，打表得出= =
 const double BETA_ARR[31] = {
@@ -22,6 +35,12 @@ const double BETA_ARR[31] = {
 	12.55107715, 15.82820829, 17.69496773, 18.07655652, 19.63438911,
 	25.40832185, 23.76001877, 28.43289797, 32.21683062, 34.56991141
 };
+
+string ToString(int i){
+	stringstream ss;
+	ss << i;
+	return ss.str();
+}
 
 //地图匹配所用数据结构
 struct Score//代表某个轨迹点对应的一个候选路段
@@ -52,6 +71,24 @@ struct Score//代表某个轨迹点对应的一个候选路段
 	}
 };
 
+/*为百度LBS所做的修改*/
+struct MatchedInfo{
+	GeoPoint* formerPoint;
+	Edge* formerMatchedEdge;
+	GeoPoint* latterPoint;
+	Edge* latterMatchedEdge;
+	double transactionProb;
+	MatchedInfo(GeoPoint* formerPoint, GeoPoint* latterPoint, Edge* formerMatchedEdge, Edge* latterMatchedEdge, double transactionProb){
+		this->formerPoint = formerPoint;
+		this->latterPoint = latterPoint;
+		this->formerMatchedEdge = formerMatchedEdge;
+		this->latterMatchedEdge = latterMatchedEdge;
+		this->transactionProb = transactionProb;
+	}
+};
+list<MatchedInfo*> matchedInfos;
+/*为百度LBS所做的修改*/
+
 //放射概率计算函数
 double EmissionProb(double t, double dist){
 	return exp(t*dist * dist * N2_SIGMAZ2) * SQR_2PI_SIGMAZ;
@@ -71,38 +108,54 @@ int GetStartColumnIndex(vector<Score> &row){
 }
 
 //若相邻匹配路段不连接，则在两个路段间插入其最短路径通过的路段
-list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
-	list<Edge*> result = list<Edge*>();
-	Edge* lastEdge = NULL;
-	for (list<Edge*>::iterator iter = mapMatchingResult.begin(); iter != mapMatchingResult.end(); iter++)
+//list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
+//	list<Edge*> result = list<Edge*>();
+//	Edge* lastEdge = NULL;
+//	for (list<Edge*>::iterator iter = mapMatchingResult.begin(); iter != mapMatchingResult.end(); iter++)
+//	{
+//		if (lastEdge == NULL){
+//			lastEdge = *iter;
+//			result.push_back(*iter);
+//			continue;
+//		}
+//		else{
+//			if ((*iter) == NULL){
+//				continue;
+//			}
+//			else{
+//				if (lastEdge != *iter&&lastEdge->endNodeId != (*iter)->startNodeId){
+//					routeNetwork.shortestPathLength(lastEdge->endNodeId, (*iter)->startNodeId);//TODO：两版本shortestpath参数不同
+//					result.insert(result.end(), shortestPath.begin(), shortestPath.end());
+//					result.push_back(*iter);
+//					lastEdge = *iter;
+//				}
+//			}
+//		}
+//	}
+//	return result;
+//}
+
+void DrawLowTransationProb(double rate){
+	cout << "size：" << matchedInfos.size() << endl;
+	matchedInfos.sort([&](const MatchedInfo* m1, const MatchedInfo* m2){
+		return (m1->transactionProb) < (m2->transactionProb);
+	});
+	size_t index = 0;
+	for each (MatchedInfo* var in matchedInfos)
 	{
-		if (lastEdge == NULL){
-			lastEdge = *iter;
-			result.push_back(*iter);
-			continue;
+		if (index < matchedInfos.size()*rate){
+			md.drawBigPoint(Color::Green, var->formerPoint->lat, var->formerPoint->lon);
+			md.drawBigPoint(Color::Red, var->latterPoint->lat, var->latterPoint->lon);
+			md.drawLine(Color::Red, var->formerPoint->lat, var->formerPoint->lon, var->latterPoint->lat, var->latterPoint->lon);
 		}
-		else{
-			if ((*iter) == NULL){
-				continue;
-			}
-			else{
-				if (lastEdge != *iter&&lastEdge->endNodeId != (*iter)->startNodeId){
-					list<Edge*> shortestPath = list<Edge*>();
-					routeNetwork.shortestPathLength(lastEdge->endNodeId, (*iter)->startNodeId, shortestPath);
-					result.insert(result.end(), shortestPath.begin(), shortestPath.end());
-					result.push_back(*iter);
-					lastEdge = *iter;
-				}
-			}
-		}
+		index++;
 	}
-	return result;
 }
 
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
 	int sampleRate = (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1);//计算轨迹平均采样率
-	cout << "采样率：" << sampleRate << endl;
+	//cout << "采样率：" << sampleRate << endl;
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
 	vector<vector<Score>> scoreMatrix = vector<vector<Score>>();//所有轨迹点的概率矩阵
@@ -168,7 +221,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 							else{
 								//或者未保存给定起点和终点的最短路结果；或者当前deltaT比保存的deltaT要大，可能得到真正的最短路结果；总之就是要调用函数计算最短路
 								list<Edge*> shortestPath = list<Edge*>();
-								routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(formerCanadidateEdge.edge->endNodeId, canadidateEdge->startNodeId, shortestPath, currentDistLeft, formerDistToEnd, deltaT);
+								routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(formerCanadidateEdge.edge->endNodeId, canadidateEdge->startNodeId, shortestPath, currentDistLeft, formerDistToEnd, deltaT);//TODO
 								shortestDistPair[odPair] = make_pair(routeNetworkDistBetweenTwoEdges, deltaT);
 							}
 						}
@@ -213,9 +266,10 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 
 	//得到全局匹配路径
 	int startColumnIndex = GetStartColumnIndex(scoreMatrix.back());//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
-	/*为百度LBS所做的修改*/
 	list<GeoPoint*>::reverse_iterator rIter = trajectory.rbegin();
-	ofstream foutForBaiduLBS = ofstream("prob.txt");
+	/*为百度LBS所做的修改*/
+	//ofstream foutForBaiduLBS = ofstream("prob"+ToString(currentTrajPointIndex)+".txt");
+	list<GeoPoint*>::reverse_iterator tmpRIter;
 	/*为百度LBS所做的修改*/
 	for (int i = scoreMatrix.size() - 1; i >= 0; i--, rIter++){
 		if (startColumnIndex != -1){
@@ -224,17 +278,14 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			list<GeoPoint*>::reverse_iterator tmpRIter = rIter;
 			tmpRIter++;
 			if (tmpRIter != trajectory.rend()){
-				if (scoreMatrix[i][startColumnIndex].preColumnIndex != -1){
-					foutForBaiduLBS << scoreMatrix[i][startColumnIndex].preColumnIndex << " " << scoreMatrix[i][startColumnIndex].edge->id << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
+				if (scoreMatrix[i][startColumnIndex].preColumnIndex != -1){//preColumnIndex不为-1，表示上一个采样点候选路段到当前采样点候选路段是有转移概率的
+					MatchedInfo *info = new MatchedInfo(*tmpRIter, *rIter, scoreMatrix[i - 1][scoreMatrix[i][startColumnIndex].preColumnIndex].edge, scoreMatrix[i][startColumnIndex].edge, scoreMatrix[i][startColumnIndex].transactionProb);
+					matchedInfos.push_front(info);
+					//foutForBaiduLBS << scoreMatrix[i][startColumnIndex].preColumnIndex << " " << scoreMatrix[i][startColumnIndex].edge->id << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
 				}
-				else{
-					foutForBaiduLBS << "-1 " << scoreMatrix[i][startColumnIndex].edge->id << " " << (*tmpRIter)->lat << " " << (*tmpRIter)->lon << " " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
-				}
-			}
-			else{
-				foutForBaiduLBS << "-1 " << scoreMatrix[i][startColumnIndex].edge->id << " -1 -1 " << (*rIter)->lat << " " << (*rIter)->lon << " " << scoreMatrix[i][startColumnIndex].transactionProb << endl;
 			}
 			/*为百度LBS所做的修改*/
+
 			mapMatchingResult.push_front(scoreMatrix[i][startColumnIndex].edge);
 			startColumnIndex = scoreMatrix[i][startColumnIndex].preColumnIndex;
 		}
@@ -247,7 +298,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		}
 	}
 	/*为百度LBS所做的修改*/
-	foutForBaiduLBS.close();
+	//foutForBaiduLBS.close();
 	/*为百度LBS所做的修改*/
 	//调试代码：输出最终的概率矩阵：如果有某个轨迹点的所有候选路段的整体概率均为均为无穷小/无穷大，那可能就不正常，需要进一步检查该行概率的得到过程
 	//for (int i = 0; i < scoreMatrix.size(); i++){
@@ -267,27 +318,37 @@ void main(){
 	//logOutput = ofstream("debug.txt");
 	//logOutput.setf(ios::showpoint);
 	//logOutput.precision(8);
-	scanTrajFolder(rootFilePath, trajList, outputFileNames);
+	md.setArea(minLat, maxLat, minLon, maxLon);
+	md.setResolution(6000);
+	routeNetwork.setArea(md);
+	BaiduTrajReader fReader(rootFilePath+"traj_hefei.txt");
+	fReader.readTrajs(trajList, 1000);
 	int trajIndex = 0;
+	md.newBitmap();
+	md.lockBits();
+	routeNetwork.drawMap(Color::Blue, md);
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		list<Edge*> resultList = MapMatching(*(*trajIter));
-		ofstream MatchedEdgeOutput(rootFilePath + "output\\" + outputFileNames[trajIndex]);
-		Traj::iterator trajPointIter = (*trajIter)->begin();
-		for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
-			if (*edgeIter != NULL){
-				int currentIndex = (*edgeIter)->id;
-				//MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
-				MatchedEdgeOutput << "0," << currentIndex << ",1.0" << endl;
-			}
-			else{
-				//MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
-				MatchedEdgeOutput << "0," << -1 << ",1.0" << endl;
-			}
-		}
-		MatchedEdgeOutput.close();
-		cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-		trajIndex++;
+		//ofstream MatchedEdgeOutput(rootFilePath + "output\\" + outputFileNames[trajIndex]);
+		//Traj::iterator trajPointIter = (*trajIter)->begin();
+		//for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
+		//	if (*edgeIter != NULL){
+		//		int currentIndex = (*edgeIter)->id;
+		//		//MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
+		//		MatchedEdgeOutput << "0," << currentIndex << ",1.0" << endl;
+		//	}
+		//	else{
+		//		//MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
+		//		MatchedEdgeOutput << "0," << -1 << ",1.0" << endl;
+		//	}
+		//}
+		//MatchedEdgeOutput.close();
+		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
+		//trajIndex++;
 	}
+	DrawLowTransationProb(0.01);
+	md.unlockBits();
+	md.saveBitmap("pic.png");
 	//logOutput.close();
 }

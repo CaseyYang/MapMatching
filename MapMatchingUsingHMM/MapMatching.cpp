@@ -98,9 +98,12 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	int currentTrajPointIndex = 0;//当前轨迹点的索引	
 	for (list<GeoPoint*>::iterator trajectoryIterator = trajectory.begin(); trajectoryIterator != trajectory.end(); trajectoryIterator++)//遍历每个轨迹点
 	{
-		double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
+		double distBetweenTwoTrajPoints;//两轨迹点间的直接距离
 		double deltaT = -1;//当前序轨迹点存在时，deltaT表示前后两轨迹点间的时间差
-		if (formerTrajPoint != NULL){ deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; }
+		if (formerTrajPoint != NULL){ 
+			deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; 
+			distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);
+		}
 		long double currentMaxProb = -1e10;//当前最大整体概率，初始值为-1e10
 		vector<Score> scores = vector<Score>();//当前轨迹点的Score集合
 		vector<Edge*> canadidateEdges;//候选路段集合

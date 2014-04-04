@@ -1,4 +1,7 @@
-#include "Map.h"
+/*
+ * Last Updated at [2014/4/3 11:42] by wuhao
+ */
+#include "BaiduMap.h"
 
 bool smallerInX(simplePoint& pt1, simplePoint& pt2);
 bool smallerInDist(pair<Edge*, double>& c1, pair<Edge*, double>& c2);
@@ -6,210 +9,184 @@ bool smallerInDist(pair<Edge*, double>& c1, pair<Edge*, double>& c2);
 //////////////////////////////////////////////////////////////////////////
 ///public part
 //////////////////////////////////////////////////////////////////////////
-Map::Map()
+BaiduMap::BaiduMap()
 {
 
 }
 
-Map::Map(string folderDir, int gridWidth)
+BaiduMap::BaiduMap(string folderDir, int gridWidth)
 {
 	this->open(folderDir, gridWidth);
 }
 
-void Map::open(string folderDir, int gridWidth)
+void BaiduMap::open(string folderDir, int gridWidth)
 {
 	/*文件目录结构为
 	* folderDir
-	* |-WA_Nodes.txt
-	* |-WA_EdgeGeometry.txt
-	* |-WA_Edges.txt
+	* |-link_hefei.txt
+	* |-ref_points_hefei.txt
+	* |-connectivity_hefei.txt
 	*/
 	this->gridWidth = gridWidth;
-	int count = 0;
-	//////////////////////////////////////////////////////////////////////////
-	//读取WA_Nodes.txt
-	//格式：nodeId lat lon
-	//////////////////////////////////////////////////////////////////////////
-	ifstream nodeIfs(folderDir + "WA_Nodes.txt");
-	if (!nodeIfs)
-	{
-		cout << "open " + folderDir + "WA_Nodes.txt" + " error!\n";
-		system("pause");
-		exit(0);
-	}
-	while (nodeIfs)
-	{
-		double lat, lon;
-		int nodeId;
-		GeoPoint* pt;
-		nodeIfs >> nodeId >> lat >> lon;
-		if (nodeIfs.fail()){
-			break;
-		}
-		if (inArea(lat, lon)){
-			pt = new GeoPoint(lat, lon);
-		}
-		else
-		{
-			pt = NULL;
-			count++;
-		}
-		nodes.push_back(pt);
-	}
-	printf("nodes count = %d\n", nodes.size());
-	printf("nodes not in area count = %d\n", count);
-	nodeIfs.close();
+	//int count = 0;
+
+	//
+	/**********************************************************/
+	/*test code starts from here*/
+	double minLat = 999, maxLat = -1, minLon = 999, maxLon = -1;
+	/*test code ends*/
+	/**********************************************************/
+
 
 	//////////////////////////////////////////////////////////////////////////
-	//读取WA_EdgeGeometry.txt
-	//格式：edgeId^^Highway^1^起始端点纬度^起始端点经度[^中间点1纬度^中间点1经度^中间点2纬度^中间点2经度.....]^结束端点纬度^结束端点经度    
+	//读取link_hefei.txt
+	//格式：edgeId “路名” rank length(KM) 4位道路类型 起始点lon 起始点lat 终点lon 终点lat    
 	//////////////////////////////////////////////////////////////////////////
-	count = 0;
-	std::ifstream geometryIfs(folderDir + "WA_EdgeGeometry.txt");
-	if (!geometryIfs)
-	{
-		cout << "open " + folderDir + "WA_EdgeGeometry.txt" + " error!\n";
-		system("pause");
-		exit(0);
-	}
-	std::string strLine;
-	bool continueFlag = false;
-	while (getline(geometryIfs, strLine))
-	{
-		if (geometryIfs.fail())
-			break;
-		std::vector<std::string> substrs;
-		//split(strLine, "^", substrs);
-		/*singapore ver*/
-		/*split(strLine, '^', substrs);
-		int edgeId = atoi(substrs[0].c_str());
-		double startLat = atof(substrs[3].c_str());
-		double startLon = atof(substrs[4].c_str());
-		double endLat = atof(substrs[substrs.size() - 2].c_str());
-		double endLon = atof(substrs[substrs.size() - 1].c_str());
-		if (!inArea(startLat, startLon) || !inArea(endLat, endLon))
-		{
-		printf("start(%lf,%lf), end(%lf,%lf)\n", startLat, startLon, endLat, endLon);
-		system("pause");
-		edges.push_back(NULL);
-		count++;
-		continue;
-		}
-		Figure* figure = new Figure();
-		for (int i = 3; i < substrs.size() - 1; i += 2)
-		{
-		double lat, lon;
-		lat = atof(substrs[i].c_str());
-		lon = atof(substrs[i + 1].c_str());
-		if (inArea(lat, lon))
-		{
-		GeoPoint* pt = new GeoPoint(lat, lon);
-		figure->push_back(pt);
-		}
-		else
-		{
-		continueFlag = true;
-		edges.push_back(NULL);
-		count++;
-		break;
-		}
-
-		}*/
-		/*washington ver*/
-		split(strLine, '^', substrs);
-		int edgeId = atoi(substrs[0].c_str());
-		double startLat = atof(substrs[4].c_str());
-		double startLon = atof(substrs[5].c_str());
-		double endLat = atof(substrs[substrs.size() - 2].c_str());
-		double endLon = atof(substrs[substrs.size() - 1].c_str());
-		if (!inArea(startLat, startLon) || !inArea(endLat, endLon))
-		{
-			//printf("start(%lf,%lf), end(%lf,%lf)\n", startLat, startLon, endLat, endLon);
-			//system("pause");
-			edges.push_back(NULL);
-			count++;
-			continue;
-		}
-		Figure* figure = new Figure();
-		for (size_t i = 4; i < substrs.size() - 1; i += 2)
-		{
-			double lat, lon;
-			lat = atof(substrs[i].c_str());
-			lon = atof(substrs[i + 1].c_str());
-			if (inArea(lat, lon))
-			{
-				GeoPoint* pt = new GeoPoint(lat, lon);
-				figure->push_back(pt);
-			}
-			else
-			{
-				continueFlag = true;
-				edges.push_back(NULL);
-				count++;
-				break;
-			}
-
-		}
-		if (continueFlag)
-		{
-			delete figure;
-			continueFlag = false;
-			continue;
-		}
-		Edge* edge = new Edge();
-		edge->id = edgeId;
-		edge->visited = false;
-		edge->figure = figure;
-		edge->lengthM = calEdgeLength(figure);
-		edges.push_back(edge);
-	}
-	printf("edges count = %d\n", edges.size());
-	printf("not in area edges count = %d\n", count);
-	geometryIfs.close();
-
-	//////////////////////////////////////////////////////////////////////////
-	//读取WA_Edges.txt
-	//格式：edgeId startNodeId endNodeId 1
-	//////////////////////////////////////////////////////////////////////////
-	//初始化邻接表
-	count = 0;
-	int edgesCount = 0;
-	for (size_t i = 0; i < edges.size(); i++)
-	{
-		AdjNode* head = new AdjNode();
-		head->endPointId = i;
-		head->next = NULL;
-		adjList.push_back(head);
-	}
-	std::ifstream edgeIfs(folderDir + "WA_Edges.txt");
+	//count = 0;
+	int edgeCount = 0;
+	int nodeCount = 0;
+	std::ifstream edgeIfs(folderDir + "link_hefei.txt");
 	if (!edgeIfs)
 	{
-		cout << "open " + folderDir + "WA_Edges.txt" + " error!\n";
+		cout << "open " + folderDir + "link_hefei.txt" + " error!\n";
 		system("pause");
 		exit(0);
 	}
 	while (edgeIfs)
 	{
-		int edgeId, startNodeId, endNodeId, dummy;
-		edgeIfs >> edgeId >> startNodeId >> endNodeId >> dummy;
+		long long id;
+		string name;
+		int rank;
+		double lengthKM;
+		string edgeInfo;
+		double startLon, startLat, endLon, endLat;
+
+		edgeIfs >> id >> name >> rank >> lengthKM >> edgeInfo
+			>> startLon >> startLat >> endLon >> endLat;
 		if (edgeIfs.fail())
-			break;
-		if (inArea(startNodeId) && inArea(endNodeId) && edges[edgeId] != NULL)
 		{
-			insertEdge(edgeId, startNodeId, endNodeId);
+			break;
+		}
+		Edge* tmpEdge = new Edge();
+
+		//tmpEdge->id = id;
+		tmpEdge->id = edgeCount;
+		tmpEdge->rank = rank;
+		tmpEdge->lengthM = lengthKM / 1000;
+		//TODO: edgeInfo
+		NodeMap::iterator iter = node_map.find(make_pair(startLat, startLon));
+		if (iter == node_map.end())
+		{
+			node_map.insert(make_pair(make_pair(startLat, startLon), nodeCount));
+			nodes.push_back(new GeoPoint(startLat, startLon));
+			AdjNode* adjNode = new AdjNode();
+			adjNode->next = NULL;
+			adjList.push_back(adjNode);
+			tmpEdge->startNodeId = nodeCount;
 		}
 		else
-			count++;
+		{
+			tmpEdge->startNodeId = (*iter).second;
+		}
+
+		iter = node_map.find(make_pair(endLat, endLon));
+		if (iter == node_map.end())
+		{
+			node_map.insert(make_pair(make_pair(endLat, endLon), nodeCount));
+			nodes.push_back(new GeoPoint(endLat, endLon));
+			AdjNode* adjNode = new AdjNode();
+			adjNode->next = NULL;
+			adjList.push_back(adjNode);
+			nodeCount++;
+			tmpEdge->endNodeId = nodeCount;
+		}
+		else
+		{
+			tmpEdge->endNodeId = (*iter).second;
+		}
+		edges.push_back(tmpEdge);
+		insertEdge(edgeCount, tmpEdge->startNodeId, tmpEdge->endNodeId);
+		edgeCount++;
+		//TODO: AdjList
 	}
+
+	printf("edges count = %d\n", edges.size());
+	printf("nodes count = %d\n", nodeCount); //4607
+	//printf("not in area edges count = %d\n", count);
 	edgeIfs.close();
 
+	//////////////////////////////////////////////////////////////////////////
+	//读取ref_points_hefei.txt
+	//格式：总id(无用) edgeId 路形点id lon lat
+	//////////////////////////////////////////////////////////////////////////
+	ifstream figureIfs(folderDir + "ref_points_hefei.txt");
+	if (!figureIfs)
+	{
+		cout << "open " + folderDir + "ref_points_hefei.txt" + " error!\n";
+		system("pause");
+		exit(0);
+	}
+	bool startFlag = true;
+	double lat, lon;
+	int figureId;
+	long long edgeId;
+	int currentEdgeIndex = 0;
+	Figure* figure = NULL;
+	while (figureIfs)
+	{
+		int dummyId;
+
+		figureIfs >> dummyId >> edgeId >> figureId >> lon >> lat;
+		if (figureIfs.fail())
+		{
+			edges[currentEdgeIndex]->figure = figure;
+			break;
+		}
+		if (figureId == 0)
+		{
+			if (figure)
+			{
+				edges[currentEdgeIndex]->figure = figure;
+				currentEdgeIndex++;
+			}
+			figure = new Figure();
+		}
+		GeoPoint* figurePt = new GeoPoint(lat, lon);
+		figure->push_back(figurePt);
+
+		/**********************************************************/
+		/*test code starts from here*/
+		/*if (edges[currentEdgeIndex]->id != edgeId)
+		{
+		cout << "currentEdgeIndex = " << currentEdgeIndex << endl;
+		cout << "edgeId is no equal! " << edges[currentEdgeIndex]->id << " " << edgeId << endl;
+		system("pause");
+		}*/
+		minLon = lon < minLon ? lon : minLon;
+		maxLon = lon > maxLon ? lon : maxLon;
+		minLat = lat < minLat ? lat : minLat;
+		maxLat = lat > maxLat ? lat : maxLat;
+		/*test code ends*/
+		/**********************************************************/
+
+	}
+	figureIfs.close();
+
 	printf(">> reading map finished\n");
+	printf("lat(%lf ~ %lf), lon(%lf ~ %lf)\n", minLat, maxLat, minLon, maxLon);
 	createGridIndex();
 	printf(">> creating grid index finished\n");
 }
 
-//返回所有距离(lat, lon)点严格小于threshold米的所有Edge*
-vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
+void BaiduMap::setArea(MapDrawer& md)
+{
+	this->minLat = md.minLat;
+	this->maxLat = md.maxLat;
+	this->minLon = md.minLon;
+	this->maxLon = md.maxLon;
+}
+
+vector<Edge*> BaiduMap::getNearEdges(double lat, double lon, double threshold) const
 {
 	//////////////////////////////////////////////////////////////////////////
 	///返回(lat, lon)周围距离小于threshold米的所有路段
@@ -228,12 +205,15 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 	if (row2 >= gridHeight) row2 = gridHeight - 1;
 	if (col1 < 0) col1 = 0;
 	if (col2 >= gridWidth) col2 = gridWidth - 1;
+	//cout << "gridrange = " << gridSearchRange << endl;
 	for (int row = row1; row <= row2; row++)
 	{
 		for (int col = col1; col <= col2; col++)
 		{
 			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
 			{
+				//if (grid[row][col]->size() != 0)
+				//	cout << "grid count = " << grid[row][col]->size() << endl;
 				if (!((*iter)->visited))
 				{
 					(*iter)->visited = true;
@@ -257,8 +237,7 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 	return result;
 }
 
-//找出所有距离(lat, lon)点严格小于threshold米的所有Edge*，保存在dest容器内
-void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& dest)
+void BaiduMap::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& dest)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///返回(lat, lon)周围距离小于threshold米的所有路段
@@ -307,7 +286,7 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 	}
 }
 
-void Map::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
+void BaiduMap::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///找出离(lat, lon)距离最近的k个边，按照从近到远的距离存入dest中
@@ -393,138 +372,51 @@ void Map::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
 
 }
 
-//返回距离(lat, lon)点最近的Edge*
-Edge* Map::getNearestEdge(double lat, double lon, double &shortestDist) {
-	//////////////////////////////////////////////////////////////////////////
-	///返回离(lat, lon)点最近的路段
-	///具体算法：
-	///首先找出(lat, lon)点所在的单元格，以此为起点按正方形逐渐外扩（即range）、进行广度优先搜索，找到第一个离得最近的路段（while中的for循环）
-	///按找到的离得最近的路段到(lat, lon)点的距离计算出广度优先搜索的最大搜索范围，即maxSearchRange，即最大外扩正方形（语句if (currentResultEdge != NULL)）
-	///当外扩的range值大于等于maxSearchRange时，能保证找到一个离得最近的路段，同时没有其他路段比该路段更近，则结束寻找过程（语句noNearerEdge = true）
-	///否则就循环外扩（语句while (!foundNearsetEdge || !noNearerEdge)）
-	///最后返回找到的路段Edge指针，并保持相应的距离shortestDist
-	//////////////////////////////////////////////////////////////////////////
-	int rowPt = getRowId(lat);
-	int colPt = getColId(lon);
-	int range = 0;
-	int maxSearchRange = 0;
-	bool foundNearsetEdge = false;
-	bool noNearerEdge = false;
-	Edge* currentResultEdge = NULL;
-	double currentShortestDist = INF;
-	while ((!foundNearsetEdge || !noNearerEdge) && range <= max(gridHeight, gridWidth)){
-		for (int row = rowPt - range; row <= rowPt + range; row++){
-			if (row >= 0 && row < gridHeight){
-				if (row == rowPt - range || row == rowPt + range){
-					for (int col = colPt - range; col <= colPt + range; col++){
-						if (col >= 0 && col < gridWidth){
-							getNearestEdgeInAGridCell(lat, lon, row, col, currentResultEdge, currentShortestDist);
-						}
-						else{
-							continue;
-						}
-					}
-				}
-				else{
-					int col = colPt - range;
-					if (col >= 0 && col < gridWidth){
-						getNearestEdgeInAGridCell(lat, lon, row, col, currentResultEdge, currentShortestDist);
-					}
-					col = colPt + range;
-					if (col >= 0 && col < gridWidth){
-						getNearestEdgeInAGridCell(lat, lon, row, col, currentResultEdge, currentShortestDist);
-					}
-				}
-			}
-			else
-			{
-				continue;
-			}
-		}
-		if (currentResultEdge != NULL){
-			foundNearsetEdge = true;
-			shortestDist = currentShortestDist;
-			maxSearchRange = int(shortestDist / (gridSizeDeg * GeoPoint::geoScale)) + 1;
-			if (range >= maxSearchRange) {
-				noNearerEdge = true;
-				break;
-			}
-		}
-		range++;
+double BaiduMap::shortestPathLength(int ID1, int ID2, list<Edge*> &shortestPath, double dist1, double dist2, double deltaT){
+	int maxNodeNum = nodes.size();
+	vector<double> dist = vector<double>(maxNodeNum);
+	vector<bool> flag = vector<bool>(maxNodeNum);
+	for (int i = 0; i < maxNodeNum; i++) {
+		dist[i] = INF;
+		flag[i] = false;
 	}
-	return currentResultEdge;
-}
-
-//找出距离(lat, lon)点最近的k条路段
-vector<Edge*> Map::getKNearEdges(double lat, double lon, size_t k){
-	const int rowPt = getRowId(lat);
-	const int colPt = getColId(lon);
-	int range = 0;
-	int maxSearchRange = max(gridHeight, gridWidth);
-	vector<pair<Edge*, double>> canadidateEdges = vector<pair<Edge*, double>>();
-	set<int> visitedEdgeIdSet = set<int>();
-	bool foundKEdges = false;
-	bool noNearerEdge = false;
-	while ((!foundKEdges || !noNearerEdge) && range <= max(gridHeight, gridWidth)){
-		bool hasEdgeAdded = false;
-		for (int row = rowPt - range; row <= rowPt + range; row++){
-			if (row >= 0 && row < gridHeight){
-				if (row == rowPt - range || row == rowPt + range){
-					for (int col = colPt - range; col <= colPt + range; col++){
-						if (col >= 0 && col < gridWidth){
-							hasEdgeAdded = getEdgesInAGridCell(lat, lon, row, col, canadidateEdges, visitedEdgeIdSet) || hasEdgeAdded;
-						}
-						else{
-							continue;
-						}
-					}
-				}
-				else{
-					int col = colPt - range;
-					if (col >= 0 && col < gridWidth){
-						hasEdgeAdded = getEdgesInAGridCell(lat, lon, row, col, canadidateEdges, visitedEdgeIdSet) || hasEdgeAdded;
-					}
-					col = colPt + range;
-					if (col >= 0 && col < gridWidth){
-						hasEdgeAdded = getEdgesInAGridCell(lat, lon, row, col, canadidateEdges, visitedEdgeIdSet) || hasEdgeAdded;
-					}
-				}
-			}
-			else
-			{
-				continue;
-			}
+	dist[ID1] = 0;
+	priority_queue<NODE_DIJKSTRA> Q;
+	map<int, Edge*> preEdges;//键为路段终点，值为路段id
+	NODE_DIJKSTRA tmp(ID1, 0);
+	preEdges[ID1] = NULL;
+	Q.push(tmp);
+	while (!Q.empty()) {
+		NODE_DIJKSTRA x = Q.top();
+		Q.pop();
+		int u = x.t;
+		if (x.dist > deltaT*MAXSPEED){
+			return INF;
 		}
-		if (visitedEdgeIdSet.size() >= k&&hasEdgeAdded){
-			foundKEdges = true;
-			sort(canadidateEdges.begin(), canadidateEdges.end(), [&](pair<Edge*, double> &e1, pair<Edge*, double> &e2){
-				return e1.second < e2.second;
-			});
-			canadidateEdges.resize(k);
-			visitedEdgeIdSet.clear();
-			for each (pair<Edge*, double> var in canadidateEdges)
-			{
-				visitedEdgeIdSet.insert(var.first->id);
-			}
-			double currentLongestDist = canadidateEdges.back().second;
-			maxSearchRange = int(currentLongestDist / (gridSizeDeg * GeoPoint::geoScale)) + 1;
+		if (flag[u]) {
+			continue;
 		}
-		if (range >= maxSearchRange) {
-			noNearerEdge = true;
+		flag[u] = true;
+		if (u == ID2) {
 			break;
 		}
-		range++;
+		for (AdjNode* i = adjList[u]->next; i != NULL; i = i->next) {
+			if (dist[i->endPointId] > dist[u] + edges[i->edgeId]->lengthM) {
+				dist[i->endPointId] = dist[u] + edges[i->edgeId]->lengthM;
+				NODE_DIJKSTRA tmp(i->endPointId, dist[i->endPointId]);
+				preEdges[i->endPointId] = edges[i->edgeId];
+				Q.push(tmp);
+			}
+		}
 	}
-	vector<Edge*> resultEdges = vector<Edge*>();
-	for each (pair<Edge*, double> var in canadidateEdges)
-	{
-		resultEdges.push_back(var.first);
+	double resultLength = dist[ID2];
+	for (Edge* edge = preEdges[ID2]; edge != NULL; edge = preEdges[edge->startNodeId]){
+		shortestPath.push_front(edge);
 	}
-	return resultEdges;
+	return resultLength;
 }
 
-//返回(lat,lon)点到edge的距离，单位为米
-double Map::distM(double lat, double lon, Edge* edge) const
+double BaiduMap::distM(double lat, double lon, Edge* edge) const
 {
 	//////////////////////////////////////////////////////////////////////////
 	///返回点(lat, lon)到边edge的精确距离
@@ -542,30 +434,28 @@ double Map::distM(double lat, double lon, Edge* edge) const
 	Figure::iterator iter = edge->figure->begin();
 	Figure::iterator nextIter = edge->figure->begin();
 	nextIter++;
-	GeoPoint* pt = new GeoPoint(lat, lon);
 	while (nextIter != edge->figure->end())
 	{
 		//有投影
+		GeoPoint* pt = new GeoPoint(lat, lon);
 		if (cosAngle(pt, (*iter), (*nextIter)) <= 0 && cosAngle(pt, (*nextIter), (*iter)) <= 0)
 		{
 			double A = ((*nextIter)->lat - (*iter)->lat);
 			double B = -((*nextIter)->lon - (*iter)->lon);
-			double C = (*iter)->lat * ((*nextIter)->lon - (*iter)->lon) - (*iter)->lon * ((*nextIter)->lat - (*iter)->lat);
+			double C = (*iter)->lat * ((*nextIter)->lon - (*iter)->lon)
+				- (*iter)->lon * ((*nextIter)->lat - (*iter)->lat);
 			double tmpDist = abs(A * pt->lon + B * pt->lat + C) / sqrt(A * A + B * B);
 			tmpDist *= GeoPoint::geoScale;
-			if (minDist > tmpDist){
+			if (minDist > tmpDist)
 				minDist = tmpDist;
-			}
 		}
 		iter++;
 		nextIter++;
 	}
-	delete pt;
 	return minDist;
 }
 
-//返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist，无投影则记为0
-double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
+double BaiduMap::distM(double lat, double lon, Edge* edge, double& prjDist) const
 {
 	//////////////////////////////////////////////////////////////////////////
 	///返回点(lat, lon)到边edge的精确距离
@@ -604,15 +494,16 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 	iter = edge->figure->begin();
 	nextIter = edge->figure->begin();
 	nextIter++;
-	GeoPoint* pt = new GeoPoint(lat, lon);
 	while (nextIter != edge->figure->end())
 	{
-		//有投影		
+		//有投影
+		GeoPoint* pt = new GeoPoint(lat, lon);
 		if (cosAngle(pt, (*iter), (*nextIter)) <= 0 && cosAngle(pt, (*nextIter), (*iter)) <= 0)
 		{
 			double A = ((*nextIter)->lat - (*iter)->lat);
 			double B = -((*nextIter)->lon - (*iter)->lon);
-			double C = (*iter)->lat * ((*nextIter)->lon - (*iter)->lon) - (*iter)->lon * ((*nextIter)->lat - (*iter)->lat);
+			double C = (*iter)->lat * ((*nextIter)->lon - (*iter)->lon)
+				- (*iter)->lon * ((*nextIter)->lat - (*iter)->lat);
 			double tmpDist = abs(A * pt->lon + B * pt->lat + C) / sqrt(A * A + B * B);
 			tmpDist *= GeoPoint::geoScale;
 			if (minDist > tmpDist)
@@ -627,13 +518,12 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 		iter++;
 		nextIter++;
 	}
-	delete pt;
 	prjDist = tempTotalPrjDist;
 	return minDist;
 }
 
 //移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
-double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist){
+double BaiduMap::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist){
 	double tmpSideLen = 0;
 	double result = 1e80, tmp = 0;
 	double x = -1, y = -1;
@@ -670,8 +560,7 @@ double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, doubl
 	return result;
 }
 
-//判断startNodeId与endNodeId之间有无边,没有边返回-1，有边返回edgeId
-int Map::hasEdge(int startNodeId, int endNodeId) const
+int BaiduMap::hasEdge(int startNodeId, int endNodeId) const
 {
 	AdjNode* current = adjList[startNodeId]->next;
 	while (current != NULL)
@@ -686,8 +575,7 @@ int Map::hasEdge(int startNodeId, int endNodeId) const
 	return -1;
 }
 
-//在当前图中插入点
-int Map::insertNode(double lat, double lon)
+int BaiduMap::insertNode(double lat, double lon)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///插入一个新结点(lat, lon),并同时在邻接表中也对应插入一个邻接表结点,返回新结点的id
@@ -703,8 +591,7 @@ int Map::insertNode(double lat, double lon)
 	return nodes.size() - 1;
 }
 
-//在当前图中插入边
-int Map::insertEdge(Figure* figure, int startNodeId, int endNodeId)
+int BaiduMap::insertEdge(Figure* figure, int startNodeId, int endNodeId)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///以figure为路形构造一条新边插入地图,并插入网格索引
@@ -723,7 +610,7 @@ int Map::insertEdge(Figure* figure, int startNodeId, int endNodeId)
 	return newEdge->id;
 }
 
-int Map::splitEdge(int edgeId, double lat, double lon)
+int BaiduMap::splitEdge(int edgeId, double lat, double lon)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///将edgeId号路在(lat, lon)点切割成两段路,(lat, lon)作为intersection
@@ -840,7 +727,7 @@ int Map::splitEdge(int edgeId, double lat, double lon)
 	return newNodeId;
 }
 
-void Map::delEdge(int edgeId)
+void BaiduMap::delEdge(int edgeId)
 {
 	//【注意】会发生内存泄露
 	edges[edgeId] = NULL;
@@ -848,7 +735,9 @@ void Map::delEdge(int edgeId)
 	//这个不能用
 }
 
-void Map::getMinMaxLatLon(string nodeFilePath)
+Color randomColor();
+
+void BaiduMap::getMinMaxLatLon(string nodeFilePath)
 {
 	ifstream nodeIfs(nodeFilePath);
 	if (!nodeIfs)
@@ -877,91 +766,55 @@ void Map::getMinMaxLatLon(string nodeFilePath)
 	nodeIfs.close();
 }
 
-/*
-A路段起点到B路段起点的最小路网距离
-参数：
-ID1：A路段起点
-ID2：B路段起点
-dist1：基于隐马尔科夫模型地图匹配算法中轨迹点到B路段起点的距离，默认值为0
-dist2：基于隐马尔科夫模型地图匹配算法中轨迹点到A路段起点的距离，默认值为0
-deltaT：基于隐马尔科夫模型地图匹配算法中两轨迹点的时间差，默认为INF
-shortestPath：保存组成最短路径的路段的Edge*
-*/
-double Map::shortestPathLength(int ID1, int ID2, list<Edge*> &shortestPath, double dist1, double dist2, double deltaT){
-	int maxNodeNum = nodes.size();
-	vector<double> dist = vector<double>(maxNodeNum);
-	vector<bool> flag = vector<bool>(maxNodeNum);
-	for (int i = 0; i < maxNodeNum; i++) {
-		dist[i] = INF;
-		flag[i] = false;
-	}
-	dist[ID1] = 0;
-	priority_queue<NODE_DIJKSTRA> Q;
-	map<int, Edge*> preEdges;//键为路段终点，值为路段id
-	NODE_DIJKSTRA tmp(ID1, 0);
-	preEdges[ID1] = NULL;
-	Q.push(tmp);
-	while (!Q.empty()) {
-		NODE_DIJKSTRA x = Q.top();
-		Q.pop();
-		int u = x.t;
-		if (x.dist > deltaT*MAXSPEED){
-			return INF;
-		}
-		if (flag[u]) {
+void BaiduMap::drawMap(Color color, MapDrawer& md)
+{
+	for (size_t i = 0; i < edges.size(); i++)
+	{
+		if (edges[i] == NULL)
 			continue;
-		}
-		flag[u] = true;
-		if (u == ID2) {
-			break;
-		}
-		for (AdjNode* i = adjList[u]->next; i != NULL; i = i->next) {
-			if (dist[i->endPointId] > dist[u] + edges[i->edgeId]->lengthM) {
-				dist[i->endPointId] = dist[u] + edges[i->edgeId]->lengthM;
-				NODE_DIJKSTRA tmp(i->endPointId, dist[i->endPointId]);
-				preEdges[i->endPointId] = edges[i->edgeId];
-				Q.push(tmp);
-			}
+
+		Figure::iterator ptIter = edges[i]->figure->begin(), nextPtIter = ptIter;
+		nextPtIter++;
+		Color rndColor = randomColor();
+		while (1)
+		{
+			if (nextPtIter == edges[i]->figure->end())
+				break;
+			md.drawLine(color, (*ptIter)->lat, (*ptIter)->lon, (*nextPtIter)->lat, (*nextPtIter)->lon);
+			//printf("(%lf, %lf) -> (%lf, %lf)\n", (*ptIter)->lat, (*ptIter)->lon, (*nextPtIter)->lat, (*nextPtIter)->lon);
+			//	system("pause");
+			md.drawBigPoint(Gdiplus::Color::Black, (*ptIter)->lat, (*ptIter)->lon);
+			//md.drawBigPoint(Gdiplus::Color::Black, (*nextPtIter)->lat, (*nextPtIter)->lon);
+			ptIter++;
+			nextPtIter++;
 		}
 	}
-	double resultLength = dist[ID2];
-	for (Edge* edge = preEdges[ID2]; edge != NULL; edge = preEdges[edge->startNodeId]){
-		shortestPath.push_front(edge);
-	}
-	return resultLength;
 }
 
+void BaiduMap::drawGridLine(Gdiplus::Color color, MapDrawer& md)
+{
+	//////////////////////////////////////////////////////////////////////////
+	///在图片上画出网格线 
+	//////////////////////////////////////////////////////////////////////////
+	//设置透明度
+	ARGB argb = Color::MakeARGB(90, color.GetR(), color.GetG(), color.GetB());
+	color.SetValue(argb);
+	double delta = 0.0000001;
+	for (int i = 0; i < gridHeight; i++)
+	{
+		double lat = minLat + gridSizeDeg * i;
+		md.drawLine(color, lat, minLon + delta, lat, maxLon - delta);
+	}
+	for (int i = 0; i < gridWidth; i++)
+	{
+		double lon = minLon + gridSizeDeg * i;
+		md.drawLine(color, minLat + delta, lon, maxLat - delta, lon);
+	}
+}
 //////////////////////////////////////////////////////////////////////////
 ///private part
 //////////////////////////////////////////////////////////////////////////
-
-//给定行号row和列号row，找出相应单元格中离(lat,lon)点最近的路段，保存在currentResultEdge中，shortestDist保存相应的最短距离
-void Map::getNearestEdgeInAGridCell(double lat, double lon, int row, int col, Edge*& currentResultEdge, double &shortestDist){
-	for (list<Edge*>::iterator edgeIter = grid[row][col]->begin(); edgeIter != grid[row][col]->end(); edgeIter++)
-	{
-		if (distM(lat, lon, (*edgeIter)) < shortestDist){
-			shortestDist = distM(lat, lon, (*edgeIter));
-			currentResultEdge = (*edgeIter);
-		}
-	}
-}
-
-//给定行号row和列号row，返回相应单元格中所有路段保存在resultEdges中，另外把相应的EdgeId保存在visitedEdgeIdSet中；如果resultEdges集合有改变，则返回true，反之返回false
-bool Map::getEdgesInAGridCell(double lat, double lon, int row, int col, vector<pair<Edge*, double>> &resultEdges, set<int> &visitedEdgeIdSet){
-	bool result = false;
-	for (list<Edge*>::iterator edgeIter = grid[row][col]->begin(); edgeIter != grid[row][col]->end(); edgeIter++)
-	{
-		if (visitedEdgeIdSet.count((*edgeIter)->id) == 0){
-			double dist = this->distM(lat, lon, (*edgeIter));
-			resultEdges.push_back(make_pair((*edgeIter), dist));
-			visitedEdgeIdSet.insert((*edgeIter)->id);
-			result = true;
-		}
-	}
-	return result;
-}
-
-double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold) const
+double BaiduMap::distM_withThres(double lat, double lon, Edge* edge, double threshold) const
 {
 	//////////////////////////////////////////////////////////////////////////
 	///返回点(lat, lon)到边edge的距离上界 【注意】不可用于计算精确距离！
@@ -1002,32 +855,30 @@ double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold
 	Figure::iterator iter = edge->figure->begin();
 	Figure::iterator nextIter = edge->figure->begin();
 	nextIter++;
-	GeoPoint* pt = new GeoPoint(lat, lon);
 	while (nextIter != edge->figure->end())
 	{
 		//有投影
+		GeoPoint* pt = new GeoPoint(lat, lon);
 		if (cosAngle(pt, (*iter), (*nextIter)) <= 0 && cosAngle(pt, (*nextIter), (*iter)) <= 0)
 		{
 			double A = ((*nextIter)->lat - (*iter)->lat);
 			double B = -((*nextIter)->lon - (*iter)->lon);
-			double C = (*iter)->lat * ((*nextIter)->lon - (*iter)->lon) - (*iter)->lon * ((*nextIter)->lat - (*iter)->lat);
+			double C = (*iter)->lat * ((*nextIter)->lon - (*iter)->lon)
+				- (*iter)->lon * ((*nextIter)->lat - (*iter)->lat);
 			double tmpDist = abs(A * pt->lon + B * pt->lat + C) / sqrt(A * A + B * B);
 			tmpDist *= GeoPoint::geoScale;
-			if (tmpDist < threshold){
+			if (tmpDist < threshold)
 				return tmpDist;
-			}
-			if (minDist > tmpDist){
+			if (minDist > tmpDist)
 				minDist = tmpDist;
-			}
 		}
 		iter++;
 		nextIter++;
 	}
-	delete pt;
 	return minDist;
 }
 
-double Map::calEdgeLength(Figure* figure) const
+double BaiduMap::calEdgeLength(Figure* figure) const
 {
 	//////////////////////////////////////////////////////////////////////////
 	///计算路段的长度，单位为m
@@ -1046,17 +897,75 @@ double Map::calEdgeLength(Figure* figure) const
 	return lengthM;
 }
 
-bool Map::inArea(double lat, double lon) const
+bool BaiduMap::inArea(double lat, double lon) const
 {
 	return (lat > minLat && lat < maxLat && lon > minLon && lon < maxLon);
 }
 
-bool Map::inArea(int nodeId) const
+bool BaiduMap::inArea(int nodeId) const
 {
 	return (nodes[nodeId] != NULL);
 }
 
-void Map::createGridIndex()
+void BaiduMap::test()
+{
+	int* flag = new int[nodes.size()];
+	for (size_t i = 0; i < nodes.size(); i++)
+	{
+		flag[i] = -1;
+	}
+	for (size_t i = 0; i < adjList.size(); i++)
+	{
+		if (i % 1000 == 0)
+		{
+			cout << i << endl;
+		}
+		AdjNode* current = adjList[i]->next;
+		while (current != NULL)
+		{
+			int j = current->endPointId;
+			/*int edgeIJId = current->edgeId;
+			int edgeJIId = hasEdge(j, i);
+			if (edgeJIId != -1)
+			{
+			Edge* edgeIJ = edges[edgeIJId];
+			Edge* edgeJI = edges[edgeJIId];
+			if (edgeIJ->size() != edgeJI->size())
+			{
+			cout << "XXXXXX" << endl;
+			}
+			Edge::iterator iter1 = edgeIJ->begin();
+			Edge::iterator iter2 = edgeJI->end();
+			iter2--;
+			while (iter2 != edgeJI->begin())
+			{
+			if (abs((*iter1)->lat - (*iter2)->lat) > 1e-8 ||
+			abs((*iter1)->lon - (*iter2)->lon) > 1e-8)
+			{
+			cout << "YYYYYY" << endl;
+			printf("%lf,%lf,%lf,%lf\n", (*iter1)->lat, (*iter2)->lat, (*iter1)->lon, (*iter2)->lon);
+			printf("edgeIJ = %d, edgeJI = %d", edgeIJId, edgeJIId);
+			system("pause");
+			}
+			//printf("%lf,%lf,%lf,%lf\n", (*iter1)->lat, (*iter2)->lat, (*iter1)->lon, (*iter2)->lon);
+			//system("pause");
+			iter2--;
+			iter1++;
+			}
+			}*/
+			if (flag[j] == i)
+			{
+				cout << "ZZZZZZZ" << endl;
+				printf("%d, %d\n", i, j);
+				system("pause");
+			}
+			flag[j] = i;
+			current = current->next;
+		}
+	}
+}
+
+void BaiduMap::createGridIndex()
 {
 	//////////////////////////////////////////////////////////////////////////
 	///对全图建立网格索引
@@ -1065,9 +974,8 @@ void Map::createGridIndex()
 	gridHeight = int((maxLat - minLat) / (maxLon - minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (maxLon - minLon) / double(gridWidth);
 	grid = new list<Edge*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++){
+	for (int i = 0; i < gridHeight; i++)
 		grid[i] = new list<Edge*>*[gridWidth];
-	}
 	for (int i = 0; i < gridHeight; i++)
 	{
 		for (int j = 0; j < gridWidth; j++)
@@ -1083,7 +991,7 @@ void Map::createGridIndex()
 	}
 }
 
-void Map::insertEdgeIntoGrid(Edge* edge, int row, int col)
+void BaiduMap::insertEdgeIntoGrid(Edge* edge, int row, int col)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///将路段edge加入grid[row][col]中索引，如果已经加入过则不添加
@@ -1097,7 +1005,7 @@ void Map::insertEdgeIntoGrid(Edge* edge, int row, int col)
 		grid[row][col]->push_back(edge);
 }
 
-void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt)
+void BaiduMap::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///对edge路中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
@@ -1244,7 +1152,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	return;
 }
 
-void Map::createGridIndexForEdge(Edge *edge)
+void BaiduMap::createGridIndexForEdge(Edge *edge)
 {
 	if (edge == NULL)
 		return;
@@ -1258,7 +1166,7 @@ void Map::createGridIndexForEdge(Edge *edge)
 	}
 }
 
-void Map::insertEdge(int edgeId, int startNodeId, int endNodeId)
+void BaiduMap::insertEdge(int edgeId, int startNodeId, int endNodeId)
 {
 	//////////////////////////////////////////////////////////////////////////
 	///向邻接表adjList中插入一条边的连通关系，初次构建图时使用，私有版本，不允许外部调用
@@ -1288,17 +1196,17 @@ void Map::insertEdge(int edgeId, int startNodeId, int endNodeId)
 	edges[edgeId]->endNodeId = endNodeId;
 }
 
-int Map::getRowId(double lat) const
+int BaiduMap::getRowId(double lat) const
 {
 	return (int)((lat - minLat) / gridSizeDeg);
 }
 
-int Map::getColId(double lon) const
+int BaiduMap::getColId(double lon) const
 {
 	return (int)((lon - minLon) / gridSizeDeg);
 }
 
-double Map::cosAngle(GeoPoint* pt1, GeoPoint* pt2, GeoPoint* pt3) const
+double BaiduMap::cosAngle(GeoPoint* pt1, GeoPoint* pt2, GeoPoint* pt3) const
 {
 	double v1x = pt2->lon - pt1->lon;
 	double v1y = pt2->lat - pt1->lat;
@@ -1307,7 +1215,7 @@ double Map::cosAngle(GeoPoint* pt1, GeoPoint* pt2, GeoPoint* pt3) const
 	return (v1x * v2x + v1y * v2y) / sqrt((v1x * v1x + v1y * v1y)*(v2x * v2x + v2y * v2y));
 }
 
-void Map::split(const string& src, const string& separator, vector<string>& dest)
+void BaiduMap::split(const string& src, const string& separator, vector<string>& dest)
 {
 	std::string str = src;
 	std::string substring;
@@ -1328,7 +1236,7 @@ void Map::split(const string& src, const string& separator, vector<string>& dest
 	dest.push_back(substring);
 }
 
-void Map::split(const string& src, const char& separator, vector<string>& dest)
+void BaiduMap::split(const string& src, const char& separator, vector<string>& dest)
 {
 	int index = 0, start = 0;
 	while (index != src.size())
