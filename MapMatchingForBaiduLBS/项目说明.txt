@@ -1,1 +1,0 @@
-本项目是百度LBS竞赛的相关代码。竞赛网址为http://openresearch.baidu.com/topic/66.jspx，目的是找出路网上的天桥、地道和斑马线三类人行设施。
