@@ -4,7 +4,7 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -87,7 +87,7 @@ list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
 
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
-	int sampleRate = (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1);//计算轨迹平均采样率
+	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
 	cout << "采样率：" << sampleRate << endl;
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
@@ -98,8 +98,12 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	int currentTrajPointIndex = 0;//当前轨迹点的索引	
 	for (list<GeoPoint*>::iterator trajectoryIterator = trajectory.begin(); trajectoryIterator != trajectory.end(); trajectoryIterator++)//遍历每个轨迹点
 	{
+		double distBetweenTwoTrajPoints;//两轨迹点间的直接距离
 		double deltaT = -1;//当前序轨迹点存在时，deltaT表示前后两轨迹点间的时间差
-		if (formerTrajPoint != NULL){ deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; }
+		if (formerTrajPoint != NULL){ 
+			deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; 
+			distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);
+		}
 		long double currentMaxProb = -1e10;//当前最大整体概率，初始值为-1e10
 		vector<Score> scores = vector<Score>();//当前轨迹点的Score集合
 		vector<Edge*> canadidateEdges;//候选路段集合
@@ -115,7 +119,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			emissionProbs[currentCanadidateEdgeIndex] = EmissionProb(1, DistBetweenTrajPointAndEdge);
 			if (!cutFlag){
 				//当前采样点不是轨迹第一个点或匹配中断后的第一个点，则计算转移概率
-				long double currentMaxProbTmp = -1e10;//当前最大转移概率，初始值为-1e10
+				long double currentMaxProbTmp = -1e10;//当前最大转移概率，初始值为-1e10				
 				int formerCanadidateEdgeIndex = 0;
 				for each(Score formerCanadidateEdge in scoreMatrix.back()){
 					double formerDistLeft = formerCanadidateEdge.distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
@@ -145,7 +149,6 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 						}
 						routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoEdges + currentDistLeft + formerDistToEnd;
 					}
-					double distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);//两轨迹点间的直接距离
 					long double transactionProb = exp(-fabs((long double)distBetweenTwoTrajPoints - (long double)routeNetworkDistBetweenTwoTrajPoints) / BT) / BT;//转移概率
 					/*GIS2012CUP的优化加在此处，对transactionProb进行修改*/
 					long double tmpTotalProbForTransaction = formerCanadidateEdge.score * transactionProb;
@@ -167,7 +170,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		delete[]emissionProbs;
 		formerTrajPoint = *trajectoryIterator;
 		currentTrajPointIndex++;
-		for (int i = 0; i < scores.size(); i++)	{ scores[i].score /= currentMaxProb; }//归一化
+		for (size_t i = 0; i < scores.size(); i++)	{ scores[i].score /= currentMaxProb; }//归一化
 		scoreMatrix.push_back(scores);//把该轨迹点的Scores数组放入scoreMatrix中
 		if (scores.size() == 0){//若scores数组为空，则说明没有一个达标的候选路段，cutFlag设为true，后续轨迹作为新轨迹进行匹配
 			cutFlag = true;

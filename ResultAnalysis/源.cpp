@@ -1,7 +1,7 @@
 #include "ReadInTrajs.h"
 using namespace std;
 
-string rootFilePath = "D:\\Document\\Subjects\\Computer\\Develop\\Data\\SingaporeData\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
 vector<string> outputFileNames;
 list<MatchedTraj> resultList;//地图匹配结果集合
 list<Traj*> trajList;//原始轨迹集合

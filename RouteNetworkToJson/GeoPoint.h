@@ -4,6 +4,8 @@
 #pragma once
 #define INVALID_TIME -1
 
+#define PI180 0.0174532925199432957694
+
 class GeoPoint
 {
 public:
