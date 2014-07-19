@@ -26,7 +26,7 @@ list<int> ReadOneResultFile(string filePath){
 }
 
 //读入所有匹配结果文件和相应的答案文件
-void ReadFolder(string folderDir)
+void ReadFolder(string folderDir, string outputDirectory, string answerDirectory)
 {
 	/*文件目录结构为
 	* folderDir
@@ -35,7 +35,7 @@ void ReadFolder(string folderDir)
 	* |-output
 	*   |-output_000011.txt ...
 	*/
-	string completeInputFilesPath = folderDir + "output\\" + "*.txt";
+	string completeInputFilesPath = folderDir + outputDirectory + "\\" + "*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
@@ -45,11 +45,11 @@ void ReadFolder(string folderDir)
 	else {
 		do {
 			string inputFileName = fileInfo.name;
-			matchedResultList.push_back(ReadOneResultFile(folderDir + "output\\" + inputFileName));
+			matchedResultList.push_back(ReadOneResultFile(folderDir + outputDirectory + "\\" + inputFileName));
 			string answerFileName = inputFileName.substr(6, inputFileName.size() - 10);
 			fileNameList.push_back(answerFileName);
 			answerFileName = "output_" + answerFileName + ".txt";
-			matchedAnswerList.push_back(ReadOneResultFile(folderDir + "answer\\" + inputFileName));
+			matchedAnswerList.push_back(ReadOneResultFile(folderDir + answerDirectory + "\\" + inputFileName));
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
 		return;
@@ -72,7 +72,10 @@ void Check(){
 			}
 		}
 		double tmpRate = (wrongCount + 0.0) / resultIter->size();
-		cout << (*fileNameIter) << ": " << tmpRate << endl;
+		//只输出匹配错误率大于0.2的轨迹文件名
+		if (tmpRate > 0.2){
+			cout << "output" << (*fileNameIter) << ": " << tmpRate << endl;
+		}
 		averageErrorRate += tmpRate;
 	}
 	averageErrorRate /= matchedResultList.size();
@@ -80,7 +83,7 @@ void Check(){
 }
 
 int main(){
-	ReadFolder("D:\\Document\\Subjects\\Computer\\Develop\\Data\\GISCUP2012_Data\\");
+	ReadFolder("E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\", "output_30", "answer_30");
 	Check();
 	return 0;
 }

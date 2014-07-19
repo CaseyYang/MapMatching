@@ -4,7 +4,9 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
+string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
+string inputDirectoryPath = "input_30";
+string outputDirectoryPath = "output_30";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -100,8 +102,8 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	{
 		double distBetweenTwoTrajPoints;//两轨迹点间的直接距离
 		double deltaT = -1;//当前序轨迹点存在时，deltaT表示前后两轨迹点间的时间差
-		if (formerTrajPoint != NULL){ 
-			deltaT = (*trajectoryIterator)->time - formerTrajPoint->time; 
+		if (formerTrajPoint != NULL){
+			deltaT = (*trajectoryIterator)->time - formerTrajPoint->time;
 			distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);
 		}
 		long double currentMaxProb = -1e10;//当前最大整体概率，初始值为-1e10
@@ -215,22 +217,20 @@ void main(){
 	//logOutput = ofstream("debug.txt");
 	//logOutput.setf(ios::showpoint);
 	//logOutput.precision(8);
-	scanTrajFolder(rootFilePath, trajList, outputFileNames);
+	scanTrajFolder(rootFilePath, inputDirectoryPath, trajList, outputFileNames);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		list<Edge*> resultList = MapMatching(*(*trajIter));
-		ofstream MatchedEdgeOutput(rootFilePath + "output\\" + outputFileNames[trajIndex]);
+		ofstream MatchedEdgeOutput(rootFilePath +outputDirectoryPath+ "\\" + outputFileNames[trajIndex]);
 		Traj::iterator trajPointIter = (*trajIter)->begin();
 		for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 			if (*edgeIter != NULL){
 				int currentIndex = (*edgeIter)->id;
-				//MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
-				MatchedEdgeOutput << "0," << currentIndex << ",1.0" << endl;
+				MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
 			}
 			else{
-				//MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
-				MatchedEdgeOutput << "0," << -1 << ",1.0" << endl;
+				MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
 			}
 		}
 		MatchedEdgeOutput.close();

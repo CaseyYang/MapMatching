@@ -5,10 +5,10 @@
 using namespace std;
 
 
-string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
+string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
-int sampleRate = 180;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
+int sampleRate = 60;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
 
 double CalculateMAD(list<double> &dist){
 	dist.sort();
@@ -145,7 +145,8 @@ void CalculateAverageSampleRate(){
 }
 
 //对高采样率轨迹数据降低其采样率，每个sampleRate选取一个采样点，得到新的符合sampleRate采样率的轨迹
-void DegradeInput(){
+//inputDirectory：新轨迹文件所在的文件夹名
+void DegradeInput(string inputDirectory){
 	string completeInputFilesPath = rootFilePath + "input\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -161,8 +162,7 @@ void DegradeInput(){
 			ofstream *fout = new ofstream[sampleRate];
 			for (size_t i = 0; i < sampleRate; i++)
 			{
-				fout[i] = ofstream(inputFileName.substr(0, 6) + ToString(index) + ToString(i) + ".txt");
-				cout << i << ": " << inputFileName.substr(0, 6) + ToString(i) + ".txt" << endl;
+				fout[i] = ofstream(rootFilePath + inputDirectory + "\\" + inputFileName.substr(0, 6) + ToString(index) + ToString(i) + ".txt");
 				fout[i].precision(13);
 			}
 			int time;
@@ -185,7 +185,8 @@ void DegradeInput(){
 	}
 }
 //和DegradeInput相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
-void DegradeAnswer(){
+//answerDirectory：新答案文件所在的文件夹名
+void DegradeAnswer(string answerDirectory){
 	string completeInputFilesPath = rootFilePath + "answer\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -201,7 +202,7 @@ void DegradeAnswer(){
 			ofstream *fout = new ofstream[sampleRate];
 			for (size_t i = 0; i < sampleRate; i++)
 			{
-				fout[i] = ofstream(inputFileName.substr(0, 7) + ToString(index) + ToString(i) + ".txt");
+				fout[i] = ofstream(rootFilePath + answerDirectory + "\\" + inputFileName.substr(0, 7) + ToString(index) + ToString(i) + ".txt");
 				fout[i].setf(ios::showpoint);
 				fout[i].precision(13);
 			}
@@ -235,11 +236,11 @@ void RawTrajToJson(string filePath){
 	bool start = true;
 	string city = "Shanghai";
 	fout << "data = {" << endl;
-	fout << "\"city\":\""<<city<<"\",\"rawTrajsId\":\"" << filePath << "\",\"points\":[" << endl;
-	while (fin>>timeStamp){
+	fout << "\"city\":\"" << city << "\",\"rawTrajsId\":\"" << filePath << "\",\"points\":[" << endl;
+	while (fin >> timeStamp){
 		fin >> y >> x;
 		if (!start){
-			fout << "," << endl<<"{";
+			fout << "," << endl << "{";
 		}
 		else{
 			fout << "{";
@@ -253,11 +254,14 @@ void RawTrajToJson(string filePath){
 }
 
 int main(){
+	DegradeInput("input_60");
+	DegradeAnswer("answer_60");
+
 	vector<string> outputFileNames;
 	//scanTrajFolder(rootFilePath, trajList, outputFileNames);
 	//cout << "文件读入完毕！" << endl;
 	//CalculateParametersForViterbiAlgorithm();
 	//CalculateAverageSampleRate();
-	RawTrajToJson("2014-03-25 16_44_11.txt");
+	//RawTrajToJson("2014-03-25 16_44_11.txt");
 	return 0;
 }
