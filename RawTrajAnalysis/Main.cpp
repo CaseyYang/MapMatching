@@ -5,7 +5,7 @@
 using namespace std;
 
 
-string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 int sampleRate = 90;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用

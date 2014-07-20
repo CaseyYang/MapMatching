@@ -85,7 +85,7 @@ void Check(){
 }
 
 int main(){
-	ReadFolder("E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\", "output_60", "answer_60");
+	ReadFolder("D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\", "output_60", "answer_60");
 	Check();
 	return 0;
 }

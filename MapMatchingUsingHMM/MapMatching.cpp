@@ -4,7 +4,7 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
 string inputDirectory = "input_90";
 string outputDirectory = "output_90";
 Map routeNetwork = Map(rootFilePath, 1000);
