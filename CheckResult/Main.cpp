@@ -62,6 +62,7 @@ void Check(){
 	list<list<int>>::iterator resultIter = matchedResultList.begin();
 	list<list<int>>::iterator answerIter = matchedAnswerList.begin();
 	list<string>::iterator fileNameIter = fileNameList.begin();
+	ofstream filePathFout = ofstream("files_sr_60.txt");
 	for (; resultIter != matchedResultList.end(); resultIter++, answerIter++, fileNameIter++){
 		int wrongCount = 0;
 		list<int>::iterator resultEdgeIter = resultIter->begin();
@@ -74,16 +75,17 @@ void Check(){
 		double tmpRate = (wrongCount + 0.0) / resultIter->size();
 		//只输出匹配错误率大于0.2的轨迹文件名
 		if (tmpRate > 0.2){
-			cout << "output" << (*fileNameIter) << ": " << tmpRate << endl;
+			filePathFout << (*fileNameIter) << " " << tmpRate << endl;
 		}
 		averageErrorRate += tmpRate;
 	}
+	filePathFout.close();
 	averageErrorRate /= matchedResultList.size();
 	cout << "平均错误率：" << averageErrorRate << endl;
 }
 
 int main(){
-	ReadFolder("E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\", "output_30", "answer_30");
+	ReadFolder("E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\", "output_60", "answer_60");
 	Check();
 	return 0;
 }

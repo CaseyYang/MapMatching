@@ -8,7 +8,7 @@ using namespace std;
 string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
-int sampleRate = 60;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
+int sampleRate = 90;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
 
 double CalculateMAD(list<double> &dist){
 	dist.sort();
@@ -254,8 +254,20 @@ void RawTrajToJson(string filePath){
 }
 
 int main(){
-	DegradeInput("input_60");
-	DegradeAnswer("answer_60");
+	trajList = list<Traj*>();
+	sampleRate = 90;
+	DegradeInput("input_90");
+	DegradeAnswer("answer_90");
+
+	trajList = list<Traj*>();
+	sampleRate = 120;
+	DegradeInput("input_120");
+	DegradeAnswer("answer_120");
+
+	trajList = list<Traj*>();
+	sampleRate = 150;
+	DegradeInput("input_150");
+	DegradeAnswer("answer_150");
 
 	vector<string> outputFileNames;
 	//scanTrajFolder(rootFilePath, trajList, outputFileNames);

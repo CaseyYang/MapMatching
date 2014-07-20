@@ -5,8 +5,8 @@
 vector<string> outputFileNames;
 list<Traj*> trajList;
 string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
-string inputDirectoryPath = "input_30";
-string outputDirectoryPath = "output_30";
+string inputDirectory = "input_90";
+string outputDirectory = "output_90";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -90,7 +90,7 @@ list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
 	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
-	cout << "采样率：" << sampleRate << endl;
+	//cout << "采样率：" << sampleRate << endl;
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
 	vector<vector<Score>> scoreMatrix = vector<vector<Score>>();//所有轨迹点的概率矩阵
@@ -217,12 +217,12 @@ void main(){
 	//logOutput = ofstream("debug.txt");
 	//logOutput.setf(ios::showpoint);
 	//logOutput.precision(8);
-	scanTrajFolder(rootFilePath, inputDirectoryPath, trajList, outputFileNames);
+	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		list<Edge*> resultList = MapMatching(*(*trajIter));
-		ofstream MatchedEdgeOutput(rootFilePath +outputDirectoryPath+ "\\" + outputFileNames[trajIndex]);
+		ofstream MatchedEdgeOutput(rootFilePath +outputDirectory+ "\\" + outputFileNames[trajIndex]);
 		Traj::iterator trajPointIter = (*trajIter)->begin();
 		for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 			if (*edgeIter != NULL){
