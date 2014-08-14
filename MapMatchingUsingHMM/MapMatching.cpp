@@ -4,9 +4,9 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
-string inputDirectory = "input_90";
-string outputDirectory = "output_90";
+string rootFilePath = "D:\\MapMatchingProject\\Data\\GISCUP2012_Data\\";
+string inputDirectory = "input_60";
+string outputDirectory = "output_60";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了

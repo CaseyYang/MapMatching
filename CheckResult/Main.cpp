@@ -85,7 +85,8 @@ void Check(){
 }
 
 int main(){
-	ReadFolder("D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\", "output_60", "answer_60");
+	ReadFolder("D:\\MapMatchingProject\\Data\\GISCUP2012_Data\\", "output_60", "answer_60");
 	Check();
+	system("pause");
 	return 0;
 }

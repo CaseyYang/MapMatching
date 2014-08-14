@@ -4,7 +4,7 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
+string rootFilePath = "D:\\MapMatchingProject\\Data\\GISCUP2012_Data\\";
 string inputDirectory = "input_60";
 string outputDirectory = "output_60";
 Map routeNetwork = Map(rootFilePath, 1000);
@@ -32,13 +32,13 @@ struct Score//代表某个轨迹点对应的一个候选路段
 	long double score;//候选路段所具有的整体概率
 	int preColumnIndex;//候选路段的前序路段的列索引
 	double distLeft;//轨迹点的投影点到候选路段起点的距离
-	vector<long double> priorProbs;
+	vector<long double> *priorProbs;
 	Score(Edge* edge, long double score, int pre, double distLeft){
 		this->edge = edge;
 		this->score = score;
 		this->preColumnIndex = pre;
 		this->distLeft = distLeft;
-		priorProbs = vector<long double>();
+		priorProbs = new vector<long double>();
 	}
 };
 
@@ -155,9 +155,11 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 					}
 					long double transactionProb = exp(-fabs((long double)distBetweenTwoTrajPoints - (long double)routeNetworkDistBetweenTwoTrajPoints) / BT) / BT;//转移概率
 					//在前一条候选路段的priorProbs中保存到下一条候选路段的转移概率，作为下一条候选路段的先验概率
-					formerCanadidateEdge.priorProbs.push_back(transactionProb);
+					formerCanadidateEdge.priorProbs->push_back(transactionProb);
 					/*GIS2012CUP的优化加在此处，对transactionProb进行修改*/
 					long double tmpTotalProbForTransaction = formerCanadidateEdge.score * transactionProb;
+					//在前一条候选路段的priorProbs中保存到下一条候选路段的转移概率，作为下一条候选路段的先验概率
+					//formerCanadidateEdge.priorProbs->push_back(tmpTotalProbForTransaction);
 					if (currentMaxProbTmp < tmpTotalProbForTransaction){//保留当前转移概率和已知最大转移概率中较大者
 						currentMaxProbTmp = tmpTotalProbForTransaction;
 						preColumnIndex = formerCanadidateEdgeIndex;
@@ -195,7 +197,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	for (int i = scoreMatrix.size() - 2; i >= 0; i--){
 		long double maxPosteriorProb = -1;
 		for (int j = 0; j < scoreMatrix[i].size(); j++){
-			long double tmpPosteriorProb = scoreMatrix[i][j].score * scoreMatrix[i][j].priorProbs[lastColumnIndex] / scoreMatrix[i + 1][lastColumnIndex].score;
+			long double tmpPosteriorProb = scoreMatrix[i][j].score * pow(scoreMatrix[i][j].priorProbs->at(lastColumnIndex),3) / scoreMatrix[i + 1][lastColumnIndex].score;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;
 				startColumnIndex = j;
