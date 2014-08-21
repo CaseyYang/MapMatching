@@ -73,7 +73,7 @@ void readResultFiles(string folderDir, vector<string> &outputFileNames, list<Mat
 
 //输出一条轨迹的地图匹配结果
 void outputMatchedEdges(string fileName,Traj* traj,list<Edge*> &resultList){
-	ofstream MatchedEdgeOutput(fileName,);
+	ofstream MatchedEdgeOutput(fileName);
 	Traj::iterator trajPointIter = traj->begin();
 	for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 		if (*edgeIter != NULL){
@@ -85,4 +85,17 @@ void outputMatchedEdges(string fileName,Traj* traj,list<Edge*> &resultList){
 		}
 	}
 	MatchedEdgeOutput.close();
+}
+
+//输出网格中的轨迹点匹配路段频数统计
+void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet){
+	ofstream biasOuput(fileName);
+	for each (auto gridCellBiasPair in biasSet){
+		biasOuput << gridCellBiasPair.first.first << " " << gridCellBiasPair.first.second << " ";
+		for each(auto edgeCountPair in gridCellBiasPair.second){
+			biasOuput << edgeCountPair.first->id << " " << edgeCountPair.second << " ";
+		}
+		biasOuput << endl;
+	}
+	biasOuput.close();
 }

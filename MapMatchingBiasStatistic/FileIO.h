@@ -13,3 +13,5 @@ extern void scanTrajFolder(string folderDir,string inputDirestory, list<Traj*> &
 extern void readResultFiles(string folderDir, vector<string> &outputFileNames, list<MatchedTraj> &resultList);
 //输出一条轨迹的地图匹配结果
 extern void outputMatchedEdges(string fileName, Traj* traj, list<Edge*> &resultList);
+//输出网格中的轨迹点匹配路段频数统计
+extern void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet);

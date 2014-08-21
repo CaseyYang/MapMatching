@@ -81,6 +81,8 @@ public:
 	double distM(double lat, double lon, Edge* edge, double& prjDist) const;
 	//移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
 	double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist);
+	//返回(lat,lon)点所在的网格索引号
+	pair<int, int> findGridCellIndex(double lat, double lon);
 	//判断startNodeId与endNodeId之间有无边,没有边返回-1，有边返回edgeId
 	int hasEdge(int startNodeId, int endNodeId) const;
 	//插入一个新结点,返回新结点id
@@ -102,7 +104,7 @@ public:
 	*/
 	double shortestPathLength(int ID1, int ID2, list<Edge*> &shortestPath, double dist1 = 0, double dist2 = 0, double deltaT = INF);
 
-	//private:
+private:
 	int gridWidth, gridHeight;
 	double gridSizeDeg;
 	double strictThreshold = 0;
@@ -133,13 +135,18 @@ public:
 	bool Map::getEdgesInAGridCell(double lat, double lon, int row, int col, vector<pair<Edge*, double>> &resultEdges, set<int> &visitedEdgeIdSet);
 	//返回(lat,lon)点到edge的距离上界,提前预判优化版本
 	double distM_withThres(double lat, double lon, Edge* edge, double threshold) const;
+	//计算路段的长度，单位为m
 	double calEdgeLength(Figure* figure) const;
 	bool inArea(double lat, double lon) const;
 	bool inArea(int nodeId) const;
+	//对全图建立网格索引
 	void createGridIndex();
 	void createGridIndexForEdge(Edge *edge);
+	//对路段edge中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
 	void createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt);
+	//将路段edge加入grid[row][col]中索引，如果已经加入过则不添加
 	void insertEdgeIntoGrid(Edge* edge, int row, int col);
+	//向邻接表adjList中插入一条边的连通关系，初次构建图时使用，私有版本，不允许外部调用
 	void insertEdge(int edgeId, int startNodeId, int endNodeId);
 
 	void split(const string& src, const string& separator, vector<string>& dest);
