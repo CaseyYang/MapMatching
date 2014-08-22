@@ -15,3 +15,5 @@ extern void readResultFiles(string folderDir, vector<string> &outputFileNames, l
 extern void outputMatchedEdges(string fileName, Traj* traj, list<Edge*> &resultList);
 //输出网格中的轨迹点匹配路段频数统计
 extern void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet);
+//读入网格中的轨迹点匹配路段频数统计
+extern void reaGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet);

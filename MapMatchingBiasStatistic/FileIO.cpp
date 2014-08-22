@@ -89,13 +89,29 @@ void outputMatchedEdges(string fileName,Traj* traj,list<Edge*> &resultList){
 
 //输出网格中的轨迹点匹配路段频数统计
 void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet){
-	ofstream biasOuput(fileName);
+	ofstream biasOutput(fileName);
 	for each (auto gridCellBiasPair in biasSet){
-		biasOuput << gridCellBiasPair.first.first << " " << gridCellBiasPair.first.second << " ";
+		biasOutput << gridCellBiasPair.first.first << " " << gridCellBiasPair.first.second << " "<<gridCellBiasPair.second.size()<<" ";
 		for each(auto edgeCountPair in gridCellBiasPair.second){
-			biasOuput << edgeCountPair.first->id << " " << edgeCountPair.second << " ";
+			biasOutput << edgeCountPair.first->id << " " << edgeCountPair.second << " ";
 		}
-		biasOuput << endl;
+		biasOutput << endl;
 	}
-	biasOuput.close();
+	biasOutput.close();
+}
+
+//读入网格中的轨迹点匹配路段频数统计
+void reaGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet,Map &routeNetwork){
+	ifstream biasInput(fileName);
+	string str;
+	int indexX, indexY, pairCount, edgeId, edgeCount;
+	while (biasInput>>indexX>>indexY>>pairCount){
+		pair<int, int> gridCellIndex = make_pair(indexX, indexY);
+		biasSet[gridCellIndex] = map<Edge*, int>();
+		for (int i = 0; i < pairCount; i++){
+			biasInput >> edgeId >> edgeCount;
+			biasSet[gridCellIndex][routeNetwork.edges[edgeId]] = edgeCount;
+		}
+	}
+	biasInput.close();
 }

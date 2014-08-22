@@ -1,8 +1,6 @@
 #pragma once
 #include <iostream>
 #include <fstream>
-#include <direct.h>
-#include <io.h>
 #include <vector>
 #include "GeoPoint.h"
 #include "Map.h"

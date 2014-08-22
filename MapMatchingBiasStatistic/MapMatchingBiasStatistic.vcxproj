@@ -143,6 +143,7 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapMatching.h" />
     <ClInclude Include="FileIO.h" />
+    <ClInclude Include="MapMatchingUsingBiasStatistic.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeoPoint.cpp" />
@@ -150,6 +151,7 @@
     <ClCompile Include="Map.cpp" />
     <ClCompile Include="MapMatching.cpp" />
     <ClCompile Include="FileIO.cpp" />
+    <ClCompile Include="MapMatchingUsingBiasStatistic.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
