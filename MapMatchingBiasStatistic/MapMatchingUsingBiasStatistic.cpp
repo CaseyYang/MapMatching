@@ -1,6 +1,6 @@
 #include "MapMatchingUsingBiasStatistic.h"
 
-std::map<pair<int, int>, pair<double, double>> shortestDistPair = std::map<pair<int, int>, pair<double, double>>();
+std::map<pair<int, int>, pair<double, double>> shortestDistPair2 = std::map<pair<int, int>, pair<double, double>>();
 
 const double BETA_ARR[31] = {
 	0,
@@ -30,7 +30,7 @@ struct Score//代表某个轨迹点对应的一个候选路段
 };
 
 //放射概率计算函数
-double EmissionProb(double t, double dist){
+double EmissionProb2(double t, double dist){
 	return exp(t*dist * dist * N2_SIGMAZ2) * SQR_2PI_SIGMAZ;
 }
 
@@ -85,7 +85,7 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 				{
 					double currentDistLeft = 0;
 					double DistBetweenTrajPointAndEdge = routeNetwork.distMFromTransplantFromSRC(trajPoint->lat, trajPoint->lon, canadidateEdge, currentDistLeft);
-					long double prob = EmissionProb(1, DistBetweenTrajPointAndEdge);
+					long double prob = EmissionProb2(1, DistBetweenTrajPointAndEdge);
 					if (prob > maxProb){
 						matchedEdge = canadidateEdge;
 					}
@@ -142,13 +142,13 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 				double currentDistLeft = 0;//当前轨迹点在候选路段上的投影点距路段起点的距离
 				double DistBetweenTrajPointAndEdge = routeNetwork.distMFromTransplantFromSRC((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, canadidateEdge, currentDistLeft);
 				//计算这些候选路段的放射概率
-				long double emissionProb = EmissionProb(1, DistBetweenTrajPointAndEdge);
+				long double emissionProb = EmissionProb2(1, DistBetweenTrajPointAndEdge);
 				scores.push_back(Score(canadidateEdge, emissionProb, -1, currentDistLeft));
 				totalCount += emissionProb;
 				currentCanadidateEdgeIndex++;
 			}
 		}
-		for (int indexForScores = 0; indexForScores < scores.size(); indexForScores++){
+		for (size_t indexForScores = 0; indexForScores < scores.size(); indexForScores++){
 			scores[indexForScores].score /= totalCount;
 		}
 		//先验概率——转移概率
@@ -166,19 +166,19 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 					else{
 						pair<int, int> odPair = make_pair(formerCanadidateEdge.edge->endNodeId, canadidateEdge.edge->startNodeId);
 						//给定起点和终点最短路已经计算过，且不是INF
-						if (shortestDistPair.find(odPair) != shortestDistPair.end() && shortestDistPair[odPair].first < INF){
+						if (shortestDistPair2.find(odPair) != shortestDistPair2.end() && shortestDistPair2[odPair].first < INF){
 							//如果当前deltaT下的移动距离上限比最短距离要大，调用最短路函数得到的也是保存的距离值；反之得到的就是INF
-							shortestDistPair[odPair].first <= MAXSPEED*deltaT ? routeNetworkDistBetweenTwoEdges = shortestDistPair[odPair].first : routeNetworkDistBetweenTwoEdges = INF;
+							shortestDistPair2[odPair].first <= MAXSPEED*deltaT ? routeNetworkDistBetweenTwoEdges = shortestDistPair2[odPair].first : routeNetworkDistBetweenTwoEdges = INF;
 						}
 						else{
-							if (shortestDistPair.find(odPair) != shortestDistPair.end() && deltaT <= shortestDistPair[odPair].second){//保存的给定起点和终点最短路结果是INF，且当前deltaT比上次计算最短路时的移动时间要小，说明当前deltaT下得到的最短路距离仍是INF
+							if (shortestDistPair2.find(odPair) != shortestDistPair2.end() && deltaT <= shortestDistPair2[odPair].second){//保存的给定起点和终点最短路结果是INF，且当前deltaT比上次计算最短路时的移动时间要小，说明当前deltaT下得到的最短路距离仍是INF
 								routeNetworkDistBetweenTwoEdges = INF;
 							}
 							else{
 								//或者未保存给定起点和终点的最短路结果；或者当前deltaT比保存的deltaT要大，可能得到真正的最短路结果；总之就是要调用函数计算最短路
 								list<Edge*> shortestPath = list<Edge*>();
 								routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(formerCanadidateEdge.edge->endNodeId, canadidateEdge.edge->startNodeId, shortestPath, canadidateEdge.distLeft, formerDistToEnd, deltaT);
-								shortestDistPair[odPair] = make_pair(routeNetworkDistBetweenTwoEdges, deltaT);
+								shortestDistPair2[odPair] = make_pair(routeNetworkDistBetweenTwoEdges, deltaT);
 							}
 						}
 						routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoEdges + canadidateEdge.distLeft + formerDistToEnd;
@@ -195,7 +195,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	int startColumnIndex;
 	long double tmpMaxProb = 0;
 	//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
-	for (int index = 0; index < scoreMatrix.back().size(); index++)
+	for (size_t index = 0; index < scoreMatrix.back().size(); index++)
 	{
 		if (scoreMatrix.back()[index].score > tmpMaxProb){
 			tmpMaxProb = scoreMatrix.back()[index].score;
@@ -206,7 +206,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	int lastColumnIndex = startColumnIndex;
 	for (int i = scoreMatrix.size() - 2; i >= 0; i--){
 		long double maxPosteriorProb = -1;
-		for (int j = 0; j < scoreMatrix[i].size(); j++){
+		for (size_t j = 0; j < scoreMatrix[i].size(); j++){
 			long double tmpPosteriorProb = scoreMatrix[i][j].score * scoreMatrix[i][j].priorProbs->at(lastColumnIndex) / scoreMatrix[i + 1][lastColumnIndex].score;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;

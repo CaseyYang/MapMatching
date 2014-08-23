@@ -5,9 +5,9 @@
 #include "MapMatching.h"
 using namespace std;
 
-string rootFilePath = "D:\\MapMatchingProject\\Data\\GISCUP2012_Data\\";
-string inputDirectory = "input_60";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "output_60";//输出的匹配结果文件名均以“output_”开头
+string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
+string inputDirectory = "input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "output";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
 
@@ -49,6 +49,7 @@ void main(){
 		biasStatistic(*trajIter, resultList);
 		trajIndex++;
 	}
+	cout << "地图匹配完成！" << endl;
 	outputGridCellBias(gridCellBiasFileName, biasSet);
 	system("pause");
 }
