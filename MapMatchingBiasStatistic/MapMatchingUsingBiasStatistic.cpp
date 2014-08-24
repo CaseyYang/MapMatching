@@ -1,6 +1,7 @@
 #include "MapMatchingUsingBiasStatistic.h"
+using namespace std;
 
-std::map<pair<int, int>, pair<double, double>> shortestDistPair2 = std::map<pair<int, int>, pair<double, double>>();
+map<pair<int, int>, pair<double, double>> shortestDistPair2 = std::map<pair<int, int>, pair<double, double>>();
 
 const double BETA_ARR[31] = {
 	0,
@@ -13,14 +14,14 @@ const double BETA_ARR[31] = {
 };
 
 //地图匹配所用数据结构
-struct Score//代表某个轨迹点对应的一个候选路段
+struct Score2//代表某个轨迹点对应的一个候选路段
 {
 	Edge* edge;//候选路段的指针
 	long double score;//候选路段所具有的整体概率
 	int preColumnIndex;//候选路段的前序路段的列索引
 	double distLeft;//轨迹点的投影点到候选路段起点的距离
 	vector<long double> *priorProbs;
-	Score(Edge* edge, long double score, int pre, double distLeft){
+	Score2(Edge* edge, long double score, int pre, double distLeft){
 		this->edge = edge;
 		this->score = score;
 		this->preColumnIndex = pre;
@@ -105,8 +106,8 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
-	vector<vector<Score>> scoreMatrix = vector<vector<Score>>();//所有轨迹点的概率矩阵
-	//需要在每次循环结束前更新的变量
+	vector<vector<Score2>> scoreMatrix = vector<vector<Score2>>();//所有轨迹点的概率矩阵
+	/*需要在每次循环结束前更新的变量*/
 	GeoPoint* formerTrajPoint = NULL;//上一个轨迹点，计算路网距离时需要
 	bool cutFlag = true;//没有前一轨迹点或前一轨迹点没有达标的候选路段
 	int currentTrajPointIndex = 0;//当前轨迹点的索引	
@@ -118,8 +119,8 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 			deltaT = (*trajectoryIterator)->time - formerTrajPoint->time;
 			distBetweenTwoTrajPoints = GeoPoint::distM((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, formerTrajPoint->lat, formerTrajPoint->lon);
 		}
-		vector<Score> scores = vector<Score>();//当前轨迹点的Score集合
-		//先验概率——放射概率
+		vector<Score2> scores = vector<Score2>();//当前轨迹点的Score2集合
+		/*先验概率——放射概率*/
 		long double totalCount = 0;//归一化
 		pair<int, int>gridCellIndex = routeNetwork.findGridCellIndex((*trajectoryIterator)->lat, (*trajectoryIterator)->lon);
 		if (biasSet.find(gridCellIndex) != biasSet.end()){
@@ -127,7 +128,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 			{
 				double currentDistLeft = 0;//当前轨迹点在候选路段上的投影点距路段起点的距离
 				routeNetwork.distMFromTransplantFromSRC((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, edgeCountPair.first, currentDistLeft);
-				scores.push_back(Score(edgeCountPair.first, edgeCountPair.second, -1, currentDistLeft));
+				scores.push_back(Score2(edgeCountPair.first, edgeCountPair.second, -1, currentDistLeft));
 				totalCount += edgeCountPair.second;
 			}
 		}
@@ -143,17 +144,17 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 				double DistBetweenTrajPointAndEdge = routeNetwork.distMFromTransplantFromSRC((*trajectoryIterator)->lat, (*trajectoryIterator)->lon, canadidateEdge, currentDistLeft);
 				//计算这些候选路段的放射概率
 				long double emissionProb = EmissionProb2(1, DistBetweenTrajPointAndEdge);
-				scores.push_back(Score(canadidateEdge, emissionProb, -1, currentDistLeft));
+				scores.push_back(Score2(canadidateEdge, emissionProb, -1, currentDistLeft));
 				totalCount += emissionProb;
 				currentCanadidateEdgeIndex++;
 			}
 		}
-		for (size_t indexForScores = 0; indexForScores < scores.size(); indexForScores++){
-			scores[indexForScores].score /= totalCount;
+		for (size_t indexForScore2s = 0; indexForScore2s < scores.size(); indexForScore2s++){
+			scores[indexForScore2s].score /= totalCount;
 		}
-		//先验概率——转移概率
+		/*先验概率——转移概率*/
 		if (scoreMatrix.size()>0){
-			for each (Score canadidateEdge in scores)
+			for each (Score2 canadidateEdge in scores)
 			{
 				for (size_t index = 0; index < scoreMatrix.back().size(); index++){
 					double formerDistLeft = scoreMatrix.back()[index].distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
@@ -184,19 +185,13 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 						routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoEdges + canadidateEdge.distLeft + formerDistToEnd;
 					}
 					long double transactionProb = exp(-fabs((long double)distBetweenTwoTrajPoints - (long double)routeNetworkDistBetweenTwoTrajPoints) / BT) / BT;//转移概率
-					cout << scoreMatrix.size() << " " << index << " " << scoreMatrix.back().size() << " " << scoreMatrix.back()[index].priorProbs->size() << endl;
-					system("pause");
 					scoreMatrix.back()[index].priorProbs->push_back(transactionProb);
-					cout << "看不到" << endl;
 				}
 			}
 		}
-		cout << scores.size() << endl;
-		cout << scores[10].priorProbs->size() << endl;
-		scoreMatrix.push_back(scores);//把该轨迹点的Scores数组放入scoreMatrix中
+		scoreMatrix.push_back(scores);//把该轨迹点的Score2s数组放入scoreMatrix中
 	}
-
-	//得到全局匹配路径
+	/*得到全局匹配路径*/
 	int startColumnIndex;
 	long double tmpMaxProb = 0;
 	//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
@@ -211,7 +206,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	int lastColumnIndex = startColumnIndex;
 	for (int i = scoreMatrix.size() - 2; i >= 0; i--){
 		long double maxPosteriorProb = -1;
-		for (size_t j = 0; j < scoreMatrix[i].size(); j++){
+		for (int j = 0; j < scoreMatrix[i].size(); j++){
 			long double tmpPosteriorProb = scoreMatrix[i][j].score * scoreMatrix[i][j].priorProbs->at(lastColumnIndex) / scoreMatrix[i + 1][lastColumnIndex].score;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;
