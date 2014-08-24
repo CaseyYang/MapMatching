@@ -3,11 +3,12 @@
 #include "FileIO.h"
 #include "Map.h"
 #include "MapMatching.h"
+#include "MapMatchingUsingBiasStatistic.h"
 using namespace std;
 
 string rootFilePath = "E:\\Documents\\Computer\\Data\\TrajData\\WashingtonState\\";
-string inputDirectory = "input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "output";//输出的匹配结果文件名均以“output_”开头
+string inputDirectory = "input_120";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "output_120";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
 
@@ -40,16 +41,17 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 
 void main(){
 	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	readGridCellBias(gridCellBiasFileName, biasSet,routeNetwork);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
-		list<Edge*> resultList = MapMatching(*(*trajIter));
-		//outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+		list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+		outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
 		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-		biasStatistic(*trajIter, resultList);
+		//biasStatistic(*trajIter, resultList);
 		trajIndex++;
 	}
 	cout << "地图匹配完成！" << endl;
-	outputGridCellBias(gridCellBiasFileName, biasSet);
+	//outputGridCellBias(gridCellBiasFileName, biasSet);
 	system("pause");
 }

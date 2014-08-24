@@ -155,16 +155,16 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 		if (scoreMatrix.size()>0){
 			for each (Score canadidateEdge in scores)
 			{
-				for each(Score formerCanadidateEdge in scoreMatrix.back()){
-					double formerDistLeft = formerCanadidateEdge.distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
-					double formerDistToEnd = formerCanadidateEdge.edge->lengthM - formerDistLeft;//前一个轨迹点在候选路段上的投影点距路段终点的距离
+				for (size_t index = 0; index < scoreMatrix.back().size(); index++){
+					double formerDistLeft = scoreMatrix.back()[index].distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
+					double formerDistToEnd = scoreMatrix.back()[index].edge->lengthM - formerDistLeft;//前一个轨迹点在候选路段上的投影点距路段终点的距离
 					double routeNetworkDistBetweenTwoEdges;//两路段起点间的距离
 					double routeNetworkDistBetweenTwoTrajPoints;//两轨迹点对应的投影点间的路网距离
-					if (canadidateEdge.edge == formerCanadidateEdge.edge){//如果前一匹配路段和当前候选路段是同一路段，则两者计算距离起点的差即为路网距离
-						routeNetworkDistBetweenTwoTrajPoints = fabs(canadidateEdge.distLeft - formerCanadidateEdge.distLeft);
+					if (canadidateEdge.edge == scoreMatrix.back()[index].edge){//如果前一匹配路段和当前候选路段是同一路段，则两者计算距离起点的差即为路网距离
+						routeNetworkDistBetweenTwoTrajPoints = fabs(canadidateEdge.distLeft - scoreMatrix.back()[index].distLeft);
 					}
 					else{
-						pair<int, int> odPair = make_pair(formerCanadidateEdge.edge->endNodeId, canadidateEdge.edge->startNodeId);
+						pair<int, int> odPair = make_pair(scoreMatrix.back()[index].edge->endNodeId, canadidateEdge.edge->startNodeId);
 						//给定起点和终点最短路已经计算过，且不是INF
 						if (shortestDistPair2.find(odPair) != shortestDistPair2.end() && shortestDistPair2[odPair].first < INF){
 							//如果当前deltaT下的移动距离上限比最短距离要大，调用最短路函数得到的也是保存的距离值；反之得到的就是INF
@@ -177,17 +177,22 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 							else{
 								//或者未保存给定起点和终点的最短路结果；或者当前deltaT比保存的deltaT要大，可能得到真正的最短路结果；总之就是要调用函数计算最短路
 								list<Edge*> shortestPath = list<Edge*>();
-								routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(formerCanadidateEdge.edge->endNodeId, canadidateEdge.edge->startNodeId, shortestPath, canadidateEdge.distLeft, formerDistToEnd, deltaT);
+								routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(scoreMatrix.back()[index].edge->endNodeId, canadidateEdge.edge->startNodeId, shortestPath, canadidateEdge.distLeft, formerDistToEnd, deltaT);
 								shortestDistPair2[odPair] = make_pair(routeNetworkDistBetweenTwoEdges, deltaT);
 							}
 						}
 						routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoEdges + canadidateEdge.distLeft + formerDistToEnd;
 					}
 					long double transactionProb = exp(-fabs((long double)distBetweenTwoTrajPoints - (long double)routeNetworkDistBetweenTwoTrajPoints) / BT) / BT;//转移概率
-					formerCanadidateEdge.priorProbs->push_back(transactionProb);
+					cout << scoreMatrix.size() << " " << index << " " << scoreMatrix.back().size() << " " << scoreMatrix.back()[index].priorProbs->size() << endl;
+					system("pause");
+					scoreMatrix.back()[index].priorProbs->push_back(transactionProb);
+					cout << "看不到" << endl;
 				}
 			}
 		}
+		cout << scores.size() << endl;
+		cout << scores[10].priorProbs->size() << endl;
 		scoreMatrix.push_back(scores);//把该轨迹点的Scores数组放入scoreMatrix中
 	}
 

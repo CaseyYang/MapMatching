@@ -72,7 +72,7 @@ void readResultFiles(string folderDir, vector<string> &outputFileNames, list<Mat
 }
 
 //输出一条轨迹的地图匹配结果
-void outputMatchedEdges(string fileName,Traj* traj,list<Edge*> &resultList){
+void outputMatchedEdges(string fileName, Traj* traj, list<Edge*> &resultList){
 	ofstream MatchedEdgeOutput(fileName);
 	Traj::iterator trajPointIter = traj->begin();
 	for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
@@ -91,7 +91,7 @@ void outputMatchedEdges(string fileName,Traj* traj,list<Edge*> &resultList){
 void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet){
 	ofstream biasOutput(fileName);
 	for each (auto gridCellBiasPair in biasSet){
-		biasOutput << gridCellBiasPair.first.first << " " << gridCellBiasPair.first.second << " "<<gridCellBiasPair.second.size()<<" ";
+		biasOutput << gridCellBiasPair.first.first << " " << gridCellBiasPair.first.second << " " << gridCellBiasPair.second.size() << " ";
 		for each(auto edgeCountPair in gridCellBiasPair.second){
 			biasOutput << edgeCountPair.first->id << " " << edgeCountPair.second << " ";
 		}
@@ -101,11 +101,11 @@ void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &
 }
 
 //读入网格中的轨迹点匹配路段频数统计
-void reaGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet,Map &routeNetwork){
+void readGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &biasSet, Map &routeNetwork){
 	ifstream biasInput(fileName);
 	string str;
 	int indexX, indexY, pairCount, edgeId, edgeCount;
-	while (biasInput>>indexX>>indexY>>pairCount){
+	while (biasInput >> indexX >> indexY >> pairCount){
 		pair<int, int> gridCellIndex = make_pair(indexX, indexY);
 		biasSet[gridCellIndex] = map<Edge*, int>();
 		for (int i = 0; i < pairCount; i++){
