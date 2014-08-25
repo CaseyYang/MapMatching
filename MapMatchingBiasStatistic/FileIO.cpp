@@ -37,6 +37,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
 	if ((lf = _findfirst(dir, &fileInfo)) == -1l) {
+		cout << "文件夹" << completeInputFilesPath << "下未找到指定文件！" << endl;
 		return;
 	}
 	else {
@@ -48,6 +49,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 			outputFileNames.push_back(outputFileName);
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
+		cout << "所有轨迹文件读入完毕！" << endl;
 		return;
 	}
 }
@@ -69,6 +71,7 @@ void readResultFiles(string folderDir, vector<string> &outputFileNames, list<Mat
 		fin.close();
 		resultList.push_back(traj);
 	}
+	return;
 }
 
 //输出一条轨迹的地图匹配结果
@@ -85,6 +88,7 @@ void outputMatchedEdges(string fileName, Traj* traj, list<Edge*> &resultList){
 		}
 	}
 	MatchedEdgeOutput.close();
+	return;
 }
 
 //输出网格中的轨迹点匹配路段频数统计
@@ -114,4 +118,6 @@ void readGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &bi
 		}
 	}
 	biasInput.close();
+	cout << "统计文件读入完毕！" << endl;
+	return;
 }

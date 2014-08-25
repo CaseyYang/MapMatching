@@ -116,16 +116,16 @@ private:
 	//double maxLon = 104.0;
 
 	//singapore full
-	//double minLat = 0.99999;
-	//double maxLat = 1.6265;
-	//double minLon = 103.548;
-	//double maxLon = 104.1155;
+	double minLat = 0.99999;
+	double maxLat = 1.6265;
+	double minLon = 103.548;
+	double maxLon = 104.1155;
 
 	//washington full
-	double minLat = 45.0;
-	double maxLat = 49.5;
-	double minLon = -125.0;
-	double maxLon = -116.5;
+	//double minLat = 45.0;
+	//double maxLat = 49.5;
+	//double minLon = -125.0;
+	//double maxLon = -116.5;
 
 	int getRowId(double lat) const;
 	int getColId(double lon) const;
