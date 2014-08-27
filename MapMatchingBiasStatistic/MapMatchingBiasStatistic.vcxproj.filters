@@ -30,6 +30,9 @@
     <ClInclude Include="MapMatchingUsingBiasStatistic.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="TrajReader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Map.cpp">

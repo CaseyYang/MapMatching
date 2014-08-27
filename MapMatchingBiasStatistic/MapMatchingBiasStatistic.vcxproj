@@ -144,6 +144,7 @@
     <ClInclude Include="MapMatching.h" />
     <ClInclude Include="FileIO.h" />
     <ClInclude Include="MapMatchingUsingBiasStatistic.h" />
+    <ClInclude Include="TrajReader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeoPoint.cpp" />
