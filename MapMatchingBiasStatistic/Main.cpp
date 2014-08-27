@@ -1,5 +1,6 @@
 #include <iostream>
 #include <map>
+#include <set>
 #include "FileIO.h"
 #include "Map.h"
 #include "MapMatching.h"
@@ -7,8 +8,8 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_unsplit";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "day1\\day1_output";//输出的匹配结果文件名均以“output_”开头
+string inputDirectory = "day7\\day7_unsplit";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "day7\\day7_output";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 Map routeNetwork = Map(rootFilePath, 2000);
 
@@ -19,19 +20,26 @@ map<pair<int, int>, map<Edge*, int>> biasSet;
 void biasStatistic(Traj* traj, list<Edge*> result){
 	int trajPointIndex = 0;
 	Traj::iterator trajIter = traj->begin();
+	set<pair<int, int>> countedGridCellSet = set<pair<int, int>>();
 	for each (Edge* edge in result)
 	{
 		GeoPoint* trajPoint = *trajIter;
 		trajIter++;
 		if (edge != NULL){
 			pair<int, int> gridCellIndex = routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
-			if (biasSet.find(gridCellIndex) == biasSet.end()){
-				biasSet[gridCellIndex] = map<Edge*, int>();
+			if (countedGridCellSet.find(gridCellIndex) == countedGridCellSet.end()){
+				if (biasSet.find(gridCellIndex) == biasSet.end()){
+					biasSet[gridCellIndex] = map<Edge*, int>();
+				}
+				if (biasSet[gridCellIndex].find(edge) == biasSet[gridCellIndex].end()){
+					biasSet[gridCellIndex][edge] = 0;
+				}
+				biasSet[gridCellIndex][edge]++;
+				countedGridCellSet.insert(gridCellIndex);
 			}
-			if (biasSet[gridCellIndex].find(edge) == biasSet[gridCellIndex].end()){
-				biasSet[gridCellIndex][edge] = 0;
+			else{
+				continue;
 			}
-			biasSet[gridCellIndex][edge]++;
 		}
 		else{
 			continue;
@@ -41,7 +49,7 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 
 void main(){
 	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
-	readGridCellBias(gridCellBiasFileName, biasSet,routeNetwork);
+	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
