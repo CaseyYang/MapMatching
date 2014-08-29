@@ -5,12 +5,14 @@
 #include "Map.h"
 #include "MapMatching.h"
 #include "MapMatchingUsingBiasStatistic.h"
+#include "TrajReader.h"
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string inputDirectory = "day7\\day7_unsplit";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "day7\\day7_output";//输出的匹配结果文件名均以“output_”开头
+string outputDirectory = "15days\\15days_output";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
+string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 2000);
 
 vector<string> outputFileNames;//匹配结果文件名集合
@@ -48,22 +50,27 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 }
 
 void main(){
-	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	/*单个文件单条轨迹读取方法*/
+	//scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+
+	TrajReader trajReader(mergedTrajFilePath);
+	trajReader.readTrajs(trajList);
 	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		/*匹配路段信息统计*/
-		list<Edge*> resultList = MapMatching(*(*trajIter));
-		biasStatistic(*trajIter, resultList);
+		//list<Edge*> resultList = MapMatching(*(*trajIter));
+		//biasStatistic(*trajIter, resultList);
 		/*利用匹配路段统计信息进行地图匹配*/
-		//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
+		list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
+		cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
 		//list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
-		//outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
-		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;		
+		outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+		cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
 		trajIndex++;
 	}
 	cout << "地图匹配完成！" << endl;
-	outputGridCellBias(gridCellBiasFileName, biasSet);
+	//outputGridCellBias(gridCellBiasFileName, biasSet);
 	system("pause");
 }

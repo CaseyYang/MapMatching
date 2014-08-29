@@ -110,10 +110,10 @@ private:
 	double strictThreshold = 0;
 	list<Edge*>* **grid;
 	//singapore half
-	//double minLat = 1.22;
-	//double maxLat = 1.5;
-	//double minLon = 103.620;
-	//double maxLon = 104.0;
+	//double minLat = 1.294788;
+	//double maxLat = 1.327723;
+	//double minLon = 103.784667;
+	//double maxLon = 103.825200;
 
 	//singapore full
 	double minLat = 0.99999;

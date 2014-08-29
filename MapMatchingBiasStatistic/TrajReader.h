@@ -1,4 +1,4 @@
-/* 
+/*
  * Last Updated at [2014/4/21 10:01] by wuhao
  */
 #pragma once
@@ -25,10 +25,10 @@ public:
 
 private:
 	//设定区域，在区域外的轨迹不读
-	double minLat;
-	double maxLat;
-	double minLon;
-	double maxLon;
+	//double minLat;
+	//double maxLat;
+	//double minLon;
+	//double maxLon;
 	ifstream trajIfs;
 };
 
@@ -91,7 +91,7 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 		else
 		{
 			trajIfs >> lat >> lon >> mmRoadId;
-			GeoPoint* pt = new GeoPoint(lat, lon, time, mmRoadId);
+			GeoPoint* pt = new GeoPoint(lat, lon, time);
 			if (isStart)
 			{
 				tmpTraj = new Traj();
@@ -152,7 +152,7 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 		else
 		{
 			trajIfs >> lat >> lon >> mmRoadId;
-			GeoPoint* pt = new GeoPoint(lat, lon, time, mmRoadId);
+			GeoPoint* pt = new GeoPoint(lat, lon, time);
 			if (isStart)
 			{
 				tmpTraj = new Traj();
@@ -170,29 +170,29 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 	trajIfs.close();
 }
 
-void TrajReader::outputTrajs(list<Traj*>& trajs, string filePath, int count /* = INF */)
-{
-	ofstream ofs(filePath);
-	if (!ofs)
-	{
-		cout << "open " << filePath << " error!" << endl;
-		system("pause");
-	}
-	ofs << fixed << showpoint << setprecision(8);
-	int currentCount = 0;
-	for (list<Traj*>::iterator trajIter = trajs.begin(); trajIter != trajs.end(); trajIter++)
-	{
-		if (currentCount == count)
-		{
-			break;
-		}
-		for (Traj::iterator ptIter = (*trajIter)->begin(); ptIter != (*trajIter)->end(); ptIter++)
-		{
-			ofs << (*ptIter)->time << " " << (*ptIter)->lat << " " << (*ptIter)->lon << " " << (*ptIter)->mmRoadId << endl;
-		}
-		ofs << -1 << endl;
-		currentCount++;
-	}
-	cout << ">> " << currentCount << " trajs have been output to " << filePath << endl;
-	ofs.close();
-}
+//void TrajReader::outputTrajs(list<Traj*>& trajs, string filePath, int count /* = INF */)
+//{
+//	ofstream ofs(filePath);
+//	if (!ofs)
+//	{
+//		cout << "open " << filePath << " error!" << endl;
+//		system("pause");
+//	}
+//	ofs << fixed << showpoint << setprecision(8);
+//	int currentCount = 0;
+//	for (list<Traj*>::iterator trajIter = trajs.begin(); trajIter != trajs.end(); trajIter++)
+//	{
+//		if (currentCount == count)
+//		{
+//			break;
+//		}
+//		for (Traj::iterator ptIter = (*trajIter)->begin(); ptIter != (*trajIter)->end(); ptIter++)
+//		{
+//			ofs << (*ptIter)->time << " " << (*ptIter)->lat << " " << (*ptIter)->lon << " " << (*ptIter)->mmRoadId << endl;
+//		}
+//		ofs << -1 << endl;
+//		currentCount++;
+//	}
+//	cout << ">> " << currentCount << " trajs have been output to " << filePath << endl;
+//	ofs.close();
+//}
