@@ -204,9 +204,9 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	}
 	mapMatchingResult.push_front(scoreMatrix.back()[startColumnIndex].edge);
 	int lastColumnIndex = startColumnIndex;
-	for (int i = scoreMatrix.size() - 2; i >= 0; i--){
+	for (int i = scoreMatrix.size() - 2; i >= 0; i--){//注意：此处i类型不能设为size_t，因为size_t是无符号类型，当i==0时i--会使得i变成一个极大数
 		long double maxPosteriorProb = -1;
-		for (int j = 0; j < scoreMatrix[i].size(); j++){
+		for (size_t j = 0; j < scoreMatrix[i].size(); j++){
 			long double tmpPosteriorProb = scoreMatrix[i][j].score * scoreMatrix[i][j].priorProbs->at(lastColumnIndex) / scoreMatrix[i + 1][lastColumnIndex].score;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;

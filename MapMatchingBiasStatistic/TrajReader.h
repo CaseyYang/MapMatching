@@ -5,11 +5,12 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <list>
 #include "GeoPoint.h"
 using namespace std;
-#define INF 999999999
+//#define INF 999999999
 #define INVALID_ROADID -1
 typedef list<GeoPoint*> Traj;
 
@@ -21,6 +22,7 @@ public:
 	void open(string filePath); //打开轨迹文件，轨迹文件路径为filePath
 	void readTrajs(vector<Traj*>& dest, int count = INF); //读入count条轨迹放入dest(dest会先清空)，默认为全部读入，并关闭文件
 	void readTrajs(list<Traj*>& dest, int count = INF); //读入count条轨迹放入dest(dest会先清空)，默认为全部读入。并关闭文件
+	void makeOutputFileNames(vector<string> &outputFileNames);//由于所有轨迹都集中在一个文件中，因此需要构造出单条轨迹的输出文件名
 	static void outputTrajs(list<Traj*>& trajs, string filePath, int count = INF); //将trajs内count条轨迹按照标准格式输出至filePath
 
 private:
@@ -29,7 +31,8 @@ private:
 	//double maxLat;
 	//double minLon;
 	//double maxLon;
-	ifstream trajIfs;
+	ifstream trajIfs;//轨迹文件输入流
+	int trajectoriesNum;//读入轨迹数量
 };
 
 
@@ -106,6 +109,7 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 	}
 	cout << ">> reading trajs finished" << endl;
 	cout << dest.size() << "trajs in all" << endl;
+	trajectoriesNum = dest.size();
 	trajIfs.close();
 }
 
@@ -129,10 +133,10 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 		{
 			break;
 		}
-		if (currentCount % 1000 == 0 && currentCount > 0)
-		{
-			printf("read %d trajs\n", currentCount++);
-		}
+		//if (currentCount % 1000 == 0 && currentCount > 0)
+		//{
+		//	printf("read %d trajs\n", currentCount++);
+		//}
 		int time;
 		trajIfs >> time;
 		if (trajIfs.fail())
@@ -168,6 +172,15 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 	cout << ">> reading trajs finished" << endl;
 	cout << dest.size() << " trajs in all" << endl;
 	trajIfs.close();
+}
+
+void TrajReader::makeOutputFileNames(vector<string> &outputFileNames){
+	string baseStr = "output_";
+	for (int i = 0; i < trajectoriesNum; i++){
+		stringstream ss;
+		ss << baseStr << i;
+		outputFileNames.push_back(ss.str());
+	}
 }
 
 //void TrajReader::outputTrajs(list<Traj*>& trajs, string filePath, int count /* = INF */)

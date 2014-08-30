@@ -1108,10 +1108,10 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double y1 = pt1->lat - minLat;
 	double x2 = pt2->lon - minLon;
 	double y2 = pt2->lat - minLat;
-	int row1 = y1 / gridSizeDeg;
-	int row2 = y2 / gridSizeDeg;
-	int col1 = x1 / gridSizeDeg;
-	int col2 = x2 / gridSizeDeg;
+	int row1 = static_cast<int>(y1 / gridSizeDeg);
+	int row2 = static_cast<int>(y2 / gridSizeDeg);
+	int col1 = static_cast<int>(x1 / gridSizeDeg);
+	int col2 = static_cast<int>(x2 / gridSizeDeg);
 	if (row1 >= gridHeight || row1 < 0 || col1 >= gridWidth || col1 < 0 ||
 		row2 >= gridHeight || row2 < 0 || col2 >= gridWidth || col2 < 0)
 	{
