@@ -23,6 +23,7 @@ public:
 	void readTrajs(vector<Traj*>& dest, int count = INF); //读入count条轨迹放入dest(dest会先清空)，默认为全部读入，并关闭文件
 	void readTrajs(list<Traj*>& dest, int count = INF); //读入count条轨迹放入dest(dest会先清空)，默认为全部读入。并关闭文件
 	void makeOutputFileNames(vector<string> &outputFileNames);//由于所有轨迹都集中在一个文件中，因此需要构造出单条轨迹的输出文件名
+	void TrajReader::outputMatchedEdges(list<Traj*> &trajs, string directoryPath);//输出每条轨迹对应的匹配路段；参数directoryPath最后不必自带“//”
 	static void outputTrajs(list<Traj*>& trajs, string filePath, int count = INF); //将trajs内count条轨迹按照标准格式输出至filePath
 
 private:
@@ -36,14 +37,13 @@ private:
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-///public part
-//////////////////////////////////////////////////////////////////////////
+//构造函数时就打开轨迹文件 
 TrajReader::TrajReader(string filePath)
 {
 	open(filePath);
 }
 
+//打开轨迹文件，轨迹文件路径为filePath
 void TrajReader::open(string filePath)
 {
 	trajIfs.open(filePath);
@@ -55,6 +55,7 @@ void TrajReader::open(string filePath)
 	}
 }
 
+//读入count条轨迹放入dest(dest会先清空)，默认为全部读入，并关闭文件
 void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -65,10 +66,9 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 	dest.clear();
 	cout << ">> start reading trajs" << endl;
 	bool isStart = true;
-	int time, mmRoadId;
+	int mmRoadId, currentCount = 0;
 	double lat, lon;
 	Traj* tmpTraj = NULL;
-	int currentCount = 0;
 	while (trajIfs)
 	{
 		if (currentCount == count)
@@ -94,7 +94,7 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 		else
 		{
 			trajIfs >> lat >> lon >> mmRoadId;
-			GeoPoint* pt = new GeoPoint(lat, lon, time);
+			GeoPoint* pt = new GeoPoint(lat, lon, time, mmRoadId);
 			if (isStart)
 			{
 				tmpTraj = new Traj();
@@ -113,6 +113,7 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 	trajIfs.close();
 }
 
+//读入count条轨迹放入dest(dest会先清空)，默认为全部读入。并关闭文件
 void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -123,10 +124,9 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 	dest.clear();
 	cout << ">> start reading trajs" << endl;
 	bool isStart = true;
-	int time, mmRoadId;
+	int mmRoadId, currentCount = 0;
 	double lat, lon;
 	Traj* tmpTraj = NULL;
-	int currentCount = 0;
 	while (trajIfs)
 	{
 		if (currentCount == count)
@@ -156,7 +156,7 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 		else
 		{
 			trajIfs >> lat >> lon >> mmRoadId;
-			GeoPoint* pt = new GeoPoint(lat, lon, time);
+			GeoPoint* pt = new GeoPoint(lat, lon, time, mmRoadId);
 			if (isStart)
 			{
 				tmpTraj = new Traj();
@@ -171,18 +171,38 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 	}
 	cout << ">> reading trajs finished" << endl;
 	cout << dest.size() << " trajs in all" << endl;
+	trajectoriesNum = dest.size();
 	trajIfs.close();
 }
 
+//由于所有轨迹都集中在一个文件中，因此需要构造出单条轨迹的输出文件名
 void TrajReader::makeOutputFileNames(vector<string> &outputFileNames){
 	string baseStr = "output_";
 	for (int i = 0; i < trajectoriesNum; i++){
 		stringstream ss;
-		ss << baseStr << i;
+		ss << baseStr << i << ".txt";
 		outputFileNames.push_back(ss.str());
 	}
 }
 
+//输出每条轨迹对应的匹配路段；参数directoryPath最后不必自带“//”
+void TrajReader::outputMatchedEdges(list<Traj*> &trajs, string directoryPath){
+	int index = 0;
+	for each (auto traj in trajs)
+	{
+		stringstream ss;
+		ss << directoryPath + "\\output_" << index << ".txt";
+		index++;
+		ofstream outputAnswerFile = ofstream(ss.str());
+		for each (auto trajPoint in *traj)
+		{
+			outputAnswerFile << trajPoint->time << "," << trajPoint->matchedEdge << ",1.0" << endl;
+		}
+		outputAnswerFile.close();
+	}
+}
+
+//将trajs内count条轨迹按照标准格式输出至filePath
 //void TrajReader::outputTrajs(list<Traj*>& trajs, string filePath, int count /* = INF */)
 //{
 //	ofstream ofs(filePath);

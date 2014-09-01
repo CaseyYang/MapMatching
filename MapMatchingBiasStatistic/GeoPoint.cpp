@@ -17,6 +17,14 @@ GeoPoint::GeoPoint(double lat, double lon)
 	this->time = INVALID_TIME;
 }
 
+GeoPoint::GeoPoint(double lat, double lon, int time,int matchedEdge)
+{
+	this->lat = lat;
+	this->lon = lon;
+	this->time = INVALID_TIME;
+	this->matchedEdge = matchedEdge;
+}
+
 double GeoPoint::distM(double lat1, double lon1, double lat2, double lon2)
 {
 	double deltaLat = lat1 - lat2;

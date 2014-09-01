@@ -42,11 +42,15 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 	list<Edge*> matchedEdges = list<Edge*>();
 	GeoPoint* formerTrajPoint = NULL;
 	Edge* formerMatchedEdge = NULL;
+	//int trajPointIndex = 0;//轨迹点序号，调试用
 	for each (GeoPoint* trajPoint in trajectory)
 	{
+		//cout << "轨迹点序号：" << trajPointIndex << endl;
+		//trajPointIndex++;
 		Edge* matchedEdge = NULL;
 		pair<int, int>gridCellIndex = routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
 		if (biasSet.find(gridCellIndex) != biasSet.end()){
+			//cout << "进入if段" << endl;
 			int max = 0;
 			for each (pair<Edge*, int> edgeCountPair in biasSet[gridCellIndex])
 			{
@@ -57,30 +61,38 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 			}
 		}
 		else{
+			//cout << "进入else段" << endl;
 			//首先获得该轨迹点的候选路段，然后选择转移概率最大的候选路段
 			vector<Edge*> canadidateEdges;//候选路段集合
 			routeNetwork.getNearEdges(trajPoint->lat, trajPoint->lon, RANGEOFCANADIDATEEDGES, canadidateEdges);//获得所有在指定范围内的候选路段集合
 			if (formerTrajPoint != NULL){
+				//cout << "进入二级if段" << endl;
 				long double distBetweenTwoTrajPoints = GeoPoint::distM(trajPoint->lat, trajPoint->lon, formerTrajPoint->lat, formerTrajPoint->lon);
 				double formerDistLeft = 0;
+				//cout << "点坐标：" << formerTrajPoint->lat << "," << formerTrajPoint->lon << " " << formerMatchedEdge << " " << formerDistLeft << endl;
 				routeNetwork.distMFromTransplantFromSRC(formerTrajPoint->lat, formerTrajPoint->lon, formerMatchedEdge, formerDistLeft);
 				double deltaT = trajPoint->time - formerTrajPoint->time;
 				long double maxProb = 0;
+				//cout << "for循环之前：" << endl;
 				for each (Edge* canadidateEdge in canadidateEdges)
 				{
 					double currentDistLeft = 0;
 					routeNetwork.distMFromTransplantFromSRC(trajPoint->lat, trajPoint->lon, canadidateEdge, currentDistLeft);
 					double formerDistToEnd = formerMatchedEdge->lengthM - formerDistLeft;//前一个轨迹点在候选路段上的投影点距路段终点的距离
+					//cout << "中间" << endl;
 					list<Edge*> shortestPath = list<Edge*>();
 					double routeNetworkDistBetweenTwoEdges = routeNetwork.shortestPathLength(formerMatchedEdge->endNodeId, canadidateEdge->startNodeId, shortestPath, currentDistLeft, formerDistToEnd, deltaT);
 					long double routeNetworkDistBetweenTwoTrajPoints = routeNetworkDistBetweenTwoEdges + currentDistLeft + formerDistToEnd;
 					long double transactionProb = exp(-fabs(distBetweenTwoTrajPoints - routeNetworkDistBetweenTwoTrajPoints) / BT) / BT;//转移概率
-					if (transactionProb > maxProb){
+					//cout << "转移概率：" << transactionProb << endl;
+					if (transactionProb >= maxProb){
+						//cout << "赋值" << endl;
 						matchedEdge = canadidateEdge;
 					}
 				}
 			}
 			else{
+				//cout << "进入二级else段" << endl;
 				long double maxProb = 0;
 				for each (Edge* canadidateEdge in canadidateEdges)
 				{

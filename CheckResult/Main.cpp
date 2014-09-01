@@ -30,9 +30,9 @@ void ReadFolder(string folderDir, string outputDirectory, string answerDirectory
 {
 	/*文件目录结构为
 	* folderDir
-	* |-input
-	*   |-input_000011.txt ...
-	* |-output
+	* |-outputDirectory
+	*   |-output_000011.txt ...
+	* |-answerDirectory
 	*   |-output_000011.txt ...
 	*/
 	string completeInputFilesPath = folderDir + outputDirectory + "\\" + "*.txt";
@@ -55,6 +55,7 @@ void ReadFolder(string folderDir, string outputDirectory, string answerDirectory
 		return;
 	}
 }
+
 
 //比较匹配结果和答案
 void Check(){
