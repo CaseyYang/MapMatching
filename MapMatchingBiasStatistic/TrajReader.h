@@ -97,14 +97,10 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 			GeoPoint* pt = new GeoPoint(lat, lon, time, mmRoadId);
 			if (isStart)
 			{
-				tmpTraj = new Traj();
-				tmpTraj->push_back(pt);
+				tmpTraj = new Traj();				
 				isStart = false;
 			}
-			else
-			{
-				tmpTraj->push_back(pt);
-			}
+			tmpTraj->push_back(pt);
 		}
 	}
 	cout << ">> reading trajs finished" << endl;
@@ -160,13 +156,9 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 			if (isStart)
 			{
 				tmpTraj = new Traj();
-				tmpTraj->push_back(pt);
 				isStart = false;
 			}
-			else
-			{
-				tmpTraj->push_back(pt);
-			}
+			tmpTraj->push_back(pt);
 		}
 	}
 	cout << ">> reading trajs finished" << endl;

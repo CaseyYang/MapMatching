@@ -21,7 +21,7 @@ GeoPoint::GeoPoint(double lat, double lon, int time,int matchedEdge)
 {
 	this->lat = lat;
 	this->lon = lon;
-	this->time = INVALID_TIME;
+	this->time = time;
 	this->matchedEdge = matchedEdge;
 }
 
