@@ -78,12 +78,17 @@ void readResultFiles(string folderDir, vector<string> &outputFileNames, list<Mat
 void outputMatchedEdges(string fileName, Traj* traj, list<Edge*> &resultList){
 	ofstream MatchedEdgeOutput(fileName);
 	Traj::iterator trajPointIter = traj->begin();
+	//cout << "进入for之前……" << endl;
 	for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 		if (*edgeIter != NULL){
+			//cout << "if段……" << endl;
+			//cout << (*trajPointIter)->time << endl;
+			//cout << *edgeIter << endl;			
 			int currentIndex = (*edgeIter)->id;
 			MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
 		}
 		else{
+			//cout << "else段……" << endl;
 			MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
 		}
 	}

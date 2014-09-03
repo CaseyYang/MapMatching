@@ -86,7 +86,7 @@ void Check(){
 }
 
 int main(){
-	ReadFolder("D:\\MapMatchingProject\\Data\\GISCUP2012_Data\\", "output_60", "answer_60");
+	ReadFolder("D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\", "15days_output2", "15days_answer");
 	Check();
 	system("pause");
 	return 0;
