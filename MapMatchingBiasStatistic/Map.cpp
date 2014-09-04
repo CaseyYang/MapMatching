@@ -1112,8 +1112,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	int row2 = static_cast<int>(y2 / gridSizeDeg);
 	int col1 = static_cast<int>(x1 / gridSizeDeg);
 	int col2 = static_cast<int>(x2 / gridSizeDeg);
-	if (row1 >= gridHeight || row1 < 0 || col1 >= gridWidth || col1 < 0 ||
-		row2 >= gridHeight || row2 < 0 || col2 >= gridWidth || col2 < 0)
+	if (row1 >= gridHeight || row1 < 0 || col1 >= gridWidth || col1 < 0 || row2 >= gridHeight || row2 < 0 || col2 >= gridWidth || col2 < 0)
 	{
 		cout << "************test**************" << endl;
 		cout << "row1 = " << row1 << " col1 = " << col1 << endl;
@@ -1245,8 +1244,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 
 void Map::createGridIndexForEdge(Edge *edge)
 {
-	if (edge == NULL)
-		return;
+	if (edge == NULL){ return; }
 	Figure::iterator ptIter = edge->figure->begin();
 	Figure::iterator nextPtIter = edge->figure->begin(); nextPtIter++;
 	while (nextPtIter != edge->figure->end())
