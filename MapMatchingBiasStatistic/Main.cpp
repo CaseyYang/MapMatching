@@ -9,7 +9,7 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day3\\day3_unsplit";//输入的轨迹文件名要求：以“input_”开头
+string inputDirectory = "day1\\day1_unsplit";//输入的轨迹文件名要求：以“input_”开头
 string outputDirectory = "15days\\15days_output2";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
