@@ -102,7 +102,7 @@ void PointGridIndex::getNearPts(GeoPoint* pt, int gridRange, vector<GeoPoint*>& 
 		for (int col = col1; col <= col2; col++)
 		{
 			if (row == rowPt && col == colPt)
-				continue;			
+				continue;
 			for (list<GeoPoint*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
 			{
 				if ((*iter) != pt)
@@ -145,9 +145,7 @@ void PointGridIndex::getNearPts(GeoPoint* pt, int gridRange, vector<GeoPoint*>& 
 //		dest.push_back(candidatePts[i]);
 //	}
 //}
-//////////////////////////////////////////////////////////////////////////
-///private
-//////////////////////////////////////////////////////////////////////////
+
 void PointGridIndex::initialization()
 {
 	//////////////////////////////////////////////////////////////////////////
@@ -156,8 +154,7 @@ void PointGridIndex::initialization()
 	///2.在堆上开空间
 	///[ATTENTION]：[MEM_LEAK]建立索引时不会判断grid是否是NULL，需自行delete前一个索引空间
 	//////////////////////////////////////////////////////////////////////////	
-	if (gridWidth <= 0)
-		return;
+	if (gridWidth <= 0){ return; }
 	gridHeight = int((area->maxLat - area->minLat) / (area->maxLon - area->minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (area->maxLon - area->minLon) / double(gridWidth);
 	grid = new list<GeoPoint*>* *[gridHeight];
@@ -180,5 +177,5 @@ void PointGridIndex::insertOnePt(GeoPoint* pt)
 	{
 		pair<int, int> rolCol = getRowCol(pt);
 		grid[rolCol.first][rolCol.second]->push_back(pt);
-	}	
+	}
 }

@@ -21,7 +21,7 @@ public:
 	list<GeoPoint*>* **grid;
 	int gridWidth;
 	int gridHeight;
-	double gridSizeDeg; //记录gird边长代表多少实际距离（单位为度）
+	double gridSizeDeg; //记录grid边长代表多少实际距离（单位为度）
 	Area* area;
 
 	void initialization();

@@ -10,17 +10,16 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_unsplit";//输入的轨迹文件名要求：以“input_”开头
+string inputDirectory = "day7\\day7_unsplit";//输入的轨迹文件名要求：以“input_”开头
 string outputDirectory = "15days\\15days_2_output_2";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
 PointGridIndex pointGridIndex = PointGridIndex();//针对所有轨迹点建立的网格索引
-
 vector<string> outputFileNames;//匹配结果文件名集合
 list<Traj*> trajList;//轨迹集合
 list<GeoPoint*> trajPointList;//所有轨迹点集合
-map<pair<int, int>, map<Edge*, int>> biasSet;
+map<pair<int, int>, map<Edge*, int>> biasSet;//地图中基于网格的地图匹配统计情况集合
 
 //把轨迹集合trajList中所有轨迹点合并到集合trajPointList中
 void makeTrajPointGridIndex(int gridWidth){
@@ -76,6 +75,12 @@ void main(){
 	//trajReader.makeOutputFileNames(outputFileNames);
 	//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
 	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
+	//对轨迹点集合单独建立网格索引
+	/*
+	TODO：事实上，单单统计基于网格的匹配信息并不需要建立网格索引，只需要维护biasSet这一数据结构。
+	因此，在必要情况下可以去掉函数makeTrajPointGridIndex和网格索引pointGridIndex。
+	在现有代码中所有调用pointGridIndex.getRowCol方法的地方计算出某个点所在的网格（row，col）即可。
+	*/
 	makeTrajPointGridIndex(4000);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
