@@ -6,6 +6,7 @@
 #include "MapMatching.h"
 #include "MapMatchingUsingBiasStatistic.h"
 #include "TrajReader.h"
+#include "PointGridIndex.h"
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\ĞÂ¼ÓÆÂÊı¾İ\\";
@@ -13,22 +14,39 @@ string inputDirectory = "day1\\day1_unsplit";//ÊäÈëµÄ¹ì¼£ÎÄ¼şÃûÒªÇó£ºÒÔ¡°input_¡
 string outputDirectory = "15days\\15days_2_output_2";//Êä³öµÄÆ¥Åä½á¹ûÎÄ¼şÃû¾ùÒÔ¡°output_¡±¿ªÍ·
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\ĞÂ¼ÓÆÂÊı¾İ\\15days\\wy_MMTrajs.txt";
-Map routeNetwork = Map(rootFilePath, 3100);
+Map routeNetwork = Map(rootFilePath, 1000);
+PointGridIndex pointGridIndex = PointGridIndex();//Õë¶ÔËùÓĞ¹ì¼£µã½¨Á¢µÄÍø¸ñË÷Òı
 
 vector<string> outputFileNames;//Æ¥Åä½á¹ûÎÄ¼şÃû¼¯ºÏ
 list<Traj*> trajList;//¹ì¼£¼¯ºÏ
+list<GeoPoint*> trajPointList;//ËùÓĞ¹ì¼£µã¼¯ºÏ
 map<pair<int, int>, map<Edge*, int>> biasSet;
 
+//°Ñ¹ì¼£¼¯ºÏtrajListÖĞËùÓĞ¹ì¼£µãºÏ²¢µ½¼¯ºÏtrajPointListÖĞ
+void makeTrajPointGridIndex(int gridWidth){
+	for each (Traj* traj in trajList)
+	{
+		for each (GeoPoint* trajPoint in *traj)
+		{
+			trajPointList.push_back(trajPoint);
+		}
+	}
+	pointGridIndex.createIndex(trajPointList, &routeNetwork.getMapRange(), gridWidth);
+	trajPointList.clear();
+}
+
+//Í³¼Æ¹ì¼£trajÖĞËùÓĞ¹ì¼£µãµÄµØÍ¼Æ¥ÅäÇé¿ö
 void biasStatistic(Traj* traj, list<Edge*> result){
 	int trajPointIndex = 0;
 	Traj::iterator trajIter = traj->begin();
+	//¶ÔÓÚÒ»¸öÍø¸ñ£¬Í¬Ò»Ìõ¹ì¼£×î¶àÖ»ÄÜÓĞÒ»¸ö¹ì¼£µãÍ¶ÔÚ¸ÃÍø¸ñÖĞ£¬·ÀÖ¹Í¬Ò»Ìõ¹ì¼£Æ¥Åäµ½µÄÂ·¶ÎÔÚÍ¬Ò»Íø¸ñÄÚ¶à´Î¼ÆËã
 	set<pair<int, int>> countedGridCellSet = set<pair<int, int>>();
 	for each (Edge* edge in result)
 	{
 		GeoPoint* trajPoint = *trajIter;
 		trajIter++;
 		if (edge != NULL){
-			pair<int, int> gridCellIndex = routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
+			pair<int, int> gridCellIndex = pointGridIndex.getRowCol(trajPoint);//Ê¹ÓÃµ¥¶ÀµÄÕë¶Ô¹ì¼£µã½¨Á¢µÄÍø¸ñË÷ÒıÀ´Í³¼ÆÆ¥ÅäĞÅÏ¢
 			if (countedGridCellSet.find(gridCellIndex) == countedGridCellSet.end()){
 				if (biasSet.find(gridCellIndex) == biasSet.end()){
 					biasSet[gridCellIndex] = map<Edge*, int>();
@@ -51,32 +69,33 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 
 void main(){
 	/*µ¥¸öÎÄ¼şµ¥Ìõ¹ì¼£¶ÁÈ¡·½·¨*/
-	//scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
 	/*µ¥¸öÎÄ¼ş¶àÌõ¹ì¼£¶ÁÈ¡·½·¨*/
-	TrajReader trajReader(mergedTrajFilePath);
-	trajReader.readTrajs(trajList);
-	trajReader.makeOutputFileNames(outputFileNames);
-	//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");
-	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);
+	//TrajReader trajReader(mergedTrajFilePath);
+	//trajReader.readTrajs(trajList);
+	//trajReader.makeOutputFileNames(outputFileNames);
+	//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//Êä³ö15Ìì¹ì¼£ÎÄ¼şÖĞÒÑÆ¥Åä´ğ°¸ÖÁÒ»¸öµ¥¶ÀµÄÎÄ¼şÖĞ
+	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//¶ÁÈëÒÑ±£´æµÄµãË÷Òı
+	makeTrajPointGridIndex(4000);
 	int trajIndex = 0;
 	cout << "¿ªÊ¼µØÍ¼Æ¥Åä£¡" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		//if (trajIndex == 1365){
-			//cout << "¹ì¼£³¤¶È£º" << (*trajIter)->size() << endl;
-			/*Æ¥ÅäÂ·¶ÎĞÅÏ¢Í³¼Æ*/
-			//list<Edge*> resultList = MapMatching(*(*trajIter));
-			//biasStatistic(*trajIter, resultList);
-			/*ÀûÓÃÆ¥ÅäÂ·¶ÎÍ³¼ÆĞÅÏ¢½øĞĞµØÍ¼Æ¥Åä*/
-			//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
-			/*ÀûÓÃÆ¥ÅäÂ·¶ÎÍ³¼ÆĞÅÏ¢×÷ÎªºóÑé¸ÅÂÊ½øĞĞµØÍ¼Æ¥Åä*/
-			list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
-			//cout << "µÚ" << tra2000jIndex << "Ìõ¹ì¼£Æ¥ÅäÍê±Ï£¡" << endl;
-			outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
-			cout << "µÚ" << trajIndex << "Ìõ¹ì¼£Æ¥ÅäÂ·¶ÎÊä³öÍê±Ï£¡" << endl;
+		//cout << "¹ì¼£³¤¶È£º" << (*trajIter)->size() << endl;
+		/*Æ¥ÅäÂ·¶ÎĞÅÏ¢Í³¼Æ*/
+		list<Edge*> resultList = MapMatching(*(*trajIter));
+		biasStatistic(*trajIter, resultList);
+		/*ÀûÓÃÆ¥ÅäÂ·¶ÎÍ³¼ÆĞÅÏ¢½øĞĞµØÍ¼Æ¥Åä*/
+		//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
+		/*ÀûÓÃÆ¥ÅäÂ·¶ÎÍ³¼ÆĞÅÏ¢×÷ÎªºóÑé¸ÅÂÊ½øĞĞµØÍ¼Æ¥Åä*/
+		//list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+		//cout << "µÚ" << tra2000jIndex << "Ìõ¹ì¼£Æ¥ÅäÍê±Ï£¡" << endl;
+		//outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+		cout << "µÚ" << trajIndex << "Ìõ¹ì¼£Æ¥ÅäÂ·¶ÎÊä³öÍê±Ï£¡" << endl;
 		//}
 		trajIndex++;
 	}
 	cout << "µØÍ¼Æ¥ÅäÍê³É£¡" << endl;
-	//outputGridCellBias(gridCellBiasFileName, biasSet);
+	outputGridCellBias(gridCellBiasFileName, biasSet);
 	system("pause");
 }

@@ -139,11 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Area.h" />
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="Map.h" />
     <ClInclude Include="MapMatching.h" />
     <ClInclude Include="FileIO.h" />
     <ClInclude Include="MapMatchingUsingBiasStatistic.h" />
+    <ClInclude Include="PointGridIndex.h" />
     <ClInclude Include="TrajReader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +155,7 @@
     <ClCompile Include="MapMatching.cpp" />
     <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="MapMatchingUsingBiasStatistic.cpp" />
+    <ClCompile Include="PointGridIndex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

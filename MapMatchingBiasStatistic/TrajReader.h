@@ -97,7 +97,7 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 			GeoPoint* pt = new GeoPoint(lat, lon, time, mmRoadId);
 			if (isStart)
 			{
-				tmpTraj = new Traj();				
+				tmpTraj = new Traj();
 				isStart = false;
 			}
 			tmpTraj->push_back(pt);
@@ -105,7 +105,7 @@ void TrajReader::readTrajs(vector<Traj*>& dest, int count /* = INF */)
 	}
 	cout << ">> reading trajs finished" << endl;
 	cout << dest.size() << "trajs in all" << endl;
-	trajectoriesNum = dest.size();
+	trajectoriesNum = static_cast<int>(dest.size());
 	trajIfs.close();
 }
 
@@ -163,7 +163,7 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 	}
 	cout << ">> reading trajs finished" << endl;
 	cout << dest.size() << " trajs in all" << endl;
-	trajectoriesNum = dest.size();
+	trajectoriesNum = static_cast<int>(dest.size());
 	trajIfs.close();
 }
 
@@ -188,7 +188,7 @@ void TrajReader::outputMatchedEdges(list<Traj*> &trajs, string directoryPath){
 		ofstream outputAnswerFile = ofstream(ss.str());
 		for each (auto trajPoint in *traj)
 		{
-			outputAnswerFile << trajPoint->time << "," << trajPoint->matchedEdge << ",1.0" << endl;
+			outputAnswerFile << trajPoint->time << "," << trajPoint->matchedEdgeId << ",1.0" << endl;
 		}
 		outputAnswerFile.close();
 	}

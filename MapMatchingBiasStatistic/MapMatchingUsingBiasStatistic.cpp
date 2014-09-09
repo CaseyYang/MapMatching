@@ -48,7 +48,7 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 		//cout << "轨迹点序号：" << trajPointIndex << endl;
 		//trajPointIndex++;
 		Edge* matchedEdge = NULL;
-		pair<int, int>gridCellIndex = routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
+		pair<int, int>gridCellIndex = pointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
 		if (biasSet.find(gridCellIndex) != biasSet.end()){
 			//cout << "进入if段" << endl;
 			int max = 0;
@@ -115,7 +115,7 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 //使用网格的路段偏好作为先验概率进行地图匹配
 list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
-	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
+	int sampleRate = (static_cast<int>(trajectory.size()) > 1 ? (trajectory.back()->time - trajectory.front()->time) / (static_cast<int>(trajectory.size()) - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
 	vector<vector<Score2>> scoreMatrix = vector<vector<Score2>>();//所有轨迹点的概率矩阵
@@ -133,7 +133,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 		vector<Score2> scores = vector<Score2>();//当前轨迹点的Score2集合
 		/*先验概率——放射概率*/
 		long double totalCount = 0;//归一化
-		pair<int, int>gridCellIndex = routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
+		pair<int, int>gridCellIndex = pointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
 		if (biasSet.find(gridCellIndex) != biasSet.end()){
 			for each (pair<Edge*, int> edgeCountPair in biasSet[gridCellIndex])
 			{
@@ -212,12 +212,12 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	{
 		if (scoreMatrix.back()[index].score > tmpMaxProb){
 			tmpMaxProb = scoreMatrix.back()[index].score;
-			startColumnIndex = index;
+			startColumnIndex = static_cast<int>(index);
 		}
 	}
 	mapMatchingResult.push_front(scoreMatrix.back()[startColumnIndex].edge);
 	int lastColumnIndex = startColumnIndex;
-	for (int i = scoreMatrix.size() - 2; i >= 0; i--){//注意：此处i类型不能设为size_t，因为size_t是无符号类型，当i==0时i--会使得i变成一个极大数
+	for (int i = static_cast<int>(scoreMatrix.size()) - 2; i >= 0; i--){//注意：此处i类型不能设为size_t，因为size_t是无符号类型，当i==0时i--会使得i变成一个极大数
 		startColumnIndex = 0;
 		//cout << "第" << i << "列候选路段数量" << scoreMatrix[i].size() << endl;
 		long double maxPosteriorProb = -1;
@@ -226,7 +226,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 			//cout << tmpPosteriorProb << endl;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;
-				startColumnIndex = j;
+				startColumnIndex = static_cast<int>(j);
 			}
 		}
 		//cout << i << " " << startColumnIndex << endl;

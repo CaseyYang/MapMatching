@@ -177,7 +177,7 @@ void Map::open(string folderDir, int gridWidth)
 	for (size_t i = 0; i < edges.size(); i++)
 	{
 		AdjNode* head = new AdjNode();
-		head->endPointId = i;
+		head->endPointId = static_cast<int>(i);
 		head->next = NULL;
 		adjList.push_back(head);
 	}
@@ -703,10 +703,10 @@ int Map::insertNode(double lat, double lon)
 	GeoPoint* pt = new GeoPoint(lat, lon);
 	nodes.push_back(pt);
 	AdjNode* adjNode = new AdjNode();
-	adjNode->endPointId = adjList.size();
+	adjNode->endPointId = static_cast<int>(adjList.size());
 	adjNode->next = NULL;
 	adjList.push_back(adjNode);
-	return nodes.size() - 1;
+	return static_cast<int>(nodes.size()) - 1;
 }
 
 //在当前图中插入边
@@ -721,7 +721,7 @@ int Map::insertEdge(Figure* figure, int startNodeId, int endNodeId)
 	newEdge->startNodeId = startNodeId;
 	newEdge->endNodeId = endNodeId;
 	newEdge->lengthM = calEdgeLength(figure);
-	newEdge->id = edges.size();
+	newEdge->id = static_cast<int>(edges.size());
 	edges.push_back(newEdge);
 	AdjNode* current = adjList[startNodeId];
 	insertEdge(newEdge->id, startNodeId, endNodeId); //加入连通关系
@@ -854,7 +854,7 @@ void Map::delEdge(int edgeId)
 	//这个不能用
 }
 
-void Map::getMinMaxLatLon(string nodeFilePath)
+void Map::setMapRange(string nodeFilePath)
 {
 	ifstream nodeIfs(nodeFilePath);
 	if (!nodeIfs)
@@ -883,6 +883,11 @@ void Map::getMinMaxLatLon(string nodeFilePath)
 	nodeIfs.close();
 }
 
+Area Map::getMapRange(){
+	Area result = Area(minLat, maxLat, minLon, maxLon);
+	return result;
+}
+
 /*
 A路段起点到B路段起点的最小路网距离
 参数：
@@ -894,7 +899,7 @@ deltaT：基于隐马尔科夫模型地图匹配算法中两轨迹点的时间差，默认为INF
 shortestPath：保存组成最短路径的路段的Edge*
 */
 double Map::shortestPathLength(int ID1, int ID2, list<Edge*> &shortestPath, double dist1, double dist2, double deltaT){
-	int maxNodeNum = nodes.size();
+	int maxNodeNum = static_cast<int>(nodes.size());
 	vector<double> dist = vector<double>(maxNodeNum);
 	vector<bool> flag = vector<bool>(maxNodeNum);
 	for (int i = 0; i < maxNodeNum; i++) {

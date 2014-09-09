@@ -4,6 +4,7 @@
 #include <vector>
 #include "GeoPoint.h"
 #include "Map.h"
+#include "PointGridIndex.h"
 using namespace std;
 
 
@@ -16,4 +17,5 @@ using namespace std;
 #define MINPROB 1e-150 //整体概率的下限
 
 extern Map routeNetwork;
+extern PointGridIndex pointGridIndex;
 extern list<Edge*> MapMatching(list<GeoPoint*> &trajectory);

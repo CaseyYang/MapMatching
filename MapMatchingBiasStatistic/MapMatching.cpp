@@ -44,7 +44,7 @@ int GetStartColumnIndex(vector<Score> &row){
 	for (size_t i = 0; i < row.size(); i++){
 		if (currentMaxProb < row.at(i).score){
 			currentMaxProb = row.at(i).score;
-			resultIndex = i;
+			resultIndex = static_cast<int>(i);
 		}
 	}
 	return resultIndex;
@@ -81,7 +81,7 @@ list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
 
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
-	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
+	int sampleRate = (static_cast<int>(trajectory.size()) > 1 ? (trajectory.back()->time - trajectory.front()->time) / (static_cast<int>(trajectory.size()) - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
 	//cout << "采样率：" << sampleRate << endl;
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
@@ -178,7 +178,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 
 	//得到全局匹配路径
 	int startColumnIndex = GetStartColumnIndex(scoreMatrix.back());//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
-	for (int i = scoreMatrix.size() - 1; i >= 0; i--){
+	for (int i = static_cast<int>(scoreMatrix.size()) - 1; i >= 0; i--){
 		if (startColumnIndex != -1){
 			mapMatchingResult.push_front(scoreMatrix[i][startColumnIndex].edge);
 			startColumnIndex = scoreMatrix[i][startColumnIndex].preColumnIndex;

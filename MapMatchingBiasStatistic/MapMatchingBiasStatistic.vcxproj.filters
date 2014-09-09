@@ -33,6 +33,12 @@
     <ClInclude Include="TrajReader.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="PointGridIndex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Area.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Map.cpp">
@@ -51,6 +57,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="MapMatchingUsingBiasStatistic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PointGridIndex.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

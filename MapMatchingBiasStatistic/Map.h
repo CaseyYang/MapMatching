@@ -9,6 +9,7 @@
 #include <set>
 #include <map>
 #include "GeoPoint.h"
+#include "Area.h"
 using namespace std;
 
 #define eps 1e-10
@@ -80,7 +81,7 @@ public:
 	//同上，同时记录投影点到edge起点的距离存入prjDist，无投影则记为0
 	double distM(double lat, double lon, Edge* edge, double& prjDist) const;
 	//移植SRC版本：返回(lat,lon)点到edge的距离，单位为米；同时记录投影点到edge起点的距离存入prjDist
-	double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist);
+	double distMFromTransplantFromSRC(double lat, double lon, Edge* edge, double& prjDist);
 	//返回(lat,lon)点所在的网格索引号
 	pair<int, int> findGridCellIndex(double lat, double lon);
 	//判断startNodeId与endNodeId之间有无边,没有边返回-1，有边返回edgeId
@@ -92,7 +93,10 @@ public:
 	//将edge在(lat,lon)点处分开成两段,(lat,lon)作为新结点加入,返回新结点的nodeId
 	int splitEdge(int edgeId, double lat, double lon);
 	void delEdge(int edgeId);
-	void getMinMaxLatLon(string nodeFilePath);
+	//从点集合文件中获得地图范围，即在点集中找出边界经纬度
+	void setMapRange(string nodeFilePath);
+	//以一个Area对象实例的形式返回地图的边界经纬度
+	Area getMapRange();
 	/*
 	A路段起点到B路段起点的最小路网距离
 	参数：
