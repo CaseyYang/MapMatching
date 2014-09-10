@@ -11,6 +11,7 @@ class PointGridIndex
 {
 public:
 	void createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth);
+	void createIndex(Area* area, int gridWidth);
 	pair<int, int> getRowCol(GeoPoint* pt);
 	//void drawGridLine(Gdiplus::Color color, MapDrawer& md);
 	void getNearPts(GeoPoint* pt, double thresholdM, vector<GeoPoint*>& dest); //将距离pt不长于thresholdM米的所有点存入dest

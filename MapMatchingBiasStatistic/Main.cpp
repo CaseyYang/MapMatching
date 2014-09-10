@@ -11,11 +11,11 @@ using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string inputDirectory = "day7\\day7_unsplit";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "15days\\15days_2_output_2";//输出的匹配结果文件名均以“output_”开头
+string outputDirectory = "15days\\15days_3_output_2";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
-PointGridIndex pointGridIndex = PointGridIndex();//针对所有轨迹点建立的网格索引
+PointGridIndex pointGridIndex;//针对所有轨迹点建立的网格索引
 vector<string> outputFileNames;//匹配结果文件名集合
 list<Traj*> trajList;//轨迹集合
 list<GeoPoint*> trajPointList;//所有轨迹点集合
@@ -30,7 +30,7 @@ void makeTrajPointGridIndex(int gridWidth){
 			trajPointList.push_back(trajPoint);
 		}
 	}
-	pointGridIndex.createIndex(trajPointList, &routeNetwork.getMapRange(), gridWidth);
+	pointGridIndex.createIndex(trajPointList, routeNetwork.getMapRange(), gridWidth);
 	trajPointList.clear();
 }
 
@@ -68,34 +68,35 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 
 void main(){
 	/*单个文件单条轨迹读取方法*/
-	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	//scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
 	/*单个文件多条轨迹读取方法*/
-	//TrajReader trajReader(mergedTrajFilePath);
-	//trajReader.readTrajs(trajList);
-	//trajReader.makeOutputFileNames(outputFileNames);
+	TrajReader trajReader(mergedTrajFilePath);
+	trajReader.readTrajs(trajList);
+	trajReader.makeOutputFileNames(outputFileNames);
 	//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
 	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
+	pointGridIndex.createIndex(routeNetwork.getMapRange(), 4000);
 	//对轨迹点集合单独建立网格索引
 	/*
 	TODO：事实上，单单统计基于网格的匹配信息并不需要建立网格索引，只需要维护biasSet这一数据结构。
 	因此，在必要情况下可以去掉函数makeTrajPointGridIndex和网格索引pointGridIndex。
 	在现有代码中所有调用pointGridIndex.getRowCol方法的地方计算出某个点所在的网格（row，col）即可。
 	*/
-	makeTrajPointGridIndex(4000);
+	//makeTrajPointGridIndex(4000);
 	int trajIndex = 0;
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		//if (trajIndex == 1365){
 		//cout << "轨迹长度：" << (*trajIter)->size() << endl;
 		/*匹配路段信息统计*/
-		list<Edge*> resultList = MapMatching(*(*trajIter));
-		biasStatistic(*trajIter, resultList);
+		//list<Edge*> resultList = MapMatching(*(*trajIter));
+		//biasStatistic(*trajIter, resultList);
 		/*利用匹配路段统计信息进行地图匹配*/
 		//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
 		/*利用匹配路段统计信息作为后验概率进行地图匹配*/
-		//list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
-		//cout << "第" << tra2000jIndex << "条轨迹匹配完毕！" << endl;
-		//outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+		list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
+		outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
 		cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
 		//}
 		trajIndex++;

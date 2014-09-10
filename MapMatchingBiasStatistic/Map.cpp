@@ -883,8 +883,8 @@ void Map::setMapRange(string nodeFilePath)
 	nodeIfs.close();
 }
 
-Area Map::getMapRange(){
-	Area result = Area(minLat, maxLat, minLon, maxLon);
+Area* Map::getMapRange(){
+	Area* result = new Area(minLat, maxLat, minLon, maxLon);
 	return result;
 }
 

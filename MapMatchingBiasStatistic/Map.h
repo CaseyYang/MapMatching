@@ -96,7 +96,7 @@ public:
 	//从点集合文件中获得地图范围，即在点集中找出边界经纬度
 	void setMapRange(string nodeFilePath);
 	//以一个Area对象实例的形式返回地图的边界经纬度
-	Area getMapRange();
+	Area* getMapRange();
 	/*
 	A路段起点到B路段起点的最小路网距离
 	参数：
