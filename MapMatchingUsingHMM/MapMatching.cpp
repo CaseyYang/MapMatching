@@ -4,9 +4,9 @@
 //运行所需的全局变量
 vector<string> outputFileNames;
 list<Traj*> trajList;
-string rootFilePath = "D:\\MapMatchingProject\\Data\\GISCUP2012_Data\\";
-string inputDirectory = "input_60";
-string outputDirectory = "output_60";
+string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
+string inputDirectory = "day1\\day1_unsplited_input";
+string outputDirectory = "day1\\day1_unsplited_answer";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -52,7 +52,7 @@ int GetStartColumnIndex(vector<Score> &row){
 	for (size_t i = 0; i < row.size(); i++){
 		if (currentMaxProb < row.at(i).score){
 			currentMaxProb = row.at(i).score;
-			resultIndex = i;
+			resultIndex = static_cast<int>(i);
 		}
 	}
 	return resultIndex;
@@ -89,7 +89,7 @@ list<Edge*> linkMatchedResult(list<Edge*> &mapMatchingResult){
 
 list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	list<Edge*> mapMatchingResult;//全局匹配路径
-	int sampleRate = (trajectory.size() > 1 ? (trajectory.back()->time - trajectory.front()->time) / (trajectory.size() - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
+	int sampleRate = (static_cast<int>(trajectory.size()) > 1 ? (trajectory.back()->time - trajectory.front()->time) / (static_cast<int>(trajectory.size()) - 1) : (trajectory.back()->time - trajectory.front()->time));//计算轨迹平均采样率
 	//cout << "采样率：" << sampleRate << endl;
 	if (sampleRate > 30){ sampleRate = 30; }
 	long double BT = (long double)BETA_ARR[sampleRate];//根据轨迹平均采样率确定beta值，计算转移概率时使用
@@ -186,7 +186,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 
 	//得到全局匹配路径
 	int startColumnIndex = GetStartColumnIndex(scoreMatrix.back());//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
-	for (int i = scoreMatrix.size() - 1; i >= 0; i--){
+	for (int i = static_cast<int>(scoreMatrix.size()) - 1; i >= 0; i--){
 		if (startColumnIndex != -1){
 			mapMatchingResult.push_front(scoreMatrix[i][startColumnIndex].edge);
 			startColumnIndex = scoreMatrix[i][startColumnIndex].preColumnIndex;
@@ -222,7 +222,7 @@ void main(){
 	cout << "开始地图匹配！" << endl;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		list<Edge*> resultList = MapMatching(*(*trajIter));
-		ofstream MatchedEdgeOutput(rootFilePath +outputDirectory+ "\\" + outputFileNames[trajIndex]);
+		ofstream MatchedEdgeOutput(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex]);
 		Traj::iterator trajPointIter = (*trajIter)->begin();
 		for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 			if (*edgeIter != NULL){
@@ -234,7 +234,7 @@ void main(){
 			}
 		}
 		MatchedEdgeOutput.close();
-		cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
+		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
 		trajIndex++;
 	}
 	//logOutput.close();

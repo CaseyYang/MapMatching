@@ -11,7 +11,7 @@ using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string inputDirectory = "day7\\day7_unsplit";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "15days\\15days_3_output_2";//输出的匹配结果文件名均以“output_”开头
+string outputDirectory = "15days\\15days_3_output";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
@@ -92,9 +92,9 @@ void main(){
 		//list<Edge*> resultList = MapMatching(*(*trajIter));
 		//biasStatistic(*trajIter, resultList);
 		/*利用匹配路段统计信息进行地图匹配*/
-		//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
+		list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
 		/*利用匹配路段统计信息作为后验概率进行地图匹配*/
-		list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+		//list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
 		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
 		outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
 		cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
