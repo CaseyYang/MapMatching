@@ -222,6 +222,8 @@ void main(int argc, char *argv[]){
 	else{
 		inputDirectory = argv[1];
 		outputDirectory = argv[2];
+		cout << "输入文件所在文件夹路径：" << inputDirectory << endl;
+		cout << "输出文件所在文件夹路径：" << outputDirectory << endl;
 		//logOutput = ofstream("debug.txt");
 		//logOutput.setf(ios::showpoint);
 		//logOutput.precision(8);
