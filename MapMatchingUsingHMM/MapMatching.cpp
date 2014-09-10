@@ -5,8 +5,8 @@
 vector<string> outputFileNames;
 list<Traj*> trajList;
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_splited_input";
-string outputDirectory = "day1\\day1_splited_answer";
+string inputDirectory = "day2\\day2_unsplited_input";
+string outputDirectory = "day2\\day2_unsplited_answer";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
@@ -213,29 +213,40 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	//return linkMatchedResult(mapMatchingResult);
 }
 
-void main(){
-	//logOutput = ofstream("debug.txt");
-	//logOutput.setf(ios::showpoint);
-	//logOutput.precision(8);
-	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
-	int trajIndex = 0;
-	cout << "开始地图匹配！" << endl;
-	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
-		list<Edge*> resultList = MapMatching(*(*trajIter));
-		ofstream MatchedEdgeOutput(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex]);
-		Traj::iterator trajPointIter = (*trajIter)->begin();
-		for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
-			if (*edgeIter != NULL){
-				int currentIndex = (*edgeIter)->id;
-				MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
-			}
-			else{
-				MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
-			}
-		}
-		MatchedEdgeOutput.close();
-		//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-		trajIndex++;
+void main(int argc, char *argv[]){
+	if (argc != 3){
+		cout << "应该有两个参数：第一个为输入文件所在文件夹路径；第二个为输出文件所在文件夹路径！" << endl;
+		system("pause");
+		return;
 	}
-	//logOutput.close();
+	else{
+		inputDirectory = argv[1];
+		outputDirectory = argv[2];
+		//logOutput = ofstream("debug.txt");
+		//logOutput.setf(ios::showpoint);
+		//logOutput.precision(8);
+		scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+		int trajIndex = 0;
+		cout << "开始地图匹配！" << endl;
+		for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
+			list<Edge*> resultList = MapMatching(*(*trajIter));
+			ofstream MatchedEdgeOutput(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex]);
+			Traj::iterator trajPointIter = (*trajIter)->begin();
+			for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
+				if (*edgeIter != NULL){
+					int currentIndex = (*edgeIter)->id;
+					MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
+				}
+				else{
+					MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
+				}
+			}
+			MatchedEdgeOutput.close();
+			//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
+			trajIndex++;
+		}
+		//logOutput.close();
+		system("pause");
+	}
+
 }
