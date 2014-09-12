@@ -214,14 +214,16 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 }
 
 void main(int argc, char *argv[]){
-	if (argc != 3){
+	if (argc != 1 && argc != 3){
 		cout << "应该有两个参数：第一个为输入文件所在文件夹路径；第二个为输出文件所在文件夹路径！" << endl;
 		system("pause");
 		return;
 	}
 	else{
-		inputDirectory = argv[1];
-		outputDirectory = argv[2];
+		if (argc == 3){
+			inputDirectory = argv[1];
+			outputDirectory = argv[2];
+		}
 		cout << "输入文件所在文件夹路径：" << inputDirectory << endl;
 		cout << "输出文件所在文件夹路径：" << outputDirectory << endl;
 		//logOutput = ofstream("debug.txt");

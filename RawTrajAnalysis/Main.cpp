@@ -5,15 +5,15 @@
 using namespace std;
 
 
-string rootFilePath = "D:\\Document\\MDM Lab\\Data\\GISCUP2012_Data\\";
-string inputDirectory = "day7\\day7_unsplit";//输入的轨迹文件名要求：以“input_”开头
+string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
+string inputDirectory = "day7\\day7_splited_input";//输入的轨迹文件名要求：以“input_”开头
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 int sampleRate = 90;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
 
 double CalculateMAD(list<double> &dist){
 	dist.sort();
-	int mid = dist.size() / 2;
+	int mid = static_cast<int>(dist.size()) / 2;
 	list<double>::iterator dist1Iter = dist.begin();
 	for (int i = 0; i < mid; i++){
 		dist1Iter++;
@@ -129,16 +129,9 @@ void trajSplit(double maxSpeed){
 //计算轨迹平均采样率
 void CalculateAverageSampleRate(){
 	double totalAverageSampleRate = 0;
-	for (list<Traj*>::iterator iter = trajList.begin(); iter != trajList.end(); iter++){
-		double formerTrajPointTimeStamp = -1;
-		double averageSampleRate = 0;
-		for (Traj::iterator trajPointIter = (*iter)->begin(); trajPointIter != (*iter)->end(); trajPointIter++){
-			if (formerTrajPointTimeStamp != -1){
-				averageSampleRate += (*trajPointIter)->time - formerTrajPointTimeStamp;
-			}
-			formerTrajPointTimeStamp = (*trajPointIter)->time;
-		}
-		averageSampleRate /= ((*iter)->size() - 1);
+	for each (Traj* traj in trajList)
+	{
+		double averageSampleRate = (traj->back()->time - traj->front()->time) / (static_cast<double>(traj->size()) - 1);
 		totalAverageSampleRate += averageSampleRate;
 	}
 	totalAverageSampleRate /= trajList.size();
@@ -163,7 +156,7 @@ void DegradeInput(string inputDirectory){
 			ofstream *fout = new ofstream[sampleRate];
 			for (size_t i = 0; i < sampleRate; i++)
 			{
-				fout[i] = ofstream(rootFilePath + inputDirectory + "\\" + inputFileName.substr(0, 6) + ToString(index) + ToString(i) + ".txt");
+				fout[i] = ofstream(rootFilePath + inputDirectory + "\\" + inputFileName.substr(0, 6) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
 				fout[i].precision(13);
 			}
 			int time;
@@ -203,7 +196,7 @@ void DegradeAnswer(string answerDirectory){
 			ofstream *fout = new ofstream[sampleRate];
 			for (size_t i = 0; i < sampleRate; i++)
 			{
-				fout[i] = ofstream(rootFilePath + answerDirectory + "\\" + inputFileName.substr(0, 7) + ToString(index) + ToString(i) + ".txt");
+				fout[i] = ofstream(rootFilePath + answerDirectory + "\\" + inputFileName.substr(0, 7) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
 				fout[i].setf(ios::showpoint);
 				fout[i].precision(13);
 			}
@@ -254,8 +247,25 @@ void RawTrajToJson(string filePath){
 	fout.close();
 }
 
-int main(){
-	trajList = list<Traj*>();
+int main(int argc,char*argv[]){
+	if (argc != 1 && argc != 2){
+		cout << "应该有一个参数：第一个为输入文件所在文件夹路径！" << endl;
+		system("pause");
+		return 1;
+	}
+	else{
+		if (argc == 2){
+			inputDirectory = argv[1];
+			//outputDirectory = argv[2];
+		}
+		cout << "输入文件所在文件夹路径：" << inputDirectory << endl;
+		trajList = list<Traj*>();
+		vector<string> outputFileNames;
+		scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+		CalculateAverageSampleRate();
+		system("pause");
+		return 0;
+	}	
 	//sampleRate = 90;
 	//DegradeInput("input_90");
 	//DegradeAnswer("answer_90");
@@ -270,10 +280,9 @@ int main(){
 	//DegradeInput("input_150");
 	//DegradeAnswer("answer_150");
 
-	vector<string> outputFileNames;
-	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	
 	//CalculateParametersForViterbiAlgorithm();
-	CalculateAverageSampleRate();
+	
 	//RawTrajToJson("2014-03-25 16_44_11.txt");
-	return 0;
+	
 }
