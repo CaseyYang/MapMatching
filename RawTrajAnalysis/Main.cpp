@@ -139,9 +139,11 @@ void CalculateAverageSampleRate(){
 }
 
 //对高采样率轨迹数据降低其采样率，每个sampleRate选取一个采样点，得到新的符合sampleRate采样率的轨迹
-//inputDirectory：新轨迹文件所在的文件夹名
-void DegradeInput(string inputDirectory){
-	string completeInputFilesPath = rootFilePath + "input\\*.txt";
+//使用这种方法，从每条原轨迹中可得sampleRate条低采样率的轨迹
+//inputDirectory：原轨迹文件所在的文件夹路径
+//newInputDirectory：新轨迹文件所在的文件夹路径
+void DegradeInputFixedIntervals(string inputDirectory, string newInputDirectory){
+	string completeInputFilesPath = rootFilePath + inputDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
@@ -152,11 +154,11 @@ void DegradeInput(string inputDirectory){
 		int index = 0;
 		do {
 			string inputFileName = fileInfo.name;
-			ifstream fin(rootFilePath + "input\\" + inputFileName);
+			ifstream fin(rootFilePath + inputDirectory + "\\" + inputFileName);
 			ofstream *fout = new ofstream[sampleRate];
 			for (size_t i = 0; i < sampleRate; i++)
 			{
-				fout[i] = ofstream(rootFilePath + inputDirectory + "\\" + inputFileName.substr(0, 6) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
+				fout[i] = ofstream(rootFilePath + newInputDirectory + "\\" + inputFileName.substr(0, 6) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
 				fout[i].precision(13);
 			}
 			int time;
@@ -178,10 +180,11 @@ void DegradeInput(string inputDirectory){
 		return;
 	}
 }
-//和DegradeInput相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
-//answerDirectory：新答案文件所在的文件夹名
-void DegradeAnswer(string answerDirectory){
-	string completeInputFilesPath = rootFilePath + "answer\\*.txt";
+//和DegradeInputFixedIntervals相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
+//answerDirectory：原答案文件所在的文件夹路径
+//newAnswerDirectory：新答案文件所在的文件夹路径
+void DegradeAnswerFixedIntervals(string answerDirectory, string newAnswerDirectory){
+	string completeInputFilesPath = rootFilePath + answerDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
@@ -192,11 +195,11 @@ void DegradeAnswer(string answerDirectory){
 		int index = 0;
 		do {
 			string inputFileName = fileInfo.name;
-			ifstream fin(rootFilePath + "answer\\" + inputFileName);
+			ifstream fin(rootFilePath + answerDirectory + "\\" + inputFileName);
 			ofstream *fout = new ofstream[sampleRate];
 			for (size_t i = 0; i < sampleRate; i++)
 			{
-				fout[i] = ofstream(rootFilePath + answerDirectory + "\\" + inputFileName.substr(0, 7) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
+				fout[i] = ofstream(rootFilePath + newAnswerDirectory + "\\" + inputFileName.substr(0, 7) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
 				fout[i].setf(ios::showpoint);
 				fout[i].precision(13);
 			}
@@ -213,6 +216,75 @@ void DegradeAnswer(string answerDirectory){
 			}
 			fin.close();
 			index++;
+		} while (_findnext(lf, &fileInfo) == 0);
+		_findclose(lf);
+		return;
+	}
+}
+
+//对高采样率轨迹数据降低其采样率；当某个轨迹点采样时间和已选取点的采样时间间隔超过sampleRate时，选取该采样点
+//使用这种方法，从每条原轨迹中只能得到一条低采样率的轨迹
+//inputDirectory：原轨迹文件所在的文件夹路径
+//newInputDirectory：新轨迹文件所在的文件夹路径
+void DegradeInputFloatIntervals(string inputDirectory, string newInputDirectory){
+	string completeInputFilesPath = rootFilePath + newInputDirectory + "\\*.txt";
+	const char* dir = completeInputFilesPath.c_str();
+	_finddata_t fileInfo;//文件信息
+	long lf;//文件句柄
+	if ((lf = _findfirst(dir, &fileInfo)) == -1l) {
+		return;
+	}
+	else {
+		do {
+			string inputFileName = fileInfo.name;
+			ifstream fin(rootFilePath + inputDirectory + "\\" + inputFileName);
+			ofstream fout(rootFilePath + newInputDirectory + "\\" + inputFileName);
+			int formerTimeStamp = -1;//记录前一个轨迹点的采样时间。如果与当前轨迹点采样时间间隔超过SampleRate，则认为当前轨迹点符合采样率要求，输出到新的轨迹文件中
+			int time;
+			double lat, lon;
+			char useless;
+			while (fin >> time){
+				fin >> useless >> lat >> useless >> lon;
+				if (formerTimeStamp == -1 || time - formerTimeStamp > sampleRate){
+					fout << time << useless << lat << useless << lon << endl;
+					formerTimeStamp = time;
+				}
+			}
+			fout.close();
+			fin.close();
+		} while (_findnext(lf, &fileInfo) == 0);
+		_findclose(lf);
+		return;
+	}
+}
+//和DegradeInputFloatIntervals相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
+//answerDirectory：原答案文件所在的文件夹路径
+//newAnswerDirectory：新答案文件所在的文件夹路径
+void DegradeAnswerFloatIntervals(string answerDirectory, string newAnswerDirectory){
+	string completeInputFilesPath = rootFilePath + answerDirectory + "\\*.txt";
+	const char* dir = completeInputFilesPath.c_str();
+	_finddata_t fileInfo;//文件信息
+	long lf;//文件句柄
+	if ((lf = _findfirst(dir, &fileInfo)) == -1l) {
+		return;
+	}
+	else {
+		do {
+			string inputFileName = fileInfo.name;
+			ifstream fin(rootFilePath + answerDirectory + "\\" + inputFileName);
+			ofstream fout(rootFilePath + newAnswerDirectory + "\\" + inputFileName);
+			int formerTimeStamp = -1;
+			int time, edge;
+			double confidence;
+			char useless;
+			while (fin >> time){
+				fin >> useless >> edge >> useless >> confidence;
+				if (formerTimeStamp == -1 || time - formerTimeStamp > sampleRate){
+					fout << time << useless << edge << useless << confidence << endl;
+					formerTimeStamp = time;
+				}				
+			}
+			fin.close();
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
 		return;
@@ -247,28 +319,31 @@ void RawTrajToJson(string filePath){
 	fout.close();
 }
 
-int main(int argc,char*argv[]){
-	if (argc != 1 && argc != 2){
-		cout << "应该有一个参数：第一个为输入文件所在文件夹路径！" << endl;
-		system("pause");
-		return 1;
-	}
-	else{
-		if (argc == 2){
-			inputDirectory = argv[1];
-			//outputDirectory = argv[2];
-		}
-		cout << "输入文件所在文件夹路径：" << inputDirectory << endl;
-		trajList = list<Traj*>();
-		vector<string> outputFileNames;
-		scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
-		CalculateAverageSampleRate();
-		system("pause");
-		return 0;
-	}	
+int main(int argc, char*argv[]){
+	//统计轨迹文件的平均采样率
+	//if (argc != 1 && argc != 2){
+	//	cout << "应该有一个参数：第一个为输入文件所在文件夹路径！" << endl;
+	//	system("pause");
+	//	return 1;
+	//}
+	//else{
+	//	if (argc == 2){
+	//		inputDirectory = argv[1];
+	//		//outputDirectory = argv[2];
+	//	}
+	//	cout << "输入文件所在文件夹路径：" << inputDirectory << endl;
+	//	trajList = list<Traj*>();
+	//	vector<string> outputFileNames;
+	//	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	//	CalculateAverageSampleRate();
+	//	system("pause");
+	//	return 0;
+	//}
+
+	//降低轨迹文件的采样率
 	//sampleRate = 90;
-	//DegradeInput("input_90");
-	//DegradeAnswer("answer_90");
+	DegradeInputFloatIntervals(inputDirectory,"day7\\day7_splited_120_input");
+	DegradeAnswerFloatIntervals("day7\\day7_splited_answer", "day7\\day7_splited_120_answer");
 
 	//trajList = list<Traj*>();
 	//sampleRate = 120;
@@ -280,9 +355,9 @@ int main(int argc,char*argv[]){
 	//DegradeInput("input_150");
 	//DegradeAnswer("answer_150");
 
-	
+
 	//CalculateParametersForViterbiAlgorithm();
-	
+
 	//RawTrajToJson("2014-03-25 16_44_11.txt");
-	
+
 }
