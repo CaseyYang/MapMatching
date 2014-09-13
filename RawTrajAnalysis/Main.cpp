@@ -325,6 +325,7 @@ void RawTrajToJson(string filePath){
 
 int main(int argc, char*argv[]){
 	//统计轨迹文件的平均采样率
+	//cout << "统计轨迹文件的平均采样率" << endl;
 	//if (argc != 1 && argc != 2){
 	//	cout << "应该有一个参数：第一个为轨迹文件所在文件夹路径！" << endl;
 	//	system("pause");
