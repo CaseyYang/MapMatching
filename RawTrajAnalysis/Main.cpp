@@ -6,9 +6,9 @@ using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string inputDirectory = "day7\\day7_splited_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
-string newInputDirectory = "day7\\day7_splited_input_120";//降低采样率后的轨迹文件所在文件夹路径。
+string newInputDirectory = "day7\\day7_splited_120s_input";//降低采样率后的轨迹文件所在文件夹路径。
 string answerDirectory = "day7\\day7_splited_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
-string newAnswerDirectory = "day7\\day7_splited_answer_120";//降低采样率后的匹配结果文件所在文件夹路径。
+string newAnswerDirectory = "day7\\day7_splited_120s_answer";//降低采样率后的匹配结果文件所在文件夹路径。
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 int sampleRate = 120;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
@@ -229,7 +229,7 @@ void DegradeAnswerFixedIntervals(){
 //inputDirectory：原轨迹文件所在的文件夹路径
 //newInputDirectory：新轨迹文件所在的文件夹路径
 void DegradeInputFloatIntervals(){
-	string completeInputFilesPath = rootFilePath + newInputDirectory + "\\*.txt";
+	string completeInputFilesPath = rootFilePath + inputDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
@@ -256,6 +256,7 @@ void DegradeInputFloatIntervals(){
 			fin.close();
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
+		cout << "新轨迹文件输出完毕！" << endl;
 		return;
 	}
 }
@@ -289,6 +290,7 @@ void DegradeAnswerFloatIntervals(){
 			fin.close();
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
+		cout << "新匹配结果文件输出完毕！" << endl;
 		return;
 	}
 }
@@ -343,12 +345,9 @@ int main(int argc, char*argv[]){
 	//}
 
 	//降低轨迹文件的采样率
-	//sampleRate = 90;
 	cout << "降低轨迹文件的采样率" << endl;
 	if (argc != 1 && argc != 2 && argc != 6){
 		cout << "应该至多有5个参数：第一个为目标采样率；第二、三个为原轨迹文件和新轨迹文件所在文件夹路径；第四、五个为原匹配结果文件和新匹配结果文件所在文件夹路径" << endl;
-		system("pause");
-		return 1;
 	}
 	else{
 		if (argc == 2){
@@ -369,6 +368,8 @@ int main(int argc, char*argv[]){
 		DegradeInputFloatIntervals();
 		DegradeAnswerFloatIntervals();
 	}
+	system("pause");
+	return 0;
 
 	//CalculateParametersForViterbiAlgorithm();
 
