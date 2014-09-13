@@ -4,12 +4,14 @@
 #include "ReadInTrajs.h"
 using namespace std;
 
-
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day7\\day7_splited_input";//输入的轨迹文件名要求：以“input_”开头
+string inputDirectory = "day7\\day7_splited_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
+string newInputDirectory = "day7\\day7_splited_input_120";//降低采样率后的轨迹文件所在文件夹路径。
+string answerDirectory = "day7\\day7_splited_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
+string newAnswerDirectory = "day7\\day7_splited_answer_120";//降低采样率后的匹配结果文件所在文件夹路径。
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
-int sampleRate = 90;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
+int sampleRate = 120;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
 
 double CalculateMAD(list<double> &dist){
 	dist.sort();
@@ -142,7 +144,7 @@ void CalculateAverageSampleRate(){
 //使用这种方法，从每条原轨迹中可得sampleRate条低采样率的轨迹
 //inputDirectory：原轨迹文件所在的文件夹路径
 //newInputDirectory：新轨迹文件所在的文件夹路径
-void DegradeInputFixedIntervals(string inputDirectory, string newInputDirectory){
+void DegradeInputFixedIntervals(){
 	string completeInputFilesPath = rootFilePath + inputDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -183,7 +185,7 @@ void DegradeInputFixedIntervals(string inputDirectory, string newInputDirectory)
 //和DegradeInputFixedIntervals相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
 //answerDirectory：原答案文件所在的文件夹路径
 //newAnswerDirectory：新答案文件所在的文件夹路径
-void DegradeAnswerFixedIntervals(string answerDirectory, string newAnswerDirectory){
+void DegradeAnswerFixedIntervals(){
 	string completeInputFilesPath = rootFilePath + answerDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -226,7 +228,7 @@ void DegradeAnswerFixedIntervals(string answerDirectory, string newAnswerDirecto
 //使用这种方法，从每条原轨迹中只能得到一条低采样率的轨迹
 //inputDirectory：原轨迹文件所在的文件夹路径
 //newInputDirectory：新轨迹文件所在的文件夹路径
-void DegradeInputFloatIntervals(string inputDirectory, string newInputDirectory){
+void DegradeInputFloatIntervals(){
 	string completeInputFilesPath = rootFilePath + newInputDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -260,7 +262,7 @@ void DegradeInputFloatIntervals(string inputDirectory, string newInputDirectory)
 //和DegradeInputFloatIntervals相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
 //answerDirectory：原答案文件所在的文件夹路径
 //newAnswerDirectory：新答案文件所在的文件夹路径
-void DegradeAnswerFloatIntervals(string answerDirectory, string newAnswerDirectory){
+void DegradeAnswerFloatIntervals(){
 	string completeInputFilesPath = rootFilePath + answerDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -282,7 +284,7 @@ void DegradeAnswerFloatIntervals(string answerDirectory, string newAnswerDirecto
 				if (formerTimeStamp == -1 || time - formerTimeStamp > sampleRate){
 					fout << time << useless << edge << useless << confidence << endl;
 					formerTimeStamp = time;
-				}				
+				}
 			}
 			fin.close();
 		} while (_findnext(lf, &fileInfo) == 0);
@@ -322,7 +324,7 @@ void RawTrajToJson(string filePath){
 int main(int argc, char*argv[]){
 	//统计轨迹文件的平均采样率
 	//if (argc != 1 && argc != 2){
-	//	cout << "应该有一个参数：第一个为输入文件所在文件夹路径！" << endl;
+	//	cout << "应该有一个参数：第一个为轨迹文件所在文件夹路径！" << endl;
 	//	system("pause");
 	//	return 1;
 	//}
@@ -342,19 +344,31 @@ int main(int argc, char*argv[]){
 
 	//降低轨迹文件的采样率
 	//sampleRate = 90;
-	DegradeInputFloatIntervals(inputDirectory,"day7\\day7_splited_120_input");
-	DegradeAnswerFloatIntervals("day7\\day7_splited_answer", "day7\\day7_splited_120_answer");
-
-	//trajList = list<Traj*>();
-	//sampleRate = 120;
-	//DegradeInput("input_120");
-	//DegradeAnswer("answer_120");
-
-	//trajList = list<Traj*>();
-	//sampleRate = 150;
-	//DegradeInput("input_150");
-	//DegradeAnswer("answer_150");
-
+	cout << "降低轨迹文件的采样率" << endl;
+	if (argc != 1 && argc != 2 && argc != 6){
+		cout << "应该至多有5个参数：第一个为目标采样率；第二、三个为原轨迹文件和新轨迹文件所在文件夹路径；第四、五个为原匹配结果文件和新匹配结果文件所在文件夹路径" << endl;
+		system("pause");
+		return 1;
+	}
+	else{
+		if (argc == 2){
+			sampleRate = atoi(argv[1]);
+		}
+		if (argc == 6){
+			sampleRate = atoi(argv[1]);
+			inputDirectory = argv[2];
+			newInputDirectory = argv[3];
+			answerDirectory = argv[4];
+			newAnswerDirectory = argv[5];
+		}
+		cout << "目标采样率：" << sampleRate << endl;
+		cout << "原轨迹文件所在文件夹：" << inputDirectory << endl;
+		cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
+		cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
+		cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
+		DegradeInputFloatIntervals();
+		DegradeAnswerFloatIntervals();
+	}
 
 	//CalculateParametersForViterbiAlgorithm();
 
