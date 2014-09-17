@@ -8,7 +8,7 @@ using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string outputDirectory = "day7\\day7_splited_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
-string answerDirectory = "day7\\day7_splited_120s_input";//降低采样率后的轨迹文件所在文件夹路径。
+string answerDirectory = "day7\\day7_splited_120s_input";//降低采样率后的轨迹文件所在文件夹路径
 string resultFileName = "null";//检查结果输出文件名
 list<string> fileNameList = list<string>();//保存文件名集合
 list<list<int>> matchedResultList = list<list<int>>();//保存匹配结果集合

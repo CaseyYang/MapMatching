@@ -10,8 +10,10 @@ using namespace std;
 class PointGridIndex
 {
 public:
-	void createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth);
-	void createIndex(Area* area, int gridWidth);
+	//设置网格索引必要的参数
+	void setGridIndexParameters(Area* area, int gridWidth);//设置网格索引必要的参数
+	//把坐标点放入网格索引中
+	void createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth);//把坐标点放入网格索引中	
 	pair<int, int> getRowCol(GeoPoint* pt);
 	//void drawGridLine(Gdiplus::Color color, MapDrawer& md);
 	void getNearPts(GeoPoint* pt, double thresholdM, vector<GeoPoint*>& dest); //将距离pt不长于thresholdM米的所有点存入dest

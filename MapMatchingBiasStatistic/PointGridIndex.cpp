@@ -18,7 +18,7 @@ void PointGridIndex::createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth
 	}
 }
 
-void PointGridIndex::createIndex(Area* area, int gridWidth){
+void PointGridIndex::setGridIndexParameters(Area* area, int gridWidth){
 	this->area = area;
 	this->gridWidth = gridWidth;
 	if (gridWidth <= 0){ return; }

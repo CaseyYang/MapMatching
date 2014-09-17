@@ -55,44 +55,34 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 }
 
 //读入指定路径和文件名集合中所有轨迹匹配结果文件，保存在resultList中
-void readResultFiles(string folderDir, vector<string> &outputFileNames, list<MatchedTraj> &resultList){
-	string outputDirectory = "output";
-	for each (string outputFileName in outputFileNames)
-	{
-		ifstream fin(folderDir + outputDirectory + "\\" + outputFileName);
-		MatchedTraj traj = MatchedTraj();
-		int time, edgeId;
-		double confidence;
-		char useless;
-		while (fin >> time){
-			fin >> useless >> edgeId >> useless >> confidence;
-			traj.push_back(edgeId);
-		}
-		fin.close();
-		resultList.push_back(traj);
+void inputMatchedEdges(string fileName, MatchedTraj &result){
+	ifstream matchedEdgeInput(fileName);
+	MatchedTraj traj = MatchedTraj();
+	int time, edgeId;
+	double confidence;
+	char useless;
+	while (matchedEdgeInput >> time){
+		matchedEdgeInput >> useless >> edgeId >> useless >> confidence;
+		traj.push_back(edgeId);
 	}
+	matchedEdgeInput.close();
 	return;
 }
 
 //输出一条轨迹的地图匹配结果
 void outputMatchedEdges(string fileName, Traj* traj, list<Edge*> &resultList){
-	ofstream MatchedEdgeOutput(fileName);
+	ofstream matchedEdgeOutput(fileName);
 	Traj::iterator trajPointIter = traj->begin();
-	//cout << "进入for之前……" << endl;
 	for (list<Edge*>::iterator edgeIter = resultList.begin(); edgeIter != resultList.end(); edgeIter++, trajPointIter++){
 		if (*edgeIter != NULL){
-			//cout << "if段……" << endl;
-			//cout << (*trajPointIter)->time << endl;
-			//cout << *edgeIter << endl;			
 			int currentIndex = (*edgeIter)->id;
-			MatchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
+			matchedEdgeOutput << (*trajPointIter)->time << "," << currentIndex << ",1.0" << endl;
 		}
 		else{
-			//cout << "else段……" << endl;
-			MatchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
+			matchedEdgeOutput << (*trajPointIter)->time << "," << -1 << ",1.0" << endl;
 		}
 	}
-	MatchedEdgeOutput.close();
+	matchedEdgeOutput.close();
 	return;
 }
 
