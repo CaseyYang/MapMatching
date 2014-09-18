@@ -10,9 +10,9 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_unsplit";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "day1\\15days_3_output";//输出的匹配结果文件名均以“output_”开头
-string answerDirectory = "day7\\day7_splited_120s_input";//高采样率地图匹配结果文件所在文件夹路径
+string inputDirectory = "day1\\day1_unsplited_input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "day1\\day1_unsplited_output";//输出的匹配结果文件名均以“output_”开头
+string answerDirectory = "day1\\day1_unsplited_answer";//高采样率地图匹配结果文件所在文件夹路径
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 1000);

@@ -6,7 +6,7 @@ using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";//合并起来的轨迹文件路径
-string sepereatedFilesDirectory = "15days\\15days_separated_input";//轨迹文件集合所在文件夹路径
+string sepereatedFilesDirectory = "15days\\15days_separated_high_quality_input";//轨迹文件集合所在文件夹路径
 list<Traj*> trajList = list<Traj*>();//轨迹集合
 
 string ToString(int i){
@@ -77,13 +77,15 @@ void OutputOneTrajectory(string fileName, Traj* traj){
 }
 
 //把合并轨迹文件拆为每条轨迹一个文件
-void ConvertMergedFileToSeparateFiles(string filesDirectory){
+//filesDirectory：轨迹文件集所在文件夹路径
+//minimumLength：要保留的轨迹的最少采样点数
+void ConvertMergedFileToSeparateFiles(string filesDirectory,int minimumLength){
 	TrajReader trajReader(mergedTrajFilePath);
 	trajReader.readTrajs(trajList);
 	int trajIndex = 0;
 	for each (auto var in trajList)
 	{
-		if (var->size() > 3){
+		if (var->size() > minimumLength){
 			OutputOneTrajectory(filesDirectory + "\\" + "input_" + ToString(trajIndex) + ".txt", var);
 			trajIndex++;
 		}
@@ -91,12 +93,14 @@ void ConvertMergedFileToSeparateFiles(string filesDirectory){
 }
 
 //把每条轨迹合并到一个文件
-void ConvertSeparateFilesToMergedFile(string filesDirectory){
+//filesDirectory：轨迹文件集所在文件夹路径
+//minimumLength：要保留的轨迹的最少采样点数
+void ConvertSeparateFilesToMergedFile(string filesDirectory,int minimumLength){
 	scanTrajFolder(rootFilePath, sepereatedFilesDirectory, trajList);
 	ofstream fout(mergedTrajFilePath);
 	for each (auto traj in trajList)
 	{
-		if (traj->size() > 3){
+		if (traj->size() > minimumLength){
 			for each (auto var in *traj)
 			{
 				fout << var->time << " " << var->lat << " " << var->lon << " " << -1 << endl;
@@ -108,5 +112,6 @@ void ConvertSeparateFilesToMergedFile(string filesDirectory){
 }
 
 int main(){
-	ConvertMergedFileToSeparateFiles(rootFilePath + sepereatedFilesDirectory);
+	ConvertMergedFileToSeparateFiles(rootFilePath + sepereatedFilesDirectory,15);
+	system("pause");
 }

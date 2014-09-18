@@ -5,10 +5,10 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day7\\day7_splited_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
-string newInputDirectory = "day7\\day7_splited_120s_input";//降低采样率后的轨迹文件所在文件夹路径。
-string answerDirectory = "day7\\day7_splited_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
-string newAnswerDirectory = "day7\\day7_splited_120s_answer";//降低采样率后的匹配结果文件所在文件夹路径。
+string inputDirectory = "15days\\15days_separated_high_quality_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
+string newInputDirectory = "15days\\15days_separated_high_quality_120s_input";//降低采样率后的轨迹文件所在文件夹路径。
+string answerDirectory = "15days\\15days_separated_high_quality_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
+string newAnswerDirectory = "15days\\15days_separated_high_quality_120s_answer";//降低采样率后的匹配结果文件所在文件夹路径。
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 int sampleRate = 120;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
@@ -126,6 +126,16 @@ void trajSplit(double maxSpeed){
 		fout->close();
 	}
 	delete fout;
+}
+
+//计算个轨迹平均采样点数
+void CalculateAverageTrajPointCount(){
+	int count = 0;
+	for each(Traj* traj in trajList){
+		count += static_cast<int>(traj->size());
+	}
+	count /= static_cast<int>(trajList.size());
+	cout << "平均采样点数：" << count << endl;
 }
 
 //计算轨迹平均采样率
@@ -324,6 +334,14 @@ void RawTrajToJson(string filePath){
 }
 
 int main(int argc, char*argv[]){
+	//统计轨迹文件集的平均采样点数
+	//cout << "统计轨迹文件集的平均采样点数" << endl;
+	//vector<string> outputFileNames;
+	//scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	//CalculateAverageTrajPointCount();
+	//system("pause");
+	//return 0;
+
 	//统计轨迹文件的平均采样率
 	//cout << "统计轨迹文件的平均采样率" << endl;
 	//if (argc != 1 && argc != 2){
@@ -334,7 +352,6 @@ int main(int argc, char*argv[]){
 	//else{
 	//	if (argc == 2){
 	//		inputDirectory = argv[1];
-	//		//outputDirectory = argv[2];
 	//	}
 	//	cout << "输入文件所在文件夹路径：" << inputDirectory << endl;
 	//	trajList = list<Traj*>();
