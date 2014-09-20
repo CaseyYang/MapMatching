@@ -57,13 +57,12 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 //读入指定路径和文件名集合中所有轨迹匹配结果文件，保存在resultList中
 void inputMatchedEdges(string fileName, MatchedTraj &result){
 	ifstream matchedEdgeInput(fileName);
-	MatchedTraj traj = MatchedTraj();
 	int time, edgeId;
 	double confidence;
 	char useless;
 	while (matchedEdgeInput >> time){
 		matchedEdgeInput >> useless >> edgeId >> useless >> confidence;
-		traj.push_back(edgeId);
+		result.push_back(edgeId);
 	}
 	matchedEdgeInput.close();
 	return;

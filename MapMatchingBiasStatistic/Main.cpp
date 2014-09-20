@@ -11,7 +11,7 @@ using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string inputDirectory = "day1\\day1_unsplited_input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "day1\\day1_unsplited_output";//输出的匹配结果文件名均以“output_”开头
+string outputDirectory = "day1\\day1_unsplited_answer";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
@@ -78,14 +78,24 @@ void biasStatisticFromResults(){
 		list<Edge*> edges = list<Edge*>();
 		for each (auto var in result)
 		{
-			edges.push_back(routeNetwork.edges[var]);
+			if (var != -1){
+				edges.push_back(routeNetwork.edges[var]);
+			}
+			else{
+				edges.push_back(NULL);
+			}
 		}
 		biasStatistic(traj, edges);
+		trajIndex++;
 	}
 	return;
 }
 
-void main(){
+void main(int argc,char* argv[]){
+	if (argc == 3){
+		inputDirectory = argv[1];
+		outputDirectory = argv[2];
+	}
 	/*单个文件单条轨迹读取方法*/
 	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
 	/*单个文件多条轨迹读取方法*/

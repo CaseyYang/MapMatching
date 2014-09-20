@@ -1,12 +1,5 @@
 #include "PointGridIndex.h"
 
-//bool smallerThan(GeoPoint* pt1, GeoPoint* pt2)
-//{
-//	return pt1->dist < pt2->dist;
-//}
-//////////////////////////////////////////////////////////////////////////
-///public
-//////////////////////////////////////////////////////////////////////////
 void PointGridIndex::createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth)
 {
 	this->area = area;
@@ -168,8 +161,9 @@ void PointGridIndex::initialization()
 	gridHeight = int((area->maxLat - area->minLat) / (area->maxLon - area->minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (area->maxLon - area->minLon) / double(gridWidth);
 	grid = new list<GeoPoint*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++)
+	for (int i = 0; i < gridHeight; i++){
 		grid[i] = new list<GeoPoint*>*[gridWidth];
+	}
 	for (int i = 0; i < gridHeight; i++)
 	{
 		for (int j = 0; j < gridWidth; j++)
