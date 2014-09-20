@@ -10,10 +10,12 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_unsplited_input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "day1\\day1_unsplited_answer";//输出的匹配结果文件名均以“output_”开头
+string inputDirectory = "15days\\15days_separated_high_quality_120s_input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "15days\\15days_separated_high_quality_120s_answer";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
+int pointIndexGranularity = 10000;
+
 Map routeNetwork = Map(rootFilePath, 1000);
 PointGridIndex pointGridIndex;//针对所有轨迹点建立的网格索引
 vector<string> outputFileNames;//匹配结果文件名集合
@@ -91,10 +93,11 @@ void biasStatisticFromResults(){
 	return;
 }
 
-void main(int argc,char* argv[]){
-	if (argc == 3){
+void main(int argc, char* argv[]){
+	if (argc == 4){
 		inputDirectory = argv[1];
 		outputDirectory = argv[2];
+		pointIndexGranularity = atoi(argv[3]);
 	}
 	/*单个文件单条轨迹读取方法*/
 	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
@@ -110,8 +113,8 @@ void main(int argc,char* argv[]){
 	因此，在必要情况下可以去掉函数makeTrajPointGridIndex和网格索引pointGridIndex。
 	在现有代码中所有调用pointGridIndex.getRowCol方法的地方计算出某个点所在的网格（row，col）即可。
 	*/
-	pointGridIndex.setGridIndexParameters(routeNetwork.getMapRange(), 6000);
-	makeTrajPointGridIndex(6000);
+	pointGridIndex.setGridIndexParameters(routeNetwork.getMapRange(), pointIndexGranularity);
+	makeTrajPointGridIndex(pointIndexGranularity);
 	biasStatisticFromResults();
 	//int trajIndex = 0;
 	//cout << "开始地图匹配！" << endl;
@@ -124,14 +127,14 @@ void main(int argc,char* argv[]){
 	//	/*利用匹配路段统计信息进行地图匹配*/
 	//	//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
 	//	/*利用匹配路段统计信息作为后验概率进行地图匹配*/
-	//	//list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+	//	list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
 	//	//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-	//	//outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+	//	outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
 	//	cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
 	//	//}
 	//	trajIndex++;
 	//}
 	//cout << "地图匹配完成！" << endl;
 	outputGridCellBias(gridCellBiasFileName, biasSet);
-	system("pause");
+	//system("pause");
 }

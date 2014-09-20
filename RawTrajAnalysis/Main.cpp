@@ -251,6 +251,7 @@ void DegradeInputFloatIntervals(){
 			string inputFileName = fileInfo.name;
 			ifstream fin(rootFilePath + inputDirectory + "\\" + inputFileName);
 			ofstream fout(rootFilePath + newInputDirectory + "\\" + inputFileName);
+			fout.precision(13);
 			int formerTimeStamp = -1;//记录前一个轨迹点的采样时间。如果与当前轨迹点采样时间间隔超过SampleRate，则认为当前轨迹点符合采样率要求，输出到新的轨迹文件中
 			int time;
 			double lat, lon;
