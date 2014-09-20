@@ -12,7 +12,6 @@ using namespace std;
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
 string inputDirectory = "day1\\day1_unsplited_input";//输入的轨迹文件名要求：以“input_”开头
 string outputDirectory = "day1\\day1_unsplited_output";//输出的匹配结果文件名均以“output_”开头
-string answerDirectory = "day1\\day1_unsplited_answer";//高采样率地图匹配结果文件所在文件夹路径
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 Map routeNetwork = Map(rootFilePath, 1000);
@@ -69,7 +68,8 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 	return;
 }
 
-void biasStatisticFromAnswers(string answerFileN){
+//从每条轨迹对应的匹配结果文件中读取匹配路段，并依此进行匹配信息统计
+void biasStatisticFromResults(){
 	int trajIndex = 0;
 	for each (Traj* traj in trajList)
 	{
@@ -102,7 +102,8 @@ void main(){
 	*/
 	pointGridIndex.setGridIndexParameters(routeNetwork.getMapRange(), 6000);
 	makeTrajPointGridIndex(6000);
-	int trajIndex = 0;
+	biasStatisticFromResults();
+	//int trajIndex = 0;
 	//cout << "开始地图匹配！" << endl;
 	//for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 	//	//if (trajIndex == 1365){
