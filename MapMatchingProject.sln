@@ -176,7 +176,7 @@ Global
 		{A127D1DC-408E-45EE-934B-BDFAAC47D66B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{A127D1DC-408E-45EE-934B-BDFAAC47D66B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{A127D1DC-408E-45EE-934B-BDFAAC47D66B}.Release|Win32.ActiveCfg = Release|Any CPU
-		{A127D1DC-408E-45EE-934B-BDFAAC47D66B}.Release|x64.ActiveCfg = Release|Any CPU
+		{A127D1DC-408E-45EE-934B-BDFAAC47D66B}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
