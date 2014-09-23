@@ -1,14 +1,14 @@
 #include <iostream>
 #include<sstream>
 #include <math.h>
-#include "ReadInTrajs.h"
+#include "FileIO.h"
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "15days\\15days_separated_high_quality_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
-string newInputDirectory = "15days\\15days_separated_high_quality_120s_input";//降低采样率后的轨迹文件所在文件夹路径。
+string inputDirectory = "day1\\day1_unsplited_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
+string newInputDirectory = "day1\\day1_splited_input";//切割/降低采样率后的轨迹文件所在文件夹路径
 string answerDirectory = "15days\\15days_separated_high_quality_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
-string newAnswerDirectory = "15days\\15days_separated_high_quality_120s_answer";//降低采样率后的匹配结果文件所在文件夹路径。
+string newAnswerDirectory = "15days\\15days_separated_high_quality_120s_answer";//降低采样率后的匹配结果文件所在文件夹路径
 Map routeNetwork(rootFilePath, 500);
 list<Traj*> trajList = list<Traj*>();
 int sampleRate = 120;//要降到的采样间隔，DegradeInput和DegradeAnswer函数所用
@@ -100,32 +100,31 @@ string ToString(int i){
 	return ss.str();
 }
 
-//如果一条轨迹的相邻两轨迹点的欧氏距离除以时间大于maxSpeed（单位是米/秒），则在此处分割这条轨迹；得到的新的轨迹文件保存在和程序相同目录下
-void trajSplit(double maxSpeed){
+//如果一条轨迹的相邻两轨迹点的欧氏距离除以时间大于maxSpeed（单位是米/秒），则在此处分割这条轨迹；得到的新的轨迹文件保存inputDirectory目录下
+//maxSpeed：车辆在路网上行驶的最高时速（单位是米/秒）
+//minLength：要输出的切割后轨迹的最少采样点数
+void trajSplit(double maxSpeed, int minLength){
 	int trajIndex = 0;
-	ofstream *fout;
 	for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		int goodTrajIndex = 0;
-		fout = new ofstream("input_" + ToString(trajIndex) + "_" + ToString(goodTrajIndex) + ".txt");
-		fout->precision(11);
 		GeoPoint* formerTrajPoint = NULL;
+		Traj goodSubTraj = Traj();
 		for each (GeoPoint* trajPoint in *(*trajIter))
 		{
+			//如果当前采样点和最近一个非空采样点间的欧式距离/采样间隔大于最大时速，则符合切割条件，在当前采样点前进行切割；当前采样点作为新轨迹的第一个采样点
+			//条件formerTrajPoint != NULL是为了防止当前采样点是原轨迹第一个采样点的情况
 			if (formerTrajPoint != NULL && GeoPoint::distM(formerTrajPoint, trajPoint) / (trajPoint->time - formerTrajPoint->time) > maxSpeed){
-				fout->close();
-				delete fout;
+				if (goodSubTraj.size() >= minLength){
+					outputTrajsToFiles(goodSubTraj, rootFilePath + newInputDirectory + "\\input_" + ToString(trajIndex) + "_" + ToString(goodTrajIndex) + ".txt");
+				}
+				goodSubTraj.clear();
 				goodTrajIndex++;
-				fout = new ofstream("input_" + ToString(trajIndex) + "_" + ToString(goodTrajIndex) + ".txt");
-				cout << "input_" + ToString(trajIndex) + "_" + ToString(goodTrajIndex) + ".txt" << endl;
-				fout->precision(11);
 			}
-			*fout << trajPoint->time << "," << trajPoint->lat << "," << trajPoint->lon << endl;
-			formerTrajPoint = trajPoint;
+			goodSubTraj.push_back(trajPoint);
+			if (trajPoint != NULL){ formerTrajPoint = trajPoint; }//formerTrajPoint保存最后一个非空采样点，以便和采样点进行运算判断是否需要切割
 		}
 		trajIndex++;
-		fout->close();
 	}
-	delete fout;
 }
 
 //计算个轨迹平均采样点数
@@ -364,28 +363,48 @@ int main(int argc, char*argv[]){
 	//}
 
 	//降低轨迹文件的采样率
-	cout << "降低轨迹文件的采样率" << endl;
-	if (argc != 1 && argc != 2 && argc != 6){
-		cout << "应该至多有5个参数：第一个为目标采样率；第二、三个为原轨迹文件和新轨迹文件所在文件夹路径；第四、五个为原匹配结果文件和新匹配结果文件所在文件夹路径" << endl;
+	//cout << "降低轨迹文件的采样率" << endl;
+	//if (argc != 1 && argc != 2 && argc != 6){
+	//	cout << "应该至多有5个参数：第一个为目标采样率；第二、三个为原轨迹文件和新轨迹文件所在文件夹路径；第四、五个为原匹配结果文件和新匹配结果文件所在文件夹路径" << endl;
+	//}
+	//else{
+	//	if (argc == 2){
+	//		sampleRate = atoi(argv[1]);
+	//	}
+	//	if (argc == 6){
+	//		sampleRate = atoi(argv[1]);
+	//		inputDirectory = argv[2];
+	//		newInputDirectory = argv[3];
+	//		answerDirectory = argv[4];
+	//		newAnswerDirectory = argv[5];
+	//	}
+	//	cout << "目标采样率：" << sampleRate << endl;
+	//	cout << "原轨迹文件所在文件夹：" << inputDirectory << endl;
+	//	cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
+	//	cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
+	//	cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
+	//	DegradeInputFloatIntervals();
+	//	DegradeAnswerFloatIntervals();
+	//}
+	//system("pause");
+	//return 0;
+
+	//使用指定的最大时速和最小采样点数来对原始轨迹进行切割
+	cout << "原始轨迹切割程序" << endl;
+	if (argc != 1 && argc != 3){
+		cout << "应该至多有2个参数：第一个为原始轨迹所在文件夹路径；第二个为切割后轨迹所在文件夹路径" << endl;
 	}
 	else{
-		if (argc == 2){
-			sampleRate = atoi(argv[1]);
+		if (argc == 3){
+			inputDirectory = argv[1];
+			newInputDirectory = argv[2];
 		}
-		if (argc == 6){
-			sampleRate = atoi(argv[1]);
-			inputDirectory = argv[2];
-			newInputDirectory = argv[3];
-			answerDirectory = argv[4];
-			newAnswerDirectory = argv[5];
-		}
-		cout << "目标采样率：" << sampleRate << endl;
-		cout << "原轨迹文件所在文件夹：" << inputDirectory << endl;
-		cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
-		cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
-		cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
-		DegradeInputFloatIntervals();
-		DegradeAnswerFloatIntervals();
+		cout << "原始轨迹文件所在文件夹：" << inputDirectory << endl;
+		cout << "切割后轨迹文件所在文件夹：" << newInputDirectory << endl;
+		trajList = list<Traj*>();
+		vector<string> outputFileNames;
+		scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+		trajSplit(34, 15);
 	}
 	system("pause");
 	return 0;

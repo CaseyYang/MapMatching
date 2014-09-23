@@ -18,13 +18,13 @@
     <ClCompile Include="Map.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="ReadInTrajs.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="GeoPoint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="FileIO.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,10 +32,10 @@
     <ClInclude Include="Map.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ReadInTrajs.h">
+    <ClInclude Include="GeoPoint.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GeoPoint.h">
+    <ClInclude Include="FileIO.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

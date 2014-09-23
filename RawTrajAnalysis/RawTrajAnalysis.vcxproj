@@ -141,13 +141,13 @@
   <ItemGroup>
     <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="ReadInTrajs.cpp" />
+    <ClCompile Include="FileIO.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GeoPoint.h" />
     <ClInclude Include="Map.h" />
-    <ClInclude Include="ReadInTrajs.h" />
+    <ClInclude Include="FileIO.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

@@ -1,4 +1,4 @@
-#include "ReadInTrajs.h"
+#include "FileIO.h"
 
 
 //读入给定路径的轨迹文件中的一条轨迹
@@ -71,4 +71,15 @@ void readResultFiles(string folderDir, vector<string> &outputFileNames, list<Mat
 		fin.close();
 		resultList.push_back(traj);
 	}
+}
+
+//输出轨迹集合至指定路径的文件中
+void outputTrajsToFiles(Traj &traj,string filePath){
+	ofstream fout(filePath);
+	fout.precision(13);
+	for each (auto trajPoint in traj)
+	{
+		fout << trajPoint->time << "," << trajPoint->lat << "," << trajPoint->lon << endl;
+	}
+	fout.close();
 }
