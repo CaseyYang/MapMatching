@@ -5,8 +5,8 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_unsplited_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
-string newInputDirectory = "day1\\day1_splited_input";//切割/降低采样率后的轨迹文件所在文件夹路径
+string inputDirectory = "day1_splited_120s_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
+string newInputDirectory = "day1_splited_120s_input";//切割/降低采样率后的轨迹文件所在文件夹路径
 string answerDirectory = "15days\\15days_separated_high_quality_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
 string newAnswerDirectory = "15days\\15days_separated_high_quality_120s_answer";//降低采样率后的匹配结果文件所在文件夹路径
 Map routeNetwork(rootFilePath, 500);
@@ -142,9 +142,13 @@ void CalculateAverageSampleRate(){
 	double totalAverageSampleRate = 0;
 	for each (Traj* traj in trajList)
 	{
-		double averageSampleRate = (traj->back()->time - traj->front()->time) / (static_cast<double>(traj->size()) - 1);
+		double averageSampleRate = (traj->back()->time - traj->front()->time) / (static_cast<int>(traj->size()) - 1);
 		totalAverageSampleRate += averageSampleRate;
+		//cout << totalAverageSampleRate << endl;
+		//system("pause");
 	}
+	cout << trajList.size() << endl;
+	system("pause");
 	totalAverageSampleRate /= trajList.size();
 	cout << "平均采样率：" << totalAverageSampleRate << endl;
 }
@@ -237,7 +241,7 @@ void DegradeAnswerFixedIntervals(){
 //使用这种方法，从每条原轨迹中只能得到一条低采样率的轨迹
 //inputDirectory：原轨迹文件所在的文件夹路径
 //newInputDirectory：新轨迹文件所在的文件夹路径
-void DegradeInputFloatIntervals(){
+void DegradeInputFloatIntervals(int miniLength){
 	string completeInputFilesPath = rootFilePath + inputDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -249,21 +253,22 @@ void DegradeInputFloatIntervals(){
 		do {
 			string inputFileName = fileInfo.name;
 			ifstream fin(rootFilePath + inputDirectory + "\\" + inputFileName);
-			ofstream fout(rootFilePath + newInputDirectory + "\\" + inputFileName);
-			fout.precision(13);
 			int formerTimeStamp = -1;//记录前一个轨迹点的采样时间。如果与当前轨迹点采样时间间隔超过SampleRate，则认为当前轨迹点符合采样率要求，输出到新的轨迹文件中
 			int time;
 			double lat, lon;
 			char useless;
+			Traj tmpNewTraj = Traj();
 			while (fin >> time){
 				fin >> useless >> lat >> useless >> lon;
 				if (formerTimeStamp == -1 || time - formerTimeStamp > sampleRate){
-					fout << time << useless << lat << useless << lon << endl;
+					tmpNewTraj.push_back(new GeoPoint(lat, lon, time));
 					formerTimeStamp = time;
 				}
 			}
-			fout.close();
 			fin.close();
+			if (tmpNewTraj.size() >= miniLength){
+				outputTrajsToFiles(tmpNewTraj, rootFilePath + newInputDirectory + "\\" + inputFileName);
+			}
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
 		cout << "新轨迹文件输出完毕！" << endl;
@@ -273,7 +278,7 @@ void DegradeInputFloatIntervals(){
 //和DegradeInputFloatIntervals相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
 //answerDirectory：原答案文件所在的文件夹路径
 //newAnswerDirectory：新答案文件所在的文件夹路径
-void DegradeAnswerFloatIntervals(){
+void DegradeAnswerFloatIntervals(int miniLength){
 	string completeInputFilesPath = rootFilePath + answerDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
@@ -290,14 +295,18 @@ void DegradeAnswerFloatIntervals(){
 			int time, edge;
 			double confidence;
 			char useless;
+			Traj tmpNewTrajWithAnswer = Traj();
 			while (fin >> time){
 				fin >> useless >> edge >> useless >> confidence;
 				if (formerTimeStamp == -1 || time - formerTimeStamp > sampleRate){
-					fout << time << useless << edge << useless << confidence << endl;
+					tmpNewTrajWithAnswer.push_back(new GeoPoint(time, edge, confidence));
 					formerTimeStamp = time;
 				}
 			}
 			fin.close();
+			if (tmpNewTrajWithAnswer.size() >= miniLength){
+				outputTrajsToFiles(tmpNewTrajWithAnswer, rootFilePath + newAnswerDirectory + "\\" + inputFileName);
+			}
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
 		cout << "新匹配结果文件输出完毕！" << endl;
@@ -357,57 +366,59 @@ int main(int argc, char*argv[]){
 	//	trajList = list<Traj*>();
 	//	vector<string> outputFileNames;
 	//	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	//	//CalculateAverageTrajPointCount();
+	//	cout << "开始计算" << endl;
 	//	CalculateAverageSampleRate();
 	//	system("pause");
 	//	return 0;
 	//}
 
 	//降低轨迹文件的采样率
-	//cout << "降低轨迹文件的采样率" << endl;
-	//if (argc != 1 && argc != 2 && argc != 6){
-	//	cout << "应该至多有5个参数：第一个为目标采样率；第二、三个为原轨迹文件和新轨迹文件所在文件夹路径；第四、五个为原匹配结果文件和新匹配结果文件所在文件夹路径" << endl;
-	//}
-	//else{
-	//	if (argc == 2){
-	//		sampleRate = atoi(argv[1]);
-	//	}
-	//	if (argc == 6){
-	//		sampleRate = atoi(argv[1]);
-	//		inputDirectory = argv[2];
-	//		newInputDirectory = argv[3];
-	//		answerDirectory = argv[4];
-	//		newAnswerDirectory = argv[5];
-	//	}
-	//	cout << "目标采样率：" << sampleRate << endl;
-	//	cout << "原轨迹文件所在文件夹：" << inputDirectory << endl;
-	//	cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
-	//	cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
-	//	cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
-	//	DegradeInputFloatIntervals();
-	//	DegradeAnswerFloatIntervals();
-	//}
-	//system("pause");
-	//return 0;
-
-	//使用指定的最大时速和最小采样点数来对原始轨迹进行切割
-	cout << "原始轨迹切割程序" << endl;
-	if (argc != 1 && argc != 3){
-		cout << "应该至多有2个参数：第一个为原始轨迹所在文件夹路径；第二个为切割后轨迹所在文件夹路径" << endl;
+	cout << "降低轨迹文件的采样率" << endl;
+	if (argc != 1 && argc != 2 && argc != 6){
+		cout << "应该至多有5个参数：第一个为目标采样率；第二、三个为原轨迹文件和新轨迹文件所在文件夹路径；第四、五个为原匹配结果文件和新匹配结果文件所在文件夹路径" << endl;
 	}
 	else{
-		if (argc == 3){
-			inputDirectory = argv[1];
-			newInputDirectory = argv[2];
+		if (argc == 2){
+			sampleRate = atoi(argv[1]);
 		}
-		cout << "原始轨迹文件所在文件夹：" << inputDirectory << endl;
-		cout << "切割后轨迹文件所在文件夹：" << newInputDirectory << endl;
-		trajList = list<Traj*>();
-		vector<string> outputFileNames;
-		scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
-		trajSplit(34, 15);
+		if (argc == 6){
+			sampleRate = atoi(argv[1]);
+			inputDirectory = argv[2];
+			newInputDirectory = argv[3];
+			answerDirectory = argv[4];
+			newAnswerDirectory = argv[5];
+		}
+		cout << "目标采样率：" << sampleRate << endl;
+		cout << "原轨迹文件所在文件夹：" << inputDirectory << endl;
+		cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
+		cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
+		cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
+		DegradeInputFloatIntervals(5);
+		DegradeAnswerFloatIntervals(5);
 	}
 	system("pause");
 	return 0;
+
+	//使用指定的最大时速和最小采样点数来对原始轨迹进行切割
+	//cout << "原始轨迹切割程序" << endl;
+	//if (argc != 1 && argc != 3){
+	//	cout << "应该至多有2个参数：第一个为原始轨迹所在文件夹路径；第二个为切割后轨迹所在文件夹路径" << endl;
+	//}
+	//else{
+	//	if (argc == 3){
+	//		inputDirectory = argv[1];
+	//		newInputDirectory = argv[2];
+	//	}
+	//	cout << "原始轨迹文件所在文件夹：" << inputDirectory << endl;
+	//	cout << "切割后轨迹文件所在文件夹：" << newInputDirectory << endl;
+	//	trajList = list<Traj*>();
+	//	vector<string> outputFileNames;
+	//	scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+	//	trajSplit(34, 15);
+	//}
+	//system("pause");
+	//return 0;
 
 	//CalculateParametersForViterbiAlgorithm();
 

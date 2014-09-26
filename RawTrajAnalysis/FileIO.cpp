@@ -83,3 +83,14 @@ void outputTrajsToFiles(Traj &traj,string filePath){
 	}
 	fout.close();
 }
+
+//输出轨迹集合至指定路径的文件中
+void outputAnswersToFiles(Traj &traj, string filePath){
+	ofstream fout(filePath);
+	fout.precision(13);
+	for each (auto trajPoint in traj)
+	{
+		fout << trajPoint->time << "," << trajPoint->matchedEdge << "," << trajPoint->confidence << endl;
+	}
+	fout.close();
+}
