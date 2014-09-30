@@ -13,3 +13,5 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 extern void readResultFiles(string folderDir, vector<string> &outputFileNames, list<MatchedTraj> &resultList);
 //输出轨迹集合至指定路径的文件中
 void outputTrajsToFiles(Traj &traj, string filePath);
+//输出轨迹匹配答案集合至指定路径的文件中
+void outputAnswersToFiles(Traj &traj, string filePath);

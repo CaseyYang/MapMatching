@@ -290,7 +290,6 @@ void DegradeAnswerFloatIntervals(int miniLength){
 		do {
 			string inputFileName = fileInfo.name;
 			ifstream fin(rootFilePath + answerDirectory + "\\" + inputFileName);
-			ofstream fout(rootFilePath + newAnswerDirectory + "\\" + inputFileName);
 			int formerTimeStamp = -1;
 			int time, edge;
 			double confidence;
@@ -305,7 +304,7 @@ void DegradeAnswerFloatIntervals(int miniLength){
 			}
 			fin.close();
 			if (tmpNewTrajWithAnswer.size() >= miniLength){
-				outputTrajsToFiles(tmpNewTrajWithAnswer, rootFilePath + newAnswerDirectory + "\\" + inputFileName);
+				outputAnswersToFiles(tmpNewTrajWithAnswer, rootFilePath + newAnswerDirectory + "\\" + inputFileName);
 			}
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
@@ -394,7 +393,7 @@ int main(int argc, char*argv[]){
 		cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
 		cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
 		cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
-		DegradeInputFloatIntervals(5);
+		//DegradeInputFloatIntervals(5);
 		DegradeAnswerFloatIntervals(5);
 	}
 	system("pause");
