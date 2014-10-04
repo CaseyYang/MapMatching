@@ -15,7 +15,36 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeoPoint.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMatching.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="FileIO.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MapMatchingUsingBiasStatistic.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TrajReader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PointGridIndex.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Area.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="Map.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MapMatching.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="GeoPoint.cpp">
@@ -27,17 +56,12 @@
     <ClCompile Include="FileIO.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Map.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="GeoPoint.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="FileIO.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+    <ClCompile Include="MapMatchingUsingBiasStatistic.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PointGridIndex.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

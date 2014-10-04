@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{966C7ED5-8E3A-482B-9777-E78A70BFB32F}</ProjectGuid>
+    <ProjectGuid>{B2B9FEB0-7688-4201-BA02-262117F486DD}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>CheckResult</RootNamespace>
+    <RootNamespace>MapMatchingBiasStatistic</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,7 +139,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Area.h" />
+    <ClInclude Include="GeoPoint.h" />
+    <ClInclude Include="Map.h" />
+    <ClInclude Include="MapMatching.h" />
+    <ClInclude Include="FileIO.h" />
+    <ClInclude Include="MapMatchingUsingBiasStatistic.h" />
+    <ClInclude Include="PointGridIndex.h" />
+    <ClInclude Include="TrajReader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MapMatching.cpp" />
+    <ClCompile Include="FileIO.cpp" />
+    <ClCompile Include="MapMatchingUsingBiasStatistic.cpp" />
+    <ClCompile Include="PointGridIndex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />

@@ -17,12 +17,6 @@ GeoPoint::GeoPoint(double lat, double lon)
 	this->time = INVALID_TIME;
 }
 
-GeoPoint::GeoPoint(int time, int matchedEdge, double confidence){
-	this->time = time;
-	this->matchedEdge = matchedEdge;
-	this->confidence = confidence;
-}
-
 double GeoPoint::distM(double lat1, double lon1, double lat2, double lon2)
 {
 	double deltaLat = lat1 - lat2;

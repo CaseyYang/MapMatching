@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{966C7ED5-8E3A-482B-9777-E78A70BFB32F}</ProjectGuid>
+    <ProjectGuid>{CCED5E09-7509-457D-AEA7-F30D68AB2BF4}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>CheckResult</RootNamespace>
+    <RootNamespace>TrajectoryDataConverter</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,10 +139,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <ClInclude Include="Area.h" />
+    <ClInclude Include="GeoPoint.h" />
+    <ClInclude Include="TrajReader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

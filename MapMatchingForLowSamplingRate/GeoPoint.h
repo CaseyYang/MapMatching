@@ -10,12 +10,9 @@ public:
 	double lat;
 	double lon;
 	int time;
-	int matchedEdge;
-	int confidence;
 
 	GeoPoint(double lat, double lon, int time);
 	GeoPoint(double lat, double lon);
-	GeoPoint(int time, int matchedEdge, double confidence);
 
 	static double geoScale;
 	static double distM(double lat1, double lon1, double lat2, double lon2);

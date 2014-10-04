@@ -642,7 +642,7 @@ double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, doubl
 			double x2 = (*figIter)->lat;
 			double y2 = (*figIter)->lon;
 			double dist = GeoPoint::distM(x, y, lat, lon);//circleDistance(x, y, nodeX, nodeY);
-			if (dist<result){
+			if (dist < result){
 				result = dist;
 				tmpSideLen = tmp;
 			}
@@ -652,7 +652,7 @@ double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, doubl
 			double vecY2 = lon - y;
 			double vecX3 = lat - x2;
 			double vecY3 = lon - y2;
-			if (vecX1*vecX2 + vecY1*vecY2>0 && -vecX1*vecX3 - vecY1*vecY3 > 0 && (vecX1 != 0 || vecY1 != 0)){
+			if (vecX1*vecX2 + vecY1*vecY2 > 0 && -vecX1*vecX3 - vecY1*vecY3 > 0 && (vecX1 != 0 || vecY1 != 0)){
 				double rate = ((lat - x2)*vecX1 + (lon - y2)*vecY1) / (-vecX1*vecX1 - vecY1*vecY1);
 				double nearX = rate*x + (1 - rate)*x2, nearY = rate*y + (1 - rate)*y2;
 				double dist = GeoPoint::distM(nearX, nearY, lat, lon);
@@ -668,6 +668,12 @@ double Map::distMFromTransplantFromSRC(double lat, double lon, Edge* edge, doubl
 	}
 	prjDist = tmpSideLen;
 	return result;
+}
+
+//返回(lat,lon)点所在的网格索引号
+pair<int, int> Map::findGridCellIndex(double lat, double lon){
+
+	return make_pair(getRowId(lat), getColId(lon));
 }
 
 //判断startNodeId与endNodeId之间有无边,没有边返回-1，有边返回edgeId
@@ -848,7 +854,7 @@ void Map::delEdge(int edgeId)
 	//这个不能用
 }
 
-void Map::getMinMaxLatLon(string nodeFilePath)
+void Map::setMapRange(string nodeFilePath)
 {
 	ifstream nodeIfs(nodeFilePath);
 	if (!nodeIfs)
@@ -875,6 +881,11 @@ void Map::getMinMaxLatLon(string nodeFilePath)
 	}
 	printf("minLat:%lf, maxLat:%lf, minLon:%lf, maxLon:%lf\n", minLat, maxLat, minLon, maxLon);
 	nodeIfs.close();
+}
+
+Area* Map::getMapRange(){
+	Area* result = new Area(minLat, maxLat, minLon, maxLon);
+	return result;
 }
 
 /*
@@ -1027,18 +1038,15 @@ double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold
 	return minDist;
 }
 
+//计算路段的长度，单位为m
 double Map::calEdgeLength(Figure* figure) const
 {
-	//////////////////////////////////////////////////////////////////////////
-	///计算路段的长度，单位为m
-	//////////////////////////////////////////////////////////////////////////
 	double lengthM = 0;
 	Figure::iterator ptIter = figure->begin(), nextPtIter = ptIter;
 	nextPtIter++;
 	while (1)
 	{
-		if (nextPtIter == figure->end())
-			break;
+		if (nextPtIter == figure->end()){ break; }
 		lengthM += GeoPoint::distM((*ptIter)->lat, (*ptIter)->lon, (*nextPtIter)->lat, (*nextPtIter)->lon);
 		ptIter++;
 		nextPtIter++;
@@ -1056,11 +1064,9 @@ bool Map::inArea(int nodeId) const
 	return (nodes[nodeId] != NULL);
 }
 
+//对全图建立网格索引
 void Map::createGridIndex()
 {
-	//////////////////////////////////////////////////////////////////////////
-	///对全图建立网格索引
-	//////////////////////////////////////////////////////////////////////////
 	//initialization
 	gridHeight = int((maxLat - minLat) / (maxLon - minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (maxLon - minLon) / double(gridWidth);
@@ -1083,11 +1089,11 @@ void Map::createGridIndex()
 	}
 }
 
+//将路段edge加入grid[row][col]中索引，如果已经加入过则不添加
 void Map::insertEdgeIntoGrid(Edge* edge, int row, int col)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///将路段edge加入grid[row][col]中索引，如果已经加入过则不添加
-	///改函数一定在对某条edge建立索引时调用,所以加入过的grid中最后一个一定是edge
+	///该函数一定在对某条edge建立索引时调用,所以加入过的grid中最后一个一定是edge
 	//////////////////////////////////////////////////////////////////////////
 	if (row >= gridHeight || row < 0 || col >= gridWidth || col < 0)
 		return;
@@ -1097,11 +1103,9 @@ void Map::insertEdgeIntoGrid(Edge* edge, int row, int col)
 		grid[row][col]->push_back(edge);
 }
 
+//对路段edge中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
 void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt)
 {
-	//////////////////////////////////////////////////////////////////////////
-	///对edge路中的fromPt->toPt段插入网格索引，经过的网格都加入其指针，如果与网格相交长度过小则不加入网格
-	//////////////////////////////////////////////////////////////////////////
 	if (edge == NULL){ return; }
 	GeoPoint* pt1 = fromPT;
 	GeoPoint* pt2 = toPt;
@@ -1113,8 +1117,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	int row2 = static_cast<int>(y2 / gridSizeDeg);
 	int col1 = static_cast<int>(x1 / gridSizeDeg);
 	int col2 = static_cast<int>(x2 / gridSizeDeg);
-	if (row1 >= gridHeight || row1 < 0 || col1 >= gridWidth || col1 < 0 ||
-		row2 >= gridHeight || row2 < 0 || col2 >= gridWidth || col2 < 0)
+	if (row1 >= gridHeight || row1 < 0 || col1 >= gridWidth || col1 < 0 || row2 >= gridHeight || row2 < 0 || col2 >= gridWidth || col2 < 0)
 	{
 		cout << "************test**************" << endl;
 		cout << "row1 = " << row1 << " col1 = " << col1 << endl;
@@ -1246,8 +1249,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 
 void Map::createGridIndexForEdge(Edge *edge)
 {
-	if (edge == NULL)
-		return;
+	if (edge == NULL){ return; }
 	Figure::iterator ptIter = edge->figure->begin();
 	Figure::iterator nextPtIter = edge->figure->begin(); nextPtIter++;
 	while (nextPtIter != edge->figure->end())
@@ -1258,11 +1260,11 @@ void Map::createGridIndexForEdge(Edge *edge)
 	}
 }
 
+//向邻接表adjList中插入一条边的连通关系，初次构建图时使用，私有版本，不允许外部调用
 void Map::insertEdge(int edgeId, int startNodeId, int endNodeId)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///向邻接表adjList中插入一条边的连通关系，初次构建图时使用，私有版本，不允许外部调用
-	///TODO: 可能会有问题@Line1047的while
+	///TODO: 可能会有问题@while
 	//////////////////////////////////////////////////////////////////////////
 	/*if (startNodeId == -1)
 	{
@@ -1354,18 +1356,14 @@ void Map::split(const string& src, const char& separator, vector<string>& dest)
 
 }
 
+//将直线与网格交点统一按照x轴递增方向排列
 bool smallerInX(simplePoint& pt1, simplePoint& pt2)
 {
-	//////////////////////////////////////////////////////////////////////////
-	///将直线与网格交点统一按照x轴递增方向排列
-	//////////////////////////////////////////////////////////////////////////
 	return pt1.first < pt2.first;
 }
 
+//函数void getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)中使用到的比较函数
 bool smallerInDist(pair<Edge*, double>& c1, pair<Edge*, double>& c2)
 {
-	//////////////////////////////////////////////////////////////////////////
-	///void getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)函数中使用到的比较函数
-	//////////////////////////////////////////////////////////////////////////
 	return c1.second < c2.second;
 }

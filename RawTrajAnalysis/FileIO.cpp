@@ -1,4 +1,4 @@
-#include "ReadInTrajs.h"
+#include "FileIO.h"
 
 
 //读入给定路径的轨迹文件中的一条轨迹
@@ -37,6 +37,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
 	if ((lf = _findfirst(dir, &fileInfo)) == -1l) {
+		cout << "文件夹" << completeInputFilesPath << "下未找到指定文件！" << endl;
 		return;
 	}
 	else {
@@ -48,6 +49,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 			outputFileNames.push_back(outputFileName);
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
+		cout << "所有轨迹文件读入完毕！" << endl;
 		return;
 	}
 }
@@ -69,4 +71,26 @@ void readResultFiles(string folderDir, vector<string> &outputFileNames, list<Mat
 		fin.close();
 		resultList.push_back(traj);
 	}
+}
+
+//输出轨迹集合至指定路径的文件中
+void outputTrajsToFiles(Traj &traj,string filePath){
+	ofstream fout(filePath);
+	fout.precision(13);
+	for each (auto trajPoint in traj)
+	{
+		fout << trajPoint->time << "," << trajPoint->lat << "," << trajPoint->lon << endl;
+	}
+	fout.close();
+}
+
+//输出轨迹集合至指定路径的文件中
+void outputAnswersToFiles(Traj &traj, string filePath){
+	ofstream fout(filePath);
+	fout.precision(13);
+	for each (auto trajPoint in traj)
+	{
+		fout << trajPoint->time << "," << trajPoint->matchedEdge << "," << trajPoint->confidence << endl;
+	}
+	fout.close();
 }

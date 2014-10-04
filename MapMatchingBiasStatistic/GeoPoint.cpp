@@ -1,7 +1,25 @@
+/*
+* Last Updated at [2014/9/4 20:23] by wuhao
+*/
 #include "GeoPoint.h"
 #include <math.h>
 
 double GeoPoint::geoScale = 6371004 * 3.141592965 / 180;
+
+GeoPoint::GeoPoint()
+{
+	this->lat = 0;
+	this->lon = 0;
+	this->time = INVALID_TIME;
+}
+
+GeoPoint::GeoPoint(double lat, double lon, int time, int mmRoadId)
+{
+	this->lat = lat;
+	this->lon = lon;
+	this->time = time;
+	this->matchedEdgeId = mmRoadId;
+}
 
 GeoPoint::GeoPoint(double lat, double lon, int time)
 {
@@ -17,21 +35,20 @@ GeoPoint::GeoPoint(double lat, double lon)
 	this->time = INVALID_TIME;
 }
 
-GeoPoint::GeoPoint(int time, int matchedEdge, double confidence){
-	this->time = time;
-	this->matchedEdge = matchedEdge;
-	this->confidence = confidence;
+GeoPoint::GeoPoint(std::pair<double, double>& lat_lon_pair)
+{
+	this->lat = lat_lon_pair.first;
+	this->lon = lat_lon_pair.second;
+	this->time = INVALID_TIME;
 }
 
 double GeoPoint::distM(double lat1, double lon1, double lat2, double lon2)
 {
-	double deltaLat = lat1 - lat2;
-	double deltaLong = (lon2 - lon1)*cos(lat1 * PI180);
-	return LENGTH_PER_RAD*sqrt(deltaLat*deltaLat + deltaLong*deltaLong);
-	//return sqrt((lat1 - lat2) * (lat1 - lat2) + (lon1 - lon2) * (lon1 - lon2)) * GeoPoint::geoScale;
+
+	return sqrt((lat1 - lat2) * (lat1 - lat2) + (lon1 - lon2) * (lon1 - lon2)) * GeoPoint::geoScale;
 }
 
-double GeoPoint::distM(GeoPoint pt1, GeoPoint pt2)
+double GeoPoint::distM(GeoPoint& pt1, GeoPoint& pt2)
 {
 	return GeoPoint::distM(pt1.lat, pt1.lon, pt2.lat, pt2.lon);
 }
@@ -48,9 +65,14 @@ double GeoPoint::distM(double lat, double lon)
 	return sqrt((lat1 - lat) * (lat1 - lat) + (lon1 - lon) * (lon1 - lon)) * GeoPoint::geoScale;
 }
 
-double GeoPoint::distM(GeoPoint pt)
+double GeoPoint::distM(GeoPoint& pt)
 {
-	return GeoPoint::distM(pt.lat, pt.lon);
+	return distM(pt.lat, pt.lon);
+}
+
+double GeoPoint::distM(GeoPoint* pt)
+{
+	return distM(pt->lat, pt->lon);
 }
 
 double GeoPoint::distDeg(double lat1, double lon1, double lat2, double lon2)
@@ -73,7 +95,17 @@ double GeoPoint::distDeg(double lat, double lon)
 	return GeoPoint::distDeg(this->lat, this->lon, lat, lon);
 }
 
-double GeoPoint::distDeg(GeoPoint pt)
+double GeoPoint::distDeg(GeoPoint& pt)
 {
-	return GeoPoint::distDeg(this->lat, this->lon, pt.lat, pt.lon);
+	return distDeg(this->lat, this->lon, pt.lat, pt.lon);
+}
+
+double GeoPoint::distDeg(GeoPoint* pt)
+{
+	return distDeg(this->lat, this->lon, pt->lat, pt->lon);
+}
+
+void GeoPoint::print()
+{
+	printf("(%.8lf, %.8lf)\n", this->lat, this->lon);
 }
