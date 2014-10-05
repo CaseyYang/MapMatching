@@ -10,8 +10,8 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "15days\\15days_separated_high_quality_120s_input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "15days\\15days_separated_high_quality_120s_answer";//输出的匹配结果文件名均以“output_”开头
+string inputDirectory = "15days\\15days_separated_high_quality_input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "15days\\15days_separated_high_quality_answer";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 int pointIndexGranularity = 10000;
@@ -107,7 +107,7 @@ void main(int argc, char* argv[]){
 	//trajReader.makeOutputFileNames(outputFileNames);
 	//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
 	readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
-	//对轨迹点集合单独建立网格索引
+	/*对轨迹点集合单独建立网格索引：统计匹配信息时调用*/
 	/*
 	TODO：事实上，单单统计基于网格的匹配信息并不需要建立网格索引，只需要维护biasSet这一数据结构。
 	因此，在必要情况下可以去掉函数makeTrajPointGridIndex和网格索引pointGridIndex。
@@ -122,15 +122,15 @@ void main(int argc, char* argv[]){
 	//	//if (trajIndex == 1365){
 	//	//cout << "轨迹长度：" << (*trajIter)->size() << endl;
 	//	/*匹配路段信息统计*/
-	//	//list<Edge*> resultList = MapMatching(*(*trajIter));
-	//	//biasStatistic(*trajIter, resultList);
+	//	list<Edge*> resultList = MapMatching(*(*trajIter));
+	//	biasStatistic(*trajIter, resultList);
 	//	/*利用匹配路段统计信息进行地图匹配*/
 	//	//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
 	//	/*利用匹配路段统计信息作为后验概率进行地图匹配*/
 	//	list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
 	//	//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
 	//	outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
-	//	cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
+	//	//cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
 	//	//}
 	//	trajIndex++;
 	//}

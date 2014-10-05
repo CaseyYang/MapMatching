@@ -5,8 +5,8 @@
 vector<string> outputFileNames;
 list<Traj*> trajList;
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "15days\\15days_separated_high_quality_120s_input";
-string outputDirectory = "15days\\15days_separated_high_quality_120s_output_HMM";
+string inputDirectory = "day1\\day1_splited_200s_input";
+string outputDirectory = "day1\\day1_splited_200s_output";
 Map routeNetwork = Map(rootFilePath, 1000);
 //保存计算过的两点间最短距离，键pair对表示起点和终点，值pair表示两点间最短距离和对应的deltaT
 //保存的deltaT的原因是：如果deltaT过小，则返回的最短距离可能为INF；而当再遇到相同起点和终点、而deltaT变大时，最短距离可能就不是INF了
