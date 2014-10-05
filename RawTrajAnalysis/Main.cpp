@@ -241,12 +241,14 @@ void DegradeAnswerFixedIntervals(){
 //使用这种方法，从每条原轨迹中只能得到一条低采样率的轨迹
 //inputDirectory：原轨迹文件所在的文件夹路径
 //newInputDirectory：新轨迹文件所在的文件夹路径
+//miniLength：每条轨迹包含的最小轨迹点数；包含超过miniLength个采样点的轨迹才会被输出至文件
 void DegradeInputFloatIntervals(int miniLength){
 	string completeInputFilesPath = rootFilePath + inputDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
 	if ((lf = _findfirst(dir, &fileInfo)) == -1l) {
+		cout << rootFilePath + inputDirectory << "中没有找到轨迹文件！" << endl;
 		return;
 	}
 	else {
@@ -278,12 +280,14 @@ void DegradeInputFloatIntervals(int miniLength){
 //和DegradeInputFloatIntervals相对应，对高采样率轨迹数据相对应的路段信息进行抽取，得到和新的采样率的轨迹对应的路段序列
 //answerDirectory：原答案文件所在的文件夹路径
 //newAnswerDirectory：新答案文件所在的文件夹路径
+//miniLength：每条轨迹包含的最小轨迹点数；包含超过miniLength个采样点的匹配结果才会被输出至文件
 void DegradeAnswerFloatIntervals(int miniLength){
 	string completeInputFilesPath = rootFilePath + answerDirectory + "\\*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
 	if ((lf = _findfirst(dir, &fileInfo)) == -1l) {
+		cout << rootFilePath + answerDirectory << "中没有找到匹配结果文件！" << endl;
 		return;
 	}
 	else {
