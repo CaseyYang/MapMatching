@@ -23,10 +23,12 @@ PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) 
 }
 
 PointGridIndex::~PointGridIndex(){
-	for (int i = 0; i < gridHeight; ++i){
-		delete[]grid[i];
+	if (grid != NULL){
+		for (int i = 0; i < gridHeight; ++i){
+			delete[]grid[i];
+		}
+		delete[]grid;
 	}
-	delete[]grid;
 	delete area;
 }
 
@@ -162,7 +164,8 @@ void PointGridIndex::init(){
 	if (gridWidth <= 0){ return; }
 	gridHeight = int((area->maxLat - area->minLat) / (area->maxLon - area->minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (area->maxLon - area->minLon) / double(gridWidth);
-	printf("Point index gridWidth = %d, gridHeight = %d\n", gridWidth, gridHeight);
+	grid = NULL;
+	cout << "Point index gridWidth = " << gridWidth << ", gridHeight = " << gridHeight << endl;
 	cout << "gridSize = " << gridSizeDeg * GeoPoint::geoScale << "m" << endl;
 }
 
