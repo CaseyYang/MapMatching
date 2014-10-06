@@ -1,24 +1,33 @@
 #include "PointGridIndex.h"
 
-void PointGridIndex::createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth)
+PointGridIndex::PointGridIndex(Area* area, int gridWidth) :area(area), gridWidth(gridWidth)
 {
-	this->area = area;
-	this->gridWidth = gridWidth;
-	initialization();
+	init();
+}
+
+PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) : area(area), gridWidth(gridWidth)
+{
+	init();
+	grid = new list<GeoPoint*>* *[gridHeight];
+	for (int i = 0; i < gridHeight; i++){
+		grid[i] = new list<GeoPoint*>*[gridWidth];
+		for (int j = 0; j < gridWidth; j++)
+		{
+			grid[i][j] = new list<GeoPoint*>();
+		}
+	}
 	for (list<GeoPoint*>::iterator ptIter = pts.begin(); ptIter != pts.end(); ptIter++)
 	{
 		insertOnePt(*ptIter);
 	}
 }
 
-void PointGridIndex::setGridIndexParameters(Area* area, int gridWidth){
-	this->area = area;
-	this->gridWidth = gridWidth;
-	if (gridWidth <= 0){ return; }
-	gridHeight = int((area->maxLat - area->minLat) / (area->maxLon - area->minLon) * double(gridWidth)) + 1;
-	gridSizeDeg = (area->maxLon - area->minLon) / double(gridWidth);
-	printf("Point index gridWidth = %d, gridHeight = %d\n", gridWidth, gridHeight);
-	cout << "gridSize = " << gridSizeDeg * GeoPoint::geoScale << "m" << endl;
+PointGridIndex::~PointGridIndex(){
+	for (int i = 0; i < gridHeight; i++){
+		delete[]grid[i];
+	}
+	delete[]grid;
+	delete area;
 }
 
 pair<int, int> PointGridIndex::getRowCol(GeoPoint* pt)
@@ -149,28 +158,10 @@ void PointGridIndex::getNearPts(GeoPoint* pt, int gridRange, vector<GeoPoint*>& 
 //	}
 //}
 
-void PointGridIndex::initialization()
-{
-	//////////////////////////////////////////////////////////////////////////
-	///初始化中完成以下操作
-	///1.根据area计算网格行数
-	///2.在堆上开空间
-	///[ATTENTION]：[MEM_LEAK]建立索引时不会判断grid是否是NULL，需自行delete前一个索引空间
-	//////////////////////////////////////////////////////////////////////////	
+void PointGridIndex::init(){
 	if (gridWidth <= 0){ return; }
 	gridHeight = int((area->maxLat - area->minLat) / (area->maxLon - area->minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (area->maxLon - area->minLon) / double(gridWidth);
-	grid = new list<GeoPoint*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++){
-		grid[i] = new list<GeoPoint*>*[gridWidth];
-	}
-	for (int i = 0; i < gridHeight; i++)
-	{
-		for (int j = 0; j < gridWidth; j++)
-		{
-			grid[i][j] = new list<GeoPoint*>();
-		}
-	}
 	printf("Point index gridWidth = %d, gridHeight = %d\n", gridWidth, gridHeight);
 	cout << "gridSize = " << gridSizeDeg * GeoPoint::geoScale << "m" << endl;
 }

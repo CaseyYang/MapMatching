@@ -17,27 +17,11 @@ string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\w
 int pointIndexGranularity = 15000;
 
 Map routeNetwork = Map(rootFilePath, 1000);
-PointGridIndex pointGridIndex;//针对所有轨迹点建立的网格索引
+PointGridIndex litePointGridIndex(routeNetwork.getMapRange(),pointIndexGranularity);//针对所有轨迹采样点建立的网格索引
 vector<string> outputFileNames;//匹配结果文件名集合
 list<Traj*> trajList;//轨迹集合
 
 map<pair<int, int>, map<Edge*, int>> biasSet;//地图中基于网格的地图匹配统计情况集合
-
-//把轨迹集合trajList中所有轨迹点合并到集合trajPointList中
-void makeTrajPointGridIndex(int gridWidth){
-	list<GeoPoint*> trajPointList = list<GeoPoint*>();//所有轨迹点集合
-	for each (Traj* traj in trajList)
-	{
-		for each (GeoPoint* trajPoint in *traj)
-		{
-			trajPointList.push_back(trajPoint);
-		}
-	}
-	cout << "inside the function" << endl;
-	pointGridIndex.createIndex(trajPointList, routeNetwork.getMapRange(), gridWidth);
-	trajPointList.clear();
-	
-}
 
 //统计轨迹traj中所有轨迹点的地图匹配情况
 void biasStatistic(Traj* traj, list<Edge*> result){
@@ -50,7 +34,7 @@ void biasStatistic(Traj* traj, list<Edge*> result){
 		GeoPoint* trajPoint = *trajIter;
 		trajIter++;
 		if (edge != NULL){
-			pair<int, int> gridCellIndex = pointGridIndex.getRowCol(trajPoint);//使用单独的针对轨迹点建立的网格索引来统计匹配信息
+			pair<int, int> gridCellIndex = litePointGridIndex.getRowCol(trajPoint);//使用单独的针对轨迹点建立的网格索引来统计匹配信息
 			if (countedGridCellSet.find(gridCellIndex) == countedGridCellSet.end()){
 				if (biasSet.find(gridCellIndex) == biasSet.end()){
 					biasSet[gridCellIndex] = map<Edge*, int>();
@@ -118,18 +102,8 @@ void main(int argc, char* argv[]){
 		//trajReader.makeOutputFileNames(outputFileNames);
 		//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
 		readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
-		pointGridIndex.setGridIndexParameters(routeNetwork.getMapRange(), pointIndexGranularity);
-		/*对轨迹点集合单独建立网格索引：使用历史数据建立匹配路段统计信息时使用*/
-		/*
-		TODO：事实上，只是统计基于网格的匹配信息并不需要建立网格索引，只需要维护biasSet这一数据结构。
-		因此，在必要情况下可以去掉函数makeTrajPointGridIndex和网格索引pointGridIndex。
-		现有代码中所有调用pointGridIndex.getRowCol方法的地方计算出某个点所在的网格（row，col）即可。
-		*/
-		cout << "zaizheli0" << endl;
-		makeTrajPointGridIndex(pointIndexGranularity);
-		cout << "zaizheli1" << endl;
+		/*使用历史数据建立匹配路段统计信息时使用*/
 		biasStatisticFromResults();
-		cout << "zaizheli2" << endl;
 		//int trajIndex = 0;
 		//cout << "开始地图匹配！" << endl;
 		//for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){

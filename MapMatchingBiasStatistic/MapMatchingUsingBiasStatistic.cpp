@@ -49,7 +49,7 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 		//cout << "轨迹点序号：" << trajPointIndex << endl;
 		//trajPointIndex++;
 		Edge* matchedEdge = NULL;
-		pair<int, int>gridCellIndex = pointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
+		pair<int, int>gridCellIndex = litePointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
 		//如果轨迹点所在网格中有历史匹配路段频数信息，则选取其中频数最大的路段作为匹配路段
 		if (biasSet.find(gridCellIndex) != biasSet.end()){
 			int max = 0;//记录当前最大频数
@@ -127,7 +127,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 		vector<Score2> scores = vector<Score2>();//当前轨迹点的Score2集合
 		/*先验概率——放射概率——路段出现在该网格历史匹配记录中的频率或采样点与附近50米内路段距离在高斯分布上的概率*/
 		long double totalCount = 0;//归一化
-		pair<int, int>gridCellIndex = pointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
+		pair<int, int>gridCellIndex = litePointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
 		//如果轨迹点所在网格中有历史匹配路段频数信息，则把这些历史匹配路段作为候选路段；每条历史匹配路段出现的频数除以该网格中所有路段出现的总频数作为放射概率
 		if (biasSet.find(gridCellIndex) != biasSet.end()){
 			for each (pair<Edge*, int> edgeCountPair in biasSet[gridCellIndex])

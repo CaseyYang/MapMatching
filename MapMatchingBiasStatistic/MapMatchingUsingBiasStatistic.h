@@ -10,7 +10,7 @@ using namespace std;
 #define RANGEOFCANADIDATEEDGES 50.0 //候选路段选取范围
 
 extern Map routeNetwork;
-extern PointGridIndex pointGridIndex;
+extern PointGridIndex litePointGridIndex;
 extern map<pair<int, int>, map<Edge*, int>> biasSet;
 //使用网格的路段偏好进行地图匹配
 extern list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory);
