@@ -11,16 +11,18 @@ class PointGridIndex
 {
 public:
 	//设置网格索引必要的参数
-	void setGridIndexParameters(Area* area, int gridWidth);//设置网格索引必要的参数
+	void setGridIndexParameters(Area* area, int gridWidth);
 	//把坐标点放入网格索引中
-	void createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth);//把坐标点放入网格索引中	
+	void createIndex(list<GeoPoint*>& pts, Area* area, int gridWidth);
 	pair<int, int> getRowCol(GeoPoint* pt);
-	//void drawGridLine(Gdiplus::Color color, MapDrawer& md);
-	void getNearPts(GeoPoint* pt, double thresholdM, vector<GeoPoint*>& dest); //将距离pt不长于thresholdM米的所有点存入dest
-	void getNearPts(GeoPoint* pt, int gridRange, vector<GeoPoint*>& dest); //将以pt所在网格为中心，边长为2*gridRange+1格中的所有点存入dest
+	//将距离pt不长于thresholdM米的所有点存入dest
+	void getNearPts(GeoPoint* pt, double thresholdM, vector<GeoPoint*>& dest);
+	//将以pt所在网格为中心，边长为2*gridRange+1格中的所有点存入dest
+	void getNearPts(GeoPoint* pt, int gridRange, vector<GeoPoint*>& dest);
 	void kNN(GeoPoint* pt, int k, double thresholdM, vector<GeoPoint*>& dest);
+	//void drawGridLine(Gdiplus::Color color, MapDrawer& md);
 
-//private:
+	//private:
 	list<GeoPoint*>* **grid;
 	int gridWidth;
 	int gridHeight;
