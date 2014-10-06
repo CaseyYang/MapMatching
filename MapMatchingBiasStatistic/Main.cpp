@@ -10,8 +10,8 @@
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "15days\\15days_separated_high_quality_200s_input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "15days\\15days_separated_high_quality_200s_answer";//输出的匹配结果文件名均以“output_”开头
+string inputDirectory = "day1\\day1_splited_input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "day1\\day1_splited_answer";//输出的匹配结果文件名均以“output_”开头
 string gridCellBiasFileName = "biasStatistic_15000.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
 int pointIndexGranularity = 15000;
