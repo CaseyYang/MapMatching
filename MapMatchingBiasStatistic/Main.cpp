@@ -74,7 +74,7 @@ void biasStatisticFromResults(){
 			}
 		}
 		biasStatistic(traj, edges);
-		trajIndex++;
+		++trajIndex;
 	}
 	return;
 }
@@ -120,7 +120,7 @@ void main(int argc, char* argv[]){
 		//	outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
 		//	//cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
 		//	//}
-		//	trajIndex++;
+		//	++trajIndex;
 		//}
 		//cout << "地图匹配完成！" << endl;
 		/*输出匹配路段统计信息至文件：使用历史数据建立匹配路段统计信息时使用*/

@@ -47,7 +47,7 @@ list<Edge*> MapMatchingUsingBiasStatistic(list<GeoPoint*> &trajectory){
 	for each (GeoPoint* trajPoint in trajectory)
 	{
 		//cout << "轨迹点序号：" << trajPointIndex << endl;
-		//trajPointIndex++;
+		//++trajPointIndex;
 		Edge* matchedEdge = NULL;
 		pair<int, int>gridCellIndex = litePointGridIndex.getRowCol(trajPoint);//routeNetwork.findGridCellIndex(trajPoint->lat, trajPoint->lon);
 		//如果轨迹点所在网格中有历史匹配路段频数信息，则选取其中频数最大的路段作为匹配路段
@@ -160,7 +160,7 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 		if (scoreMatrix.size()>0){
 			for each (Score2 canadidateEdge in scores)
 			{
-				for (size_t formerCanadidateEdgeIndex = 0; formerCanadidateEdgeIndex < scoreMatrix.back().size(); formerCanadidateEdgeIndex++){
+				for (size_t formerCanadidateEdgeIndex = 0; formerCanadidateEdgeIndex < scoreMatrix.back().size(); ++formerCanadidateEdgeIndex){
 					double formerDistLeft = scoreMatrix.back()[formerCanadidateEdgeIndex].distLeft;//前一个轨迹点在候选路段上的投影点距路段起点的距离
 					double formerDistToEnd = scoreMatrix.back()[formerCanadidateEdgeIndex].edge->lengthM - formerDistLeft;//前一个轨迹点在候选路段上的投影点距路段终点的距离
 					double routeNetworkDistBetweenTwoEdges;//两路段起点间的距离
@@ -205,13 +205,13 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 		}
 		scoreMatrix.push_back(scores);//把该轨迹点的Score2s数组放入scoreMatrix中
 		formerTrajPoint = trajPoint;
-		currentTrajPointIndex++;
+		++currentTrajPointIndex;
 	}
 	/*得到全局匹配路径*/
 	int startColumnIndex = 0;
 	long double tmpMaxProb = -1;
 	//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
-	for (size_t index = 0; index < scoreMatrix.back().size(); index++)
+	for (size_t index = 0; index < scoreMatrix.back().size(); ++index)
 	{
 		if (scoreMatrix.back()[index].score > tmpMaxProb){
 			tmpMaxProb = scoreMatrix.back()[index].score;
@@ -220,10 +220,10 @@ list<Edge*> MapMatchingUsingBiasStatisticAsPriorProb(list<GeoPoint*> &trajectory
 	}
 	mapMatchingResult.push_front(scoreMatrix.back()[startColumnIndex].edge);
 	int lastColumnIndex = startColumnIndex;
-	for (int i = static_cast<int>(scoreMatrix.size()) - 2; i >= 0; i--){//注意：此处i类型不能设为size_t，因为size_t是无符号类型，当i==0时i--会使得i变成一个极大数
+	for (int i = static_cast<int>(scoreMatrix.size()) - 2; i >= 0; --i){//注意：此处i类型不能设为size_t，因为size_t是无符号类型，当i==0时i--会使得i变成一个极大数
 		startColumnIndex = 0;
 		long double maxPosteriorProb = -1;
-		for (size_t j = 0; j < scoreMatrix[i].size(); j++){
+		for (size_t j = 0; j < scoreMatrix[i].size(); ++j){
 			long double tmpPosteriorProb = scoreMatrix[i][j].score * scoreMatrix[i][j].priorProbs->at(lastColumnIndex) / scoreMatrix[i + 1][lastColumnIndex].score;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;

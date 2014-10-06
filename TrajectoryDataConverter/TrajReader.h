@@ -170,7 +170,7 @@ void TrajReader::readTrajs(list<Traj*>& dest, int count /* = INF */)
 //由于所有轨迹都集中在一个文件中，因此需要构造出单条轨迹的输出文件名
 void TrajReader::makeOutputFileNames(vector<string> &outputFileNames){
 	string baseStr = "output_";
-	for (int i = 0; i < trajectoriesNum; i++){
+	for (int i = 0; i < trajectoriesNum; ++i){
 		stringstream ss;
 		ss << baseStr << i << ".txt";
 		outputFileNames.push_back(ss.str());
@@ -184,7 +184,7 @@ void TrajReader::outputMatchedEdges(list<Traj*> &trajs, string directoryPath){
 	{
 		stringstream ss;
 		ss << directoryPath + "\\output_" << index << ".txt";
-		index++;
+		++index;
 		ofstream outputAnswerFile = ofstream(ss.str());
 		for each (auto trajPoint in *traj)
 		{

@@ -40,7 +40,7 @@ void MatchedTrajToJson(){
 			if (trajPointIndex < traj->size() - 1){
 				fout << ",";
 			}
-			trajPointIndex++;
+			++trajPointIndex;
 		}
 		fout << "],\"matchedEdges\":[";
 		int edgeIndex = 0;
@@ -60,14 +60,14 @@ void MatchedTrajToJson(){
 					if (figPointIndex < map.edges.at(edgeId)->figure->size() - 1){
 						fout << ",";
 					}
-					figPointIndex++;
+					++figPointIndex;
 				}
 				fout << "]}";
 			}
 			if (edgeIndex < resultListIter->size() - 1){
 				fout << ",";
 			}
-			edgeIndex++;
+			++edgeIndex;
 		}
 		fout << "]}";
 		if (trajIndex < resultList.size() - 1){
@@ -76,7 +76,7 @@ void MatchedTrajToJson(){
 		else{
 			fout << endl;
 		}
-		trajIndex++;
+		++trajIndex;
 		resultListIter++;
 	}
 	fout << "]";
@@ -109,7 +109,7 @@ void MatchedTrajConnection(){
 		}
 		cout << "第" << trajIndex << "条轨迹的非连通数：" << unconnectedEdgeCount / allValidEdgeCount << endl;
 		cout << "第" << trajIndex << "条轨迹的合规数：" << allValidEdgeCount / allEdgeCount << endl;
-		trajIndex++;
+		++trajIndex;
 		resultListIter++;
 	}
 }

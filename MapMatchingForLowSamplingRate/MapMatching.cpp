@@ -51,7 +51,7 @@ double EmissionProb(double t, double dist){
 int GetStartColumnIndex(vector<Score> &row){
 	int resultIndex = -1;
 	long double currentMaxProb = -1;
-	for (size_t i = 0; i < row.size(); i++){
+	for (size_t i = 0; i < row.size(); ++i){
 		if (currentMaxProb < row.at(i).score){
 			currentMaxProb = row.at(i).score;
 			resultIndex = i;
@@ -164,7 +164,7 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 						currentMaxProbTmp = tmpTotalProbForTransaction;
 						preColumnIndex = formerCanadidateEdgeIndex;
 					}
-					formerCanadidateEdgeIndex++;
+					++formerCanadidateEdgeIndex;
 				}
 				//此时，emissionProbs保存的是候选路段的放射概率，乘以转移概率则变为候选路段的整体概率
 				emissionProbs[currentCanadidateEdgeIndex] *= currentMaxProbTmp;
@@ -173,12 +173,12 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 			scores.push_back(Score(canadidateEdge, emissionProbs[currentCanadidateEdgeIndex], preColumnIndex, currentDistLeft));
 			//得到当前最大整体概率，以便归一化
 			if (currentMaxProb < emissionProbs[currentCanadidateEdgeIndex]){ currentMaxProb = emissionProbs[currentCanadidateEdgeIndex]; }
-			currentCanadidateEdgeIndex++;
+			++currentCanadidateEdgeIndex;
 		}
 		delete[]emissionProbs;
 		formerTrajPoint = *trajectoryIterator;
-		currentTrajPointIndex++;
-		for (size_t i = 0; i < scores.size(); i++)	{ scores[i].score /= currentMaxProb; }//归一化
+		++currentTrajPointIndex;
+		for (size_t i = 0; i < scores.size(); ++i)	{ scores[i].score /= currentMaxProb; }//归一化
 		scoreMatrix.push_back(scores);//把该轨迹点的Scores数组放入scoreMatrix中
 		if (scores.size() == 0){//若scores数组为空，则说明没有一个达标的候选路段，cutFlag设为true，后续轨迹作为新轨迹进行匹配
 			cutFlag = true;
@@ -194,9 +194,9 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 	int startColumnIndex = GetStartColumnIndex(scoreMatrix.back());//得到最后一个轨迹点的在scoreMatrix对应行中得分最高的列索引，即全局匹配路径的终点
 	mapMatchingResult.push_front(scoreMatrix.back()[startColumnIndex].edge);
 	int lastColumnIndex = startColumnIndex;
-	for (int i = scoreMatrix.size() - 2; i >= 0; i--){
+	for (int i = scoreMatrix.size() - 2; i >= 0; --i){
 		long double maxPosteriorProb = -1;
-		for (int j = 0; j < scoreMatrix[i].size(); j++){
+		for (int j = 0; j < scoreMatrix[i].size(); ++j){
 			long double tmpPosteriorProb = scoreMatrix[i][j].score * pow(scoreMatrix[i][j].priorProbs->at(lastColumnIndex),3) / scoreMatrix[i + 1][lastColumnIndex].score;
 			if (tmpPosteriorProb > maxPosteriorProb){
 				maxPosteriorProb = tmpPosteriorProb;
@@ -207,9 +207,9 @@ list<Edge*> MapMatching(list<GeoPoint*> &trajectory){
 		lastColumnIndex = startColumnIndex;
 	}
 	//调试代码：输出最终的概率矩阵：如果有某个轨迹点的所有候选路段的整体概率均为均为无穷小/无穷大，那可能就不正常，需要进一步检查该行概率的得到过程
-	//for (int i = 0; i < scoreMatrix.size(); i++){
+	//for (int i = 0; i < scoreMatrix.size(); ++i){
 	//	logOutput << scoreMatrix.at(i).size() << "\t";
-	//	for (int j = 0; j < scoreMatrix.at(i).size(); j++){
+	//	for (int j = 0; j < scoreMatrix.at(i).size(); ++j){
 	//		logOutput << "[" << scoreMatrix.at(i).at(j).edge->id << "][" << scoreMatrix.at(i).at(j).preColumnIndex << "][" << scoreMatrix.at(i).at(j).score << "]\t";
 	//	}
 	//	logOutput << endl;
@@ -242,7 +242,7 @@ void main(){
 		}
 		MatchedEdgeOutput.close();
 		cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-		trajIndex++;
+		++trajIndex;
 	}
 	//logOutput.close();
 }

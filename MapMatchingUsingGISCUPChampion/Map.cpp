@@ -174,7 +174,7 @@ void Map::open(string folderDir, int gridWidth)
 	//初始化邻接表
 	count = 0;
 	int edgesCount = 0;
-	for (int i = 0; i < edges.size(); i++)
+	for (int i = 0; i < edges.size(); ++i)
 	{
 		AdjNode* head = new AdjNode();
 		head->endPointId = i;
@@ -246,11 +246,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 			}
 		}
 	}
-	for (int i = 0; i < result.size(); i++)
+	for (int i = 0; i < result.size(); ++i)
 	{
 		result[i]->visited = false;
 	}
-	for (int i = 0; i < fail.size(); i++)
+	for (int i = 0; i < fail.size(); ++i)
 	{
 		fail[i]->visited = false;
 	}
@@ -297,11 +297,11 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 			}
 		}
 	}
-	for (int i = 0; i < dest.size(); i++)
+	for (int i = 0; i < dest.size(); ++i)
 	{
 		dest[i]->visited = false;
 	}
-	for (int i = 0; i < fail.size(); i++)
+	for (int i = 0; i < fail.size(); ++i)
 	{
 		fail[i]->visited = false;
 	}
@@ -379,13 +379,13 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 			break;
 	}
 	sort(candidates.begin(), candidates.end(), smallerInDist);
-	for (int i = 0; i < k; i++)
+	for (int i = 0; i < k; ++i)
 	{
 		dest.push_back(candidates[i].first);
 	}
 
 	//还原所有边的visitFlag
-	for (int i = 0; i < candidates.size(); i++)
+	for (int i = 0; i < candidates.size(); ++i)
 	{
 		candidates[i].first->visited = false;
 	}
@@ -858,7 +858,7 @@ double Map::shortestPathLength(int ID1, int ID2, double dist1, double dist2, dou
 	//bool *flag = new bool[size];
 	//bool flag[600000];
 	//memset(flag, 0, sizeof(flag));
-	for (int i = 0; i < maxNodeNum; i++) {
+	for (int i = 0; i < maxNodeNum; ++i) {
 		dist[i] = INF;
 		flag[i] = false;
 	}
@@ -1023,11 +1023,11 @@ bool Map::inArea(int nodeId) const
 void Map::test()
 {
 	int* flag = new int[nodes.size()];
-	for (int i = 0; i < nodes.size(); i++)
+	for (int i = 0; i < nodes.size(); ++i)
 	{
 		flag[i] = -1;
 	}
-	for (int i = 0; i < adjList.size(); i++)
+	for (int i = 0; i < adjList.size(); ++i)
 	{
 		if (i % 1000 == 0)
 		{
@@ -1087,12 +1087,12 @@ void Map::createGridIndex()
 	gridHeight = int((maxLat - minLat) / (maxLon - minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (maxLon - minLon) / double(gridWidth);
 	grid = new list<Edge*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++){
+	for (int i = 0; i < gridHeight; ++i){
 		grid[i] = new list<Edge*>*[gridWidth];
 	}
-	for (int i = 0; i < gridHeight; i++)
+	for (int i = 0; i < gridHeight; ++i)
 	{
-		for (int j = 0; j < gridWidth; j++)
+		for (int j = 0; j < gridWidth; ++j)
 		{
 			grid[i][j] = new list<Edge*>();
 		}
@@ -1179,7 +1179,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		if (headDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, row1, min(col1, col2));
 		//中间
-		for (i = min(col1, col2) + 1; i < max(col1, col2); i++)
+		for (i = min(col1, col2) + 1; i < max(col1, col2); ++i)
 		{
 			insertEdgeIntoGrid(edge, row1, i);
 		}
@@ -1197,7 +1197,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		if (headDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, min(row1, row2), col1);
 		//中间
-		for (i = min(row1, row2) + 1; i < max(row1, row2); i++)
+		for (i = min(row1, row2) + 1; i < max(row1, row2); ++i)
 		{
 			insertEdgeIntoGrid(edge, i, col1);
 		}
@@ -1210,11 +1210,11 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	//斜向穿越
 	simplePoint pts[1000];
 	int n_pts = 0;
-	for (i = min(row1, row2) + 1; i <= max(row1, row2); i++)
+	for (i = min(row1, row2) + 1; i <= max(row1, row2); ++i)
 	{
 		pts[n_pts++] = std::make_pair((-C - B*i*gridSizeDeg) / A, i*gridSizeDeg);
 	}
-	for (i = min(col1, col2) + 1; i <= max(col1, col2); i++)
+	for (i = min(col1, col2) + 1; i <= max(col1, col2); ++i)
 	{
 		pts[n_pts++] = std::make_pair(i*gridSizeDeg, (-C - A*i*gridSizeDeg) / B);
 	}
@@ -1243,7 +1243,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		insertEdgeIntoGrid(edge, (int)(yL / gridSizeDeg), (int)(xL / gridSizeDeg));
 	}
 	//中间
-	for (i = 0; i < n_pts - 1; i++)
+	for (i = 0; i < n_pts - 1; ++i)
 	{
 		double dist = sqrt((pts[i].first - pts[i + 1].first)*(pts[i].first - pts[i + 1].first) + (pts[i].second - pts[i + 1].second)*(pts[i].second - pts[i + 1].second));
 		if (dist / gridSizeDeg > strictThreshold)
@@ -1364,13 +1364,13 @@ void Map::split(const string& src, const char& separator, vector<string>& dest)
 			while (src[index + 1] == separator)
 			{
 				dest.push_back("");
-				index++;
+				++index;
 			}
-			index++;
+			++index;
 			start = index;
 		}
 		else
-			index++;
+			++index;
 	}
 	//the last token
 	string substring = src.substr(start);

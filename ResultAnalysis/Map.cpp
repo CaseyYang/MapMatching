@@ -118,7 +118,7 @@ void Map::open(string folderDir, int gridWidth)
 	//初始化邻接表
 	count = 0;
 	int edgesCount = 0;
-	for (int i = 0; i < edges.size(); i++)
+	for (int i = 0; i < edges.size(); ++i)
 	{
 		AdjNode* head = new AdjNode();
 		head->endPointId = i;
@@ -188,11 +188,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 	if (col2 >= gridWidth) {
 		col2 = gridWidth - 1;
 	}
-	for (int row = row1; row <= row2; row++)
+	for (int row = row1; row <= row2; ++row)
 	{
-		for (int col = col1; col <= col2; col++)
+		for (int col = col1; col <= col2; ++col)
 		{
-			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
+			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); ++iter)
 			{
 				if (!((*iter)->visited))
 				{
@@ -208,11 +208,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 			}
 		}
 	}
-	for (int i = 0; i < result.size(); i++)
+	for (int i = 0; i < result.size(); ++i)
 	{
 		result[i]->visited = false;
 	}
-	for (int i = 0; i < fail.size(); i++)
+	for (int i = 0; i < fail.size(); ++i)
 	{
 		fail[i]->visited = false;
 	}
@@ -246,11 +246,11 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 	if (col2 >= gridWidth) {
 		col2 = gridWidth - 1;
 	}
-	for (int row = row1; row <= row2; row++)
+	for (int row = row1; row <= row2; ++row)
 	{
-		for (int col = col1; col <= col2; col++)
+		for (int col = col1; col <= col2; ++col)
 		{
-			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
+			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); ++iter)
 			{
 				if (!((*iter)->visited))
 				{
@@ -266,11 +266,11 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 			}
 		}
 	}
-	for (int i = 0; i < dest.size(); i++)
+	for (int i = 0; i < dest.size(); ++i)
 	{
 		dest[i]->visited = false;
 	}
-	for (int i = 0; i < fail.size(); i++)
+	for (int i = 0; i < fail.size(); ++i)
 	{
 		fail[i]->visited = false;
 	}
@@ -510,7 +510,7 @@ double Map::shortestPathLength(int ID1, int ID2, double dist1, double dist2, dou
 	//bool *flag = new bool[size];
 	bool flag[100000];
 	memset(flag, 0, sizeof(flag));
-	for (int i = 0; i < size; i++) {
+	for (int i = 0; i < size; ++i) {
 		dist[i] = INF;
 	}
 	dist[ID1] = 0;
@@ -641,11 +641,11 @@ bool Map::inArea(int nodeId) const
 void Map::test()
 {
 	int* flag = new int[nodes.size()];
-	for (int i = 0; i < nodes.size(); i++)
+	for (int i = 0; i < nodes.size(); ++i)
 	{
 		flag[i] = -1;
 	}
-	for (int i = 0; i < adjList.size(); i++)
+	for (int i = 0; i < adjList.size(); ++i)
 	{
 		if (i % 1000 == 0)
 		{
@@ -705,19 +705,19 @@ void Map::createGridIndex()
 	gridHeight = int((maxLat - minLat) / (maxLon - minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (maxLon - minLon) / double(gridWidth);
 	grid = new list<Edge*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++){
+	for (int i = 0; i < gridHeight; ++i){
 		grid[i] = new list<Edge*>*[gridWidth];
 	}
-	for (int i = 0; i < gridHeight; i++)
+	for (int i = 0; i < gridHeight; ++i)
 	{
-		for (int j = 0; j < gridWidth; j++)
+		for (int j = 0; j < gridWidth; ++j)
 		{
 			grid[i][j] = new list<Edge*>();
 		}
 	}
 	printf("Map index gridWidth = %d, gridHeight = %d\n", gridWidth, gridHeight);
 	cout << "gridSize = " << gridSizeDeg * GeoPoint::geoScale << "m" << endl;
-	for (vector<Edge*>::iterator edgeIter = edges.begin(); edgeIter != edges.end(); edgeIter++)
+	for (vector<Edge*>::iterator edgeIter = edges.begin(); edgeIter != edges.end(); ++edgeIter)
 	{
 		createGridIndexForEdge((*edgeIter));
 	}
@@ -774,7 +774,7 @@ void Map::createGridIndexForEdge(Edge *edge)
 			insertEdgeIntoGrid(edge, row1, min(col1, col2));
 		}
 		//中间
-		for (i = min(col1, col2) + 1; i < max(col1, col2); i++)
+		for (i = min(col1, col2) + 1; i < max(col1, col2); ++i)
 		{
 			insertEdgeIntoGrid(edge, row1, i);
 		}
@@ -794,7 +794,7 @@ void Map::createGridIndexForEdge(Edge *edge)
 			insertEdgeIntoGrid(edge, min(row1, row2), col1);
 		}
 		//中间
-		for (i = min(row1, row2) + 1; i < max(row1, row2); i++)
+		for (i = min(row1, row2) + 1; i < max(row1, row2); ++i)
 		{
 			insertEdgeIntoGrid(edge, i, col1);
 		}
@@ -807,11 +807,11 @@ void Map::createGridIndexForEdge(Edge *edge)
 	}
 	simplePoint pts[1000];
 	int n_pts = 0;
-	for (i = min(row1, row2) + 1; i <= max(row1, row2); i++)
+	for (i = min(row1, row2) + 1; i <= max(row1, row2); ++i)
 	{
 		pts[n_pts++] = std::make_pair((-C - B*i*gridSizeDeg) / A, i*gridSizeDeg);
 	}
-	for (i = min(col1, col2) + 1; i <= max(col1, col2); i++)
+	for (i = min(col1, col2) + 1; i <= max(col1, col2); ++i)
 	{
 		pts[n_pts++] = std::make_pair(i*gridSizeDeg, (-C - A*i*gridSizeDeg) / B);
 	}
@@ -839,7 +839,7 @@ void Map::createGridIndexForEdge(Edge *edge)
 		insertEdgeIntoGrid(edge, (int)(yL / gridSizeDeg), (int)(xL / gridSizeDeg));
 	}
 	//中间
-	for (i = 0; i < n_pts - 1; i++)
+	for (i = 0; i < n_pts - 1; ++i)
 	{
 		double dist = sqrt((pts[i].first - pts[i + 1].first)*(pts[i].first - pts[i + 1].first) + (pts[i].second - pts[i + 1].second)*(pts[i].second - pts[i + 1].second)) / gridSizeDeg;
 		if (dist / gridSizeDeg > strictThreshold)

@@ -9,9 +9,9 @@ PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) 
 {
 	init();
 	grid = new list<GeoPoint*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++){
+	for (int i = 0; i < gridHeight; ++i){
 		grid[i] = new list<GeoPoint*>*[gridWidth];
-		for (int j = 0; j < gridWidth; j++)
+		for (int j = 0; j < gridWidth; ++j)
 		{
 			grid[i][j] = new list<GeoPoint*>();
 		}
@@ -23,7 +23,7 @@ PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) 
 }
 
 PointGridIndex::~PointGridIndex(){
-	for (int i = 0; i < gridHeight; i++){
+	for (int i = 0; i < gridHeight; ++i){
 		delete[]grid[i];
 	}
 	delete[]grid;

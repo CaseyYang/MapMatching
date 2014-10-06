@@ -121,7 +121,7 @@ void GetCanadidateEdges(list<GeoPoint*> &trajectory, vector<vector<CanadidateEdg
 			endPointSet.insert(var.edge->endNodeId);
 		}
 		formerTrajPoint = trajPoint;
-		trajPointIndex++;
+		++trajPointIndex;
 	}
 }
 
@@ -155,7 +155,7 @@ list<Edge*> ShortestWeight(vector<vector<CanadidateEdge>> &scoreMatrix){
 						currentEdgeIter->score = dist + formerEdge.score;
 						currentEdgeIter->preColumnIndex = formerEdgeIndex;
 					}
-					formerEdgeIndex++;
+					++formerEdgeIndex;
 				}
 			}
 			else
@@ -164,19 +164,19 @@ list<Edge*> ShortestWeight(vector<vector<CanadidateEdge>> &scoreMatrix){
 			}
 		}
 		formerIter = loopIter;
-		columnIndex++;
+		++columnIndex;
 	}
 	//回溯，记录全局最小权值解
 	double tmpMin = 1e10;
 	int matchedEdgeIndex = -1;
-	for (int i = 0; i < scoreMatrix.back().size(); i++){
+	for (int i = 0; i < scoreMatrix.back().size(); ++i){
 		cout << scoreMatrix.back().at(i).edge->id << ":" << scoreMatrix.back().at(i).preColumnIndex << endl;
 		if (scoreMatrix.back().at(i).score < tmpMin){
 			tmpMin = scoreMatrix.back().at(i).score;
 			matchedEdgeIndex = i;
 		}
 	}
-	for (int i = scoreMatrix.size() - 1; i >= 0; i--){
+	for (int i = scoreMatrix.size() - 1; i >= 0; --i){
 		mapMatchingResult.push_front(scoreMatrix.at(i).at(matchedEdgeIndex).edge);
 		matchedEdgeIndex = scoreMatrix.at(i).at(matchedEdgeIndex).preColumnIndex;
 	}
@@ -229,6 +229,6 @@ void main(){
 		}
 		MatchedEdgeOutput.close();
 		cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-		trajIndex++;
+		++trajIndex;
 	}
 }

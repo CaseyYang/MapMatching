@@ -72,7 +72,7 @@ namespace CSVToTXT
                     fileWriter.WriteLine(geoPoint.Time + "," + geoPoint.Lat + "," + geoPoint.Lon);
                 }
                 fileWriter.Close();
-                fileIndex++;
+                ++fileIndex;
             }
             #endregion
             Console.WriteLine("所有轨迹文件输出完毕！按任意键退出……");

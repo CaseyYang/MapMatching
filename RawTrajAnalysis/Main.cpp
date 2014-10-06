@@ -17,7 +17,7 @@ double CalculateMAD(list<double> &dist){
 	dist.sort();
 	int mid = static_cast<int>(dist.size()) / 2;
 	list<double>::iterator dist1Iter = dist.begin();
-	for (int i = 0; i < mid; i++){
+	for (int i = 0; i < mid; ++i){
 		dist1Iter++;
 	}
 	double median = -1;
@@ -36,7 +36,7 @@ double CalculateMAD(list<double> &dist){
 	}
 	dist.sort();
 	dist1Iter = dist.begin();
-	for (int i = 0; i < mid; i++){
+	for (int i = 0; i < mid; ++i){
 		dist1Iter++;
 	}
 	if (dist.size() % 2 != 0){
@@ -118,12 +118,12 @@ void trajSplit(double maxSpeed, int minLength){
 					outputTrajsToFiles(goodSubTraj, rootFilePath + newInputDirectory + "\\input_" + ToString(trajIndex) + "_" + ToString(goodTrajIndex) + ".txt");
 				}
 				goodSubTraj.clear();
-				goodTrajIndex++;
+				++goodTrajIndex;
 			}
 			goodSubTraj.push_back(trajPoint);
 			if (trajPoint != NULL){ formerTrajPoint = trajPoint; }//formerTrajPoint保存最后一个非空采样点，以便和采样点进行运算判断是否需要切割
 		}
-		trajIndex++;
+		++trajIndex;
 	}
 }
 
@@ -171,7 +171,7 @@ void DegradeInputFixedIntervals(){
 			string inputFileName = fileInfo.name;
 			ifstream fin(rootFilePath + inputDirectory + "\\" + inputFileName);
 			ofstream *fout = new ofstream[sampleRate];
-			for (size_t i = 0; i < sampleRate; i++)
+			for (size_t i = 0; i < sampleRate; ++i)
 			{
 				fout[i] = ofstream(rootFilePath + newInputDirectory + "\\" + inputFileName.substr(0, 6) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
 				fout[i].precision(13);
@@ -183,13 +183,13 @@ void DegradeInputFixedIntervals(){
 				fin >> useless >> lat >> useless >> lon;
 				fout[time%sampleRate] << time << useless << lat << useless << lon << endl;
 			}
-			for (size_t i = 0; i < sampleRate; i++)
+			for (size_t i = 0; i < sampleRate; ++i)
 			{
 				fout[i].close();
 			}
 			//delete fout;
 			fin.close();
-			index++;
+			++index;
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
 		return;
@@ -212,7 +212,7 @@ void DegradeAnswerFixedIntervals(){
 			string inputFileName = fileInfo.name;
 			ifstream fin(rootFilePath + answerDirectory + "\\" + inputFileName);
 			ofstream *fout = new ofstream[sampleRate];
-			for (size_t i = 0; i < sampleRate; i++)
+			for (size_t i = 0; i < sampleRate; ++i)
 			{
 				fout[i] = ofstream(rootFilePath + newAnswerDirectory + "\\" + inputFileName.substr(0, 7) + ToString(index) + ToString(static_cast<int>(i)) + ".txt");
 				fout[i].setf(ios::showpoint);
@@ -225,12 +225,12 @@ void DegradeAnswerFixedIntervals(){
 				fin >> useless >> edge >> useless >> confidence;
 				fout[time%sampleRate] << time << useless << edge << useless << confidence << endl;
 			}
-			for (size_t i = 0; i < sampleRate; i++)
+			for (size_t i = 0; i < sampleRate; ++i)
 			{
 				fout[i].close();
 			}
 			fin.close();
-			index++;
+			++index;
 		} while (_findnext(lf, &fileInfo) == 0);
 		_findclose(lf);
 		return;

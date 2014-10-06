@@ -87,7 +87,7 @@ void ConvertMergedFileToSeparateFiles(string filesDirectory,int minimumLength){
 	{
 		if (var->size() > minimumLength){
 			OutputOneTrajectory(filesDirectory + "\\" + "input_" + ToString(trajIndex) + ".txt", var);
-			trajIndex++;
+			++trajIndex;
 		}
 	}
 }

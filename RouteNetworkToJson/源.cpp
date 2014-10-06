@@ -70,10 +70,10 @@ void EdgesToJson(list<Traj*> &trajList, vector<Edge*> &edges){
 				if (trajPointIndex < traj->size() - 1){
 					fout << ",";
 				}
-				trajPointIndex++;
+				++trajPointIndex;
 			}
 			fout << "]}";
-			trajIndex++;
+			++trajIndex;
 		}
 		fout << "]," << endl;
 	}
@@ -92,11 +92,11 @@ void EdgesToJson(list<Traj*> &trajList, vector<Edge*> &edges){
 				if (figureIndex < edge->figure->size() - 1){
 					fout << ",";
 				}
-				figureIndex++;
+				++figureIndex;
 			}
 			fout << "]}";
 		}
-		edgeIndex++;
+		++edgeIndex;
 	}
 	fout << "]}" << endl;
 	fout.close();

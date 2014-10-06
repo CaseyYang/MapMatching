@@ -174,7 +174,7 @@ void Map::open(string folderDir, int gridWidth)
 	//初始化邻接表
 	count = 0;
 	int edgesCount = 0;
-	for (size_t i = 0; i < edges.size(); i++)
+	for (size_t i = 0; i < edges.size(); ++i)
 	{
 		AdjNode* head = new AdjNode();
 		head->endPointId = i;
@@ -228,11 +228,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 	if (row2 >= gridHeight) row2 = gridHeight - 1;
 	if (col1 < 0) col1 = 0;
 	if (col2 >= gridWidth) col2 = gridWidth - 1;
-	for (int row = row1; row <= row2; row++)
+	for (int row = row1; row <= row2; ++row)
 	{
-		for (int col = col1; col <= col2; col++)
+		for (int col = col1; col <= col2; ++col)
 		{
-			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
+			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); ++iter)
 			{
 				if (!((*iter)->visited))
 				{
@@ -246,11 +246,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 			}
 		}
 	}
-	for (size_t i = 0; i < result.size(); i++)
+	for (size_t i = 0; i < result.size(); ++i)
 	{
 		result[i]->visited = false;
 	}
-	for (size_t i = 0; i < fail.size(); i++)
+	for (size_t i = 0; i < fail.size(); ++i)
 	{
 		fail[i]->visited = false;
 	}
@@ -277,11 +277,11 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 	if (col1 < 0) col1 = 0;
 	if (col2 >= gridWidth) col2 = gridWidth - 1;
 	//cout << "gridrange = " << gridSearchRange << endl;
-	for (int row = row1; row <= row2; row++)
+	for (int row = row1; row <= row2; ++row)
 	{
-		for (int col = col1; col <= col2; col++)
+		for (int col = col1; col <= col2; ++col)
 		{
-			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
+			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); ++iter)
 			{
 				//if (grid[row][col]->size() != 0)
 				//	cout << "grid count = " << grid[row][col]->size() << endl;
@@ -297,11 +297,11 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 			}
 		}
 	}
-	for (size_t i = 0; i < dest.size(); i++)
+	for (size_t i = 0; i < dest.size(); ++i)
 	{
 		dest[i]->visited = false;
 	}
-	for (size_t i = 0; i < fail.size(); i++)
+	for (size_t i = 0; i < fail.size(); ++i)
 	{
 		fail[i]->visited = false;
 	}
@@ -329,11 +329,11 @@ void Map::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
 	if (row2 >= gridHeight) row2 = gridHeight - 1;
 	if (col1 < 0) col1 = 0;
 	if (col2 >= gridWidth) col2 = gridWidth - 1;
-	for (int row = row1; row <= row2; row++)
+	for (int row = row1; row <= row2; ++row)
 	{
-		for (int col = col1; col <= col2; col++)
+		for (int col = col1; col <= col2; ++col)
 		{
-			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
+			for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); ++iter)
 			{
 				if (!((*iter)->visited))
 				{
@@ -357,13 +357,13 @@ void Map::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
 		if (newRow2 >= gridHeight) newRow2 = gridHeight - 1;
 		if (newCol1 < 0) newCol1 = 0;
 		if (newCol2 >= gridWidth) newCol2 = gridWidth - 1;
-		for (int row = newRow1; row <= newCol2; row++)
+		for (int row = newRow1; row <= newCol2; ++row)
 		{
-			for (int col = newCol1; col <= newCol2; col++)
+			for (int col = newCol1; col <= newCol2; ++col)
 			{
 				if (row >= row1 && row <= row2 && col >= col1 && col <= col2) //已经搜索过的就不用搜了
 					continue;
-				for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
+				for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); ++iter)
 				{
 					if (!((*iter)->visited))
 					{
@@ -379,13 +379,13 @@ void Map::getNearEdges(double lat, double lon, size_t k, vector<Edge*>& dest)
 			break;
 	}
 	sort(candidates.begin(), candidates.end(), smallerInDist);
-	for (size_t i = 0; i < k; i++)
+	for (size_t i = 0; i < k; ++i)
 	{
 		dest.push_back(candidates[i].first);
 	}
 
 	//还原所有边的visitFlag
-	for (size_t i = 0; i < candidates.size(); i++)
+	for (size_t i = 0; i < candidates.size(); ++i)
 	{
 		candidates[i].first->visited = false;
 	}
@@ -413,10 +413,10 @@ Edge* Map::getNearestEdge(double lat, double lon, double &shortestDist) {
 	Edge* currentResultEdge = NULL;
 	double currentShortestDist = INF;
 	while ((!foundNearsetEdge || !noNearerEdge) && range <= max(gridHeight, gridWidth)){
-		for (int row = rowPt - range; row <= rowPt + range; row++){
+		for (int row = rowPt - range; row <= rowPt + range; ++row){
 			if (row >= 0 && row < gridHeight){
 				if (row == rowPt - range || row == rowPt + range){
-					for (int col = colPt - range; col <= colPt + range; col++){
+					for (int col = colPt - range; col <= colPt + range; ++col){
 						if (col >= 0 && col < gridWidth){
 							getNearestEdgeInAGridCell(lat, lon, row, col, currentResultEdge, currentShortestDist);
 						}
@@ -467,10 +467,10 @@ vector<Edge*> Map::getKNearEdges(double lat, double lon, size_t k){
 	bool noNearerEdge = false;
 	while ((!foundKEdges || !noNearerEdge) && range <= max(gridHeight, gridWidth)){
 		bool hasEdgeAdded = false;
-		for (int row = rowPt - range; row <= rowPt + range; row++){
+		for (int row = rowPt - range; row <= rowPt + range; ++row){
 			if (row >= 0 && row < gridHeight){
 				if (row == rowPt - range || row == rowPt + range){
-					for (int col = colPt - range; col <= colPt + range; col++){
+					for (int col = colPt - range; col <= colPt + range; ++col){
 						if (col >= 0 && col < gridWidth){
 							hasEdgeAdded = getEdgesInAGridCell(lat, lon, row, col, canadidateEdges, visitedEdgeIdSet) || hasEdgeAdded;
 						}
@@ -891,7 +891,7 @@ double Map::shortestPathLength(int ID1, int ID2, list<Edge*> &shortestPath, doub
 	int maxNodeNum = nodes.size();
 	vector<double> dist = vector<double>(maxNodeNum);
 	vector<bool> flag = vector<bool>(maxNodeNum);
-	for (int i = 0; i < maxNodeNum; i++) {
+	for (int i = 0; i < maxNodeNum; ++i) {
 		dist[i] = INF;
 		flag[i] = false;
 	}
@@ -1065,19 +1065,19 @@ void Map::createGridIndex()
 	gridHeight = int((maxLat - minLat) / (maxLon - minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (maxLon - minLon) / double(gridWidth);
 	grid = new list<Edge*>* *[gridHeight];
-	for (int i = 0; i < gridHeight; i++){
+	for (int i = 0; i < gridHeight; ++i){
 		grid[i] = new list<Edge*>*[gridWidth];
 	}
-	for (int i = 0; i < gridHeight; i++)
+	for (int i = 0; i < gridHeight; ++i)
 	{
-		for (int j = 0; j < gridWidth; j++)
+		for (int j = 0; j < gridWidth; ++j)
 		{
 			grid[i][j] = new list<Edge*>();
 		}
 	}
 	printf("Map index gridWidth = %d, gridHeight = %d\n", gridWidth, gridHeight);
 	cout << "gridSize = " << gridSizeDeg * GeoPoint::geoScale << "m" << endl;
-	for (vector<Edge*>::iterator edgeIter = edges.begin(); edgeIter != edges.end(); edgeIter++)
+	for (vector<Edge*>::iterator edgeIter = edges.begin(); edgeIter != edges.end(); ++edgeIter)
 	{
 		createGridIndexForEdge((*edgeIter));
 	}
@@ -1155,7 +1155,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		if (headDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, row1, min(col1, col2));
 		//中间
-		for (i = min(col1, col2) + 1; i < max(col1, col2); i++)
+		for (i = min(col1, col2) + 1; i < max(col1, col2); ++i)
 		{
 			insertEdgeIntoGrid(edge, row1, i);
 		}
@@ -1173,7 +1173,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		if (headDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, min(row1, row2), col1);
 		//中间
-		for (i = min(row1, row2) + 1; i < max(row1, row2); i++)
+		for (i = min(row1, row2) + 1; i < max(row1, row2); ++i)
 		{
 			insertEdgeIntoGrid(edge, i, col1);
 		}
@@ -1186,11 +1186,11 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	//斜向穿越
 	simplePoint pts[1000];
 	int n_pts = 0;
-	for (i = min(row1, row2) + 1; i <= max(row1, row2); i++)
+	for (i = min(row1, row2) + 1; i <= max(row1, row2); ++i)
 	{
 		pts[n_pts++] = std::make_pair((-C - B*i*gridSizeDeg) / A, i*gridSizeDeg);
 	}
-	for (i = min(col1, col2) + 1; i <= max(col1, col2); i++)
+	for (i = min(col1, col2) + 1; i <= max(col1, col2); ++i)
 	{
 		pts[n_pts++] = std::make_pair(i*gridSizeDeg, (-C - A*i*gridSizeDeg) / B);
 	}
@@ -1219,7 +1219,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		insertEdgeIntoGrid(edge, (int)(yL / gridSizeDeg), (int)(xL / gridSizeDeg));
 	}
 	//中间
-	for (i = 0; i < n_pts - 1; i++)
+	for (i = 0; i < n_pts - 1; ++i)
 	{
 		double dist = sqrt((pts[i].first - pts[i + 1].first)*(pts[i].first - pts[i + 1].first) + (pts[i].second - pts[i + 1].second)*(pts[i].second - pts[i + 1].second));
 		if (dist / gridSizeDeg > strictThreshold)
@@ -1249,7 +1249,7 @@ void Map::createGridIndexForEdge(Edge *edge)
 	if (edge == NULL)
 		return;
 	Figure::iterator ptIter = edge->figure->begin();
-	Figure::iterator nextPtIter = edge->figure->begin(); nextPtIter++;
+	Figure::iterator nextPtIter = edge->figure->begin(); ++nextPtIter;
 	while (nextPtIter != edge->figure->end())
 	{
 		createGridIndexForSegment(edge, *ptIter, *nextPtIter);
@@ -1340,13 +1340,13 @@ void Map::split(const string& src, const char& separator, vector<string>& dest)
 			while (src[index + 1] == separator)
 			{
 				dest.push_back("");
-				index++;
+				++index;
 			}
-			index++;
+			++index;
 			start = index;
 		}
 		else
-			index++;
+			++index;
 	}
 	//the last token
 	string substring = src.substr(start);

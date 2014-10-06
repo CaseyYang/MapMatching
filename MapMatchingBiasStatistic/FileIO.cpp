@@ -106,7 +106,7 @@ void readGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &bi
 	while (biasInput >> indexX >> indexY >> pairCount){
 		pair<int, int> gridCellIndex = make_pair(indexX, indexY);
 		biasSet[gridCellIndex] = map<Edge*, int>();
-		for (int i = 0; i < pairCount; i++){
+		for (int i = 0; i < pairCount; ++i){
 			biasInput >> edgeId >> edgeCount;
 			biasSet[gridCellIndex][routeNetwork.edges[edgeId]] = edgeCount;
 		}
