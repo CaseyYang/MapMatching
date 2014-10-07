@@ -1,11 +1,11 @@
 #include "PointGridIndex.h"
 
-PointGridIndex::PointGridIndex(Area* area, int gridWidth) :area(area), gridWidth(gridWidth)
+PointGridIndex::PointGridIndex(Area* area, int gridWidth) :area(area), gridWidth(gridWidth), grid(NULL)
 {
 	init();
 }
 
-PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) : area(area), gridWidth(gridWidth)
+PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) : area(area), gridWidth(gridWidth), grid(NULL)
 {
 	init();
 	grid = new list<GeoPoint*>* *[gridHeight];
@@ -164,7 +164,6 @@ void PointGridIndex::init(){
 	if (gridWidth <= 0){ return; }
 	gridHeight = int((area->maxLat - area->minLat) / (area->maxLon - area->minLon) * double(gridWidth)) + 1;
 	gridSizeDeg = (area->maxLon - area->minLon) / double(gridWidth);
-	grid = NULL;
 	cout << "Point index gridWidth = " << gridWidth << ", gridHeight = " << gridHeight << endl;
 	cout << "gridSize = " << gridSizeDeg * GeoPoint::geoScale << "m" << endl;
 }
