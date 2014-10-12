@@ -16,6 +16,15 @@ Map::Map(string folderDir, int gridWidth)
 	this->open(folderDir, gridWidth);
 }
 
+Map::~Map(){
+	for (int index = 0; index < edges.size(); index++){
+		delete edges[index];
+	}
+	for (int index = 0; index < adjList.size(); index++){
+		delete adjList[index];
+	}
+}
+
 void Map::open(string folderDir, int gridWidth)
 {
 	/*文件目录结构为

@@ -43,6 +43,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 	else {
 		do {
 			string inputFileName = fileInfo.name;
+			cout << inputFileName << endl;
 			trajList.push_back(readOneTrajectory(folderDir + inputDirestory + "\\" + inputFileName));
 			string outputFileName = inputFileName.substr(6, inputFileName.size() - 10);
 			outputFileName = "output_" + outputFileName + ".txt";
@@ -96,6 +97,8 @@ void outputGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &
 		biasOutput << endl;
 	}
 	biasOutput.close();
+	cout << "统计文件输出完毕！" << endl;
+	return;
 }
 
 //读入网格中的轨迹点匹配路段频数统计

@@ -37,12 +37,19 @@ struct NODE_DIJKSTRA {
 
 struct  Edge
 {
+public:
 	Figure* figure;  //路形信息
 	double lengthM;  //记录路段总长，单位为m
 	int startNodeId; //路段起始点id
 	int endNodeId;  //路段终止点id
 	bool visited;  //辅助字段，外部调用勿改动
 	int id;
+	~Edge(){
+		for (auto iter = this->figure->begin(); iter != this->figure->end(); ++iter){
+			delete *iter;
+		}
+		delete this->figure;
+	}
 };
 
 struct AdjNode //邻接表结点
@@ -63,6 +70,8 @@ public:
 	Map();
 	//在folderDir路径下载入地图文件,并以gridWidth列的粒度来创建索引
 	Map(string folderDir, int gridWidth);
+	//析构函数
+	~Map();
 
 	//在folderDir路径下载入地图文件,并以gridWidth列的粒度来创建索引,适用于无参构造函数	
 	void open(string folderDir, int gridWidth);

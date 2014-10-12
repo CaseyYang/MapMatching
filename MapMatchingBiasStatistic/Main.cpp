@@ -9,14 +9,14 @@
 #include "PointGridIndex.h"
 using namespace std;
 
-string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "day1\\day1_splited_input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "day1\\day1_splited_answer";//输出的匹配结果文件名均以“output_”开头
-string gridCellBiasFileName = "biasStatistic_15000.txt";
+string rootFilePath = "D:\\document\\MDM Lab\\Data\\新加坡轨迹数据\\";
+string inputDirectory = "test_input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "test_answer";//输出的匹配结果文件名均以“output_”开头
+string gridCellBiasFileName = "biasStatistic_100.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
-int pointIndexGranularity = 15000;
+int pointIndexGranularity = 100;
 
-Map routeNetwork = Map(rootFilePath, 1000);
+Map routeNetwork(rootFilePath, 1000);
 PointGridIndex litePointGridIndex(routeNetwork.getMapRange(), pointIndexGranularity);//针对所有轨迹采样点建立的网格索引
 vector<string> outputFileNames;//匹配结果文件名集合
 list<Traj*> trajList;//轨迹集合
@@ -80,6 +80,15 @@ void biasStatisticFromResults(){
 	return;
 }
 
+void disposeTrajs(){
+	for (auto iter = trajList.begin(); iter != trajList.end(); ++iter){
+		for (auto subIter = (*iter)->begin(); subIter != (*iter)->end(); ++subIter){
+			delete *subIter;
+		}
+		delete *iter;
+	}
+}
+
 void main(int argc, char* argv[]){
 	if (argc != 1 && argc != 5){
 		cout << "至多应该有四个参数：第一个参数为轨迹文件所在文件夹；第二个参数为匹配结果所在文件夹；第三个参数为采样点网格索引粒度；第四个参数为匹配路段信息统计文件名。" << endl;
@@ -110,7 +119,7 @@ void main(int argc, char* argv[]){
 		//cout << "开始地图匹配！" << endl;
 		//for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
 		//	//if (trajIndex == 1365){
-		//	//cout << "轨迹长度：" << (*trajIter)->size() << endl;
+		//	//cout << "轨迹长度：" << (*trajIter)->size() << endl;//调试代码
 		//	/*匹配路段信息统计*/
 		//	//list<Edge*> resultList = MapMatching(*(*trajIter));
 		//	//biasStatistic(*trajIter, resultList);
@@ -127,6 +136,7 @@ void main(int argc, char* argv[]){
 		//cout << "地图匹配完成！" << endl;
 		/*输出匹配路段统计信息至文件：使用历史数据建立匹配路段统计信息时使用*/
 		outputGridCellBias(gridCellBiasFileName, biasSet);
+		disposeTrajs();
 	}
 	//system("pause");
 }
