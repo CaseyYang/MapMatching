@@ -23,7 +23,7 @@ Traj* readOneTrajectory(string &filePath)
 }
 
 //读入文件夹中所有轨迹文件，保存轨迹并生成对应的输出文件名
-void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajList, vector<string> &outputFileNames)
+void scanTrajFolder(string folderDir, string inputDirectory, list<Traj*> &trajList, vector<string> &outputFileNames)
 {
 	/*文件目录结构为
 	* folderDir
@@ -32,7 +32,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 	* |-output
 	*   |-output_000011.txt ...
 	*/
-	string completeInputFilesPath = folderDir + inputDirestory + "\\" + "*.txt";
+	string completeInputFilesPath = folderDir + inputDirectory + "\\" + "*.txt";
 	const char* dir = completeInputFilesPath.c_str();
 	_finddata_t fileInfo;//文件信息
 	long lf;//文件句柄
@@ -43,7 +43,7 @@ void scanTrajFolder(string folderDir, string inputDirestory, list<Traj*> &trajLi
 	else {
 		do {
 			string inputFileName = fileInfo.name;
-			trajList.push_back(readOneTrajectory(folderDir + inputDirestory + "\\" + inputFileName));
+			trajList.push_back(readOneTrajectory(folderDir + inputDirectory + "\\" + inputFileName));
 			string outputFileName = inputFileName.substr(6, inputFileName.size() - 10);
 			outputFileName = "output_" + outputFileName + ".txt";
 			outputFileNames.push_back(outputFileName);
@@ -116,4 +116,30 @@ void readGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, int>> &bi
 	biasInput.close();
 	cout << "统计文件读入完毕！" << endl;
 	return;
+}
+
+//读入给定路径的一个地图匹配结果文件
+list<int> ReadOneResultFile(string filePath){
+	ifstream fin(filePath);
+	list<int> result = list<int>();
+	int time, edgeId;
+	double confidence;
+	char useless;
+	while (fin >> time){
+		fin >> useless >> edgeId >> useless >> confidence;
+		result.push_back(edgeId);
+	}
+	fin.close();
+	return result;
+}
+
+//读入所有匹配结果文件和相应的答案文件
+void scanTrajFolderAndAnswerFolder(string folderDir, string outputDirectory, string answerDirectory, vector<string> &outputFileNames, list<list<int>> resultList, list<list<int>> answerList)
+{
+	for each (auto fileName in outputFileNames)
+	{
+		resultList.push_back(ReadOneResultFile(folderDir + outputDirectory + "\\" + fileName));
+		answerList.push_back(ReadOneResultFile(folderDir + answerDirectory + "\\" + fileName));
+	}
+	cout << "匹配结果文件和答案文件均读取完毕！" << endl;
 }
