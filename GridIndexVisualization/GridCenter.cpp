@@ -7,7 +7,7 @@ GridCenter::GridCenter()
 
 GridCenter::GridCenter(double lat, double lon) :lat(lat), lon(lon), matchedCount(0), matchingCount(0), correctRate(0.0){}
 
-string GridCenter::GridCenter::toJsonCell()
+string GridCenter::toJsonStr()
 {
 	string lonStr;
 	string latStr;

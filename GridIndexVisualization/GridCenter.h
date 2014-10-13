@@ -12,6 +12,6 @@ public:
 	double correctRate;
 	GridCenter();
 	GridCenter(double lat, double lon);
-	string toJsonCell();
+	string toJsonStr();
 	void calculateCorrectRate();
 };

@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <map>
 #include <set>
@@ -53,8 +54,32 @@ void matchingCountStatistic(){
 
 void matchingCountDataToJson(string filePath){
 	ofstream writer(filePath);
-
+	writer << "matchingCountData={" << endl;
+	writer << "\"city\":\"Singapore\"," << endl;
+	writer << "\"grid\":[" << endl;
+	int commaIndex = static_cast<int>(matchedCountSet.size()) - 1;
+	for each(auto gridInfoPair in matchedCountSet){
+		writer << "{" << gridInfoPair.second->toJsonStr() << "}";
+		if (commaIndex > 0){
+			writer << ",";
+			--commaIndex;
+		}
+	}
+	writer << "]" << endl;
+	writer << "}" << endl;
 	writer.close();
+}
+
+void disposeAll(){
+	for (auto iter = trajList.begin(); iter != trajList.end(); ++iter){
+		for (auto subIter = (*iter)->begin(); subIter != (*iter)->end(); ++subIter){
+			delete *subIter;
+		}
+		delete *iter;
+	}
+	for (auto iter = matchedCountSet.begin(); iter != matchedCountSet.end(); ++iter){
+		delete iter->second;
+	}
 }
 
 void main(int argc, char* argv[]){
@@ -63,6 +88,12 @@ void main(int argc, char* argv[]){
 	//读入匹配结果集合
 	scanTrajFolderAndAnswerFolder(rootFilePath, outputDirectory, answerDirectory, outputFileNames, resultList, answerList);
 	//读入网格索引
-	readGridCellBias(gridCellBiasFileName, historyMatchedDataSet, routeNetwork);//读入已保存的点索引
-	
+	readGridCellBias(gridCellBiasFileName, historyMatchedDataSet, routeNetwork);
+	//统计匹配比率信息
+	matchingCountStatistic();
+	//输出至JSON文件
+	matchingCountDataToJson("MatchedRatePerGrid.js");
+	//回收内存
+	disposeAll();
+
 }

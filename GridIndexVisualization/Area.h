@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+using namespace std;
 
 //表示区域的类，MapDrawer与Map引用同一个Area对象以保持区域的一致性
 class Area
