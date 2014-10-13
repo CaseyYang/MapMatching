@@ -143,6 +143,7 @@
     <ClCompile Include="GeoPoint.cpp" />
     <ClCompile Include="GridCenter.cpp" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Map.cpp" />
     <ClCompile Include="PointGridIndex.cpp" />
   </ItemGroup>
   <ItemGroup>

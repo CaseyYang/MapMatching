@@ -134,7 +134,7 @@ list<int> ReadOneResultFile(string filePath){
 }
 
 //读入所有匹配结果文件和相应的答案文件
-void scanTrajFolderAndAnswerFolder(string folderDir, string outputDirectory, string answerDirectory, vector<string> &outputFileNames, list<list<int>> resultList, list<list<int>> answerList)
+void scanTrajFolderAndAnswerFolder(string folderDir, string outputDirectory, string answerDirectory, vector<string> &outputFileNames, list<list<int>> &resultList, list<list<int>> &answerList)
 {
 	for each (auto fileName in outputFileNames)
 	{

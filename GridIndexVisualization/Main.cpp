@@ -6,14 +6,16 @@
 #include "Map.h"
 #include "PointGridIndex.h"
 #include "GridCenter.h"
+#include "Area.h"
+#include "GeoPoint.h"
 using namespace std;
 
 string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
-string inputDirectory = "test_input";//输入的轨迹文件名要求：以“input_”开头
-string outputDirectory = "test_answer";//输出的匹配结果文件名均以“output_”开头
-string answerDirectory = "test_answer";//输出的匹配结果文件名均以“output_”开头
-string gridCellBiasFileName = "biasStatistic_100.txt";
-int pointIndexGranularity = 100;
+string inputDirectory = "15days\\15days_separated_high_quality_200s_input";//输入的轨迹文件名要求：以“input_”开头
+string outputDirectory = "15days\\15days_separated_high_quality_200s_M2_output";//输出的匹配结果文件名均以“output_”开头
+string answerDirectory = "15days\\15days_separated_high_quality_200s_answer";//输出的匹配结果文件名均以“output_”开头
+string gridCellBiasFileName = "biasStatistic_6000.txt";
+int pointIndexGranularity = 6000;
 
 Map routeNetwork(rootFilePath, 1000);
 PointGridIndex litePointGridIndex(routeNetwork.getMapRange(), pointIndexGranularity);
@@ -29,24 +31,31 @@ void matchingCountStatistic(){
 	auto trajListIter = trajList.begin();
 	auto resultListIter = resultList.begin();
 	auto answerListIter = answerList.begin();
+	int trajIndex = 0;
 	for (; trajListIter != trajList.end(); ++trajListIter, ++resultListIter, ++answerListIter){
+		//cout << "轨迹"<<trajIndex << endl;
+		//++trajIndex;
 		auto trajIter = (*trajListIter)->begin();
 		auto resultIter = resultListIter->begin();
 		auto answerIter = answerListIter->begin();
+		int pointIndex = 0;
 		for (; trajIter != (*trajListIter)->end(); ++trajIter, ++resultIter, ++answerIter){
-			pair<int, int> cell = routeNetwork.findGridCellIndex((*trajIter)->lat, (*trajIter)->lon);
+			//cout << "点" << pointIndex << endl;
+			//++pointIndex;
+			pair<int, int> cell = litePointGridIndex.getRowCol(*trajIter);
 			if (historyMatchedDataSet.find(cell) != historyMatchedDataSet.end()){
-				if (matchedCountSet.find(cell) != matchedCountSet.end()){
+				if (matchedCountSet.find(cell) == matchedCountSet.end()){
 					pair<double, double> centerCoordinate = litePointGridIndex.getCenterCorrdinate(cell);
 					matchedCountSet[cell] = new GridCenter(centerCoordinate.first, centerCoordinate.second);
 				}
 				if ((*resultIter) == (*answerIter)){
 					++matchedCountSet[cell]->matchedCount;
 				}
-				matchedCountSet[cell]->matchingCount++;
+				++matchedCountSet[cell]->matchingCount;
 			}
 		}
 	}
+	cout << matchedCountSet.size() << endl;
 	for (auto setIter = matchedCountSet.begin(); setIter != matchedCountSet.end(); ++setIter){
 		setIter->second->calculateCorrectRate();
 	}
@@ -54,6 +63,7 @@ void matchingCountStatistic(){
 
 void matchingCountDataToJson(string filePath){
 	ofstream writer(filePath);
+	writer.precision(13);
 	writer << "matchingCountData={" << endl;
 	writer << "\"city\":\"Singapore\"," << endl;
 	writer << "\"grid\":[" << endl;
@@ -95,5 +105,5 @@ void main(int argc, char* argv[]){
 	matchingCountDataToJson("MatchedRatePerGrid.js");
 	//回收内存
 	disposeAll();
-
+	system("pause");
 }

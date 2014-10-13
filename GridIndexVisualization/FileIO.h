@@ -20,4 +20,4 @@ extern void readGridCellBias(string &fileName, map<pair<int, int>, map<Edge*, in
 //读入给定路径的一个地图匹配结果文件
 extern list<int> ReadOneResultFile(string filePath);
 //读入所有匹配结果文件和相应的答案文件
-extern void scanTrajFolderAndAnswerFolder(string folderDir, string outputDirectory, string answerDirectory, vector<string> &outputFileNames, list<list<int>> resultList, list<list<int>> answerList);
+extern void scanTrajFolderAndAnswerFolder(string folderDir, string outputDirectory, string answerDirectory, vector<string> &outputFileNames, list<list<int>> &resultList, list<list<int>> &answerList);

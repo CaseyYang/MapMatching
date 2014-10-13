@@ -13,14 +13,15 @@ string GridCenter::toJsonStr()
 	string latStr;
 	string correctRateStr;
 	stringstream ss;
+	ss.precision(13);
 	ss << lon;
 	ss >> lonStr;
 	ss.clear();
-	ss >> lat;
-	ss << latStr;
+	ss << lat;
+	ss >> latStr;
 	ss.clear();
-	ss >> correctRate;
-	ss << correctRateStr;
+	ss << correctRate;
+	ss >> correctRateStr;
 	return "lon:" + lonStr + ",lat:" + latStr + ",correctRate:" + correctRateStr;
 }
 
