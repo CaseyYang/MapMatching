@@ -8,12 +8,12 @@
 #include "PointGridIndex.h"
 using namespace std;
 
-string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
+string rootFilePath = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\";
 string inputDirectory = "test_input";//输入的轨迹文件名要求：以“input_”开头
 string outputDirectory = "test_answer";//输出的匹配结果文件名均以“output_”开头
-string gridCellBiasFileName = "biasStatistic_100.txt";
+string gridCellBiasFileName = "D:\\Document\\MDM Lab\\Data\\新加坡轨迹数据\\biasStatistic_2000.txt";
 string mergedTrajFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\15days\\wy_MMTrajs.txt";
-int pointIndexGranularity = 100;
+int pointIndexGranularity = 2000;
 
 Map routeNetwork(rootFilePath, 1000);
 PointGridIndex litePointGridIndex(routeNetwork.getMapRange(), pointIndexGranularity);//针对所有轨迹采样点建立的网格索引
@@ -113,28 +113,28 @@ void main(int argc, char* argv[]){
 		//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
 		readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
 		/*使用历史数据建立匹配路段统计信息时使用*/
-		//biasStatisticFromResults();
-		int trajIndex = 0;
-		cout << "开始地图匹配！" << endl;
-		for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
-			//if (trajIndex == 1365){
-			//cout << "轨迹长度：" << (*trajIter)->size() << endl;//调试代码
-			/*匹配路段信息统计*/
-			//list<Edge*> resultList = MapMatching(*(*trajIter));
-			//biasStatistic(*trajIter, resultList);
-			/*利用匹配路段统计信息进行地图匹配*/
-			//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
-			/*利用匹配路段统计信息作为后验概率进行地图匹配*/
-			list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
-			//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-			outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
-			//cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
-			//}
-			++trajIndex;
-		}
-		cout << "地图匹配完成！" << endl;
+		biasStatisticFromResults();
+		//int trajIndex = 0;
+		//cout << "开始地图匹配！" << endl;
+		//for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
+		//	//if (trajIndex == 1365){
+		//	//cout << "轨迹长度：" << (*trajIter)->size() << endl;//调试代码
+		//	/*匹配路段信息统计*/
+		//	//list<Edge*> resultList = MapMatching(*(*trajIter));
+		//	//biasStatistic(*trajIter, resultList);
+		//	/*利用匹配路段统计信息进行地图匹配*/
+		//	//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
+		//	/*利用匹配路段统计信息作为后验概率进行地图匹配*/
+		//	list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+		//	//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
+		//	outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+		//	//cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
+		//	//}
+		//	++trajIndex;
+		//}
+		//cout << "地图匹配完成！" << endl;
 		/*输出匹配路段统计信息至文件：使用历史数据建立匹配路段统计信息时使用*/
-		//outputGridCellBias(gridCellBiasFileName, biasSet);
+		outputGridCellBias(gridCellBiasFileName, biasSet);
 		disposeTrajs();
 	}
 	//system("pause");
