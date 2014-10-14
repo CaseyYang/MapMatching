@@ -1,17 +1,16 @@
 #include "GridCenter.h"
 
+double GridCenter::maxMatchingCount = 0;
 
 GridCenter::GridCenter()
 {
 }
 
-GridCenter::GridCenter(double lat, double lon) :lat(lat), lon(lon), matchedCount(0), matchingCount(0), correctRate(0.0){}
+GridCenter::GridCenter(double lat, double lon) :lat(lat), lon(lon), matchedCount(0), matchingCount(0), correctRate(0.0), matchingRate(0.0){}
 
 string GridCenter::toJsonStr()
 {
-	string lonStr;
-	string latStr;
-	string correctRateStr;
+	string lonStr, latStr, correctRateStr, matchingStr;
 	stringstream ss;
 	ss.precision(13);
 	ss << lon;
@@ -22,10 +21,14 @@ string GridCenter::toJsonStr()
 	ss.clear();
 	ss << correctRate;
 	ss >> correctRateStr;
-	return "lon:" + lonStr + ",lat:" + latStr + ",correctRate:" + correctRateStr;
+	ss.clear();
+	ss << matchingRate;
+	ss >> matchingStr;
+	return "lon:" + lonStr + ",lat:" + latStr + ",matchingRate:" + matchingStr + ",correctRate:" + correctRateStr;
 }
 
-void GridCenter::calculateCorrectRate()
-{	
+void GridCenter::calculateCorrectRateAndMatchingRate()
+{
 	this->correctRate = static_cast<double>(this->matchedCount) / this->matchingCount;
+	this->matchingRate = static_cast<double>(this->matchingCount) / GridCenter::maxMatchingCount;
 }

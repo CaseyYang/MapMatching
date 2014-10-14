@@ -23,13 +23,15 @@ PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) 
 }
 
 PointGridIndex::~PointGridIndex(){
+	cout << "PointGridIndex类开始析构" << endl;
 	if (grid != NULL){
 		for (int i = 0; i < gridHeight; ++i){
 			delete[]grid[i];
 		}
 		delete[]grid;
 	}
-	delete area;
+	//delete area;
+	cout << "PointGridIndex类析构完成" << endl;
 }
 
 pair<int, int> PointGridIndex::getRowCol(GeoPoint* pt)

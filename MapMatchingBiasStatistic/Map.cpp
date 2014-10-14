@@ -17,12 +17,14 @@ Map::Map(string folderDir, int gridWidth)
 }
 
 Map::~Map(){
+	cout << "Map类开始析构" << endl;
 	for (int index = 0; index < edges.size(); index++){
 		delete edges[index];
 	}
 	for (int index = 0; index < adjList.size(); index++){
 		delete adjList[index];
 	}
+	cout << "Map类析构完成" << endl;
 }
 
 void Map::open(string folderDir, int gridWidth)
