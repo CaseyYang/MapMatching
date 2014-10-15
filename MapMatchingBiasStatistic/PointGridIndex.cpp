@@ -22,6 +22,20 @@ PointGridIndex::PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts) 
 	}
 }
 
+PointGridIndex::PointGridIndex(const PointGridIndex& gridIndex) :gridHeight(gridIndex.gridHeight), gridWidth(gridIndex.gridWidth), gridSizeDeg(gridIndex.gridSizeDeg), area(new Area(*gridIndex.area)){
+	this->grid = new list<GeoPoint*>* *[gridHeight];
+	for (int i = 0; i < gridHeight; ++i){
+		grid[i] = new list<GeoPoint*>*[this->gridWidth];
+		for (int j = 0; j < gridWidth; ++j){
+			grid[i][j] = new list<GeoPoint*>();
+			for each (auto geoPoint in *gridIndex.grid[i][j])
+			{
+				grid[i][j]->push_back(new GeoPoint(*geoPoint));
+			}
+		}
+	}
+}
+
 PointGridIndex::~PointGridIndex(){
 	cout << "PointGridIndex类开始析构" << endl;
 	if (grid != NULL){
@@ -30,7 +44,7 @@ PointGridIndex::~PointGridIndex(){
 		}
 		delete[]grid;
 	}
-	//delete area;
+	delete area;
 	cout << "PointGridIndex类析构完成" << endl;
 }
 

@@ -21,6 +21,10 @@ public:
 	//gridWidth：网格索引在经度轴上的单元格数
 	//pts：要放入网格索引中的坐标点集合
 	PointGridIndex(Area* area, int gridWidth, list<GeoPoint*>& pts);
+	//复制构造函数
+	//因为有指针成员，因此一定要写复制构造函数，否则两个实例会共享指针
+	//三法则：如果需要析构函数，则也需要赋值操作符和复制构造函数
+	PointGridIndex(const PointGridIndex& gridIndex);
 	//析构函数
 	~PointGridIndex();
 	//获取给定坐标点所在的单元格坐标
