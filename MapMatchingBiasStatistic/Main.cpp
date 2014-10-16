@@ -98,45 +98,44 @@ void main(int argc, char* argv[]){
 			outputDirectory = argv[2];
 			pointIndexGranularity = atoi(argv[3]);
 			gridCellBiasFileName = argv[4];
-			//litePointGridIndex = PointGridIndex(routeNetwork.getMapRange(), pointIndexGranularity);
+			litePointGridIndex = PointGridIndex(routeNetwork.getMapRange(), pointIndexGranularity);
 		}
-		litePointGridIndex = PointGridIndex(routeNetwork.getMapRange(), pointIndexGranularity);
-		//cout << "轨迹文件所在文件夹：" << inputDirectory << endl;
-		//cout << "匹配结果所在文件夹：" << outputDirectory << endl;
-		//cout << "采样点网格索引粒度：" << pointIndexGranularity << endl;
-		//cout << "匹配路段信息统计文件名：" << gridCellBiasFileName << endl;
-		///*单个文件单条轨迹读取方法*/
-		//scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
-		///*单个文件多条轨迹读取方法*/
-		////TrajReader trajReader(mergedTrajFilePath);
-		////trajReader.readTrajs(trajList);
-		////trajReader.makeOutputFileNames(outputFileNames);
-		////trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
-		//readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
-		///*使用历史数据建立匹配路段统计信息时使用*/
-		//biasStatisticFromResults();
-		////int trajIndex = 0;
-		////cout << "开始地图匹配！" << endl;
-		////for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
-		////	//if (trajIndex == 1365){
-		////	//cout << "轨迹长度：" << (*trajIter)->size() << endl;//调试代码
-		////	/*匹配路段信息统计*/
-		////	//list<Edge*> resultList = MapMatching(*(*trajIter));
-		////	//biasStatistic(*trajIter, resultList);
-		////	/*利用匹配路段统计信息进行地图匹配*/
-		////	//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
-		////	/*利用匹配路段统计信息作为后验概率进行地图匹配*/
-		////	list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
-		////	//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
-		////	outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
-		////	//cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
-		////	//}
-		////	++trajIndex;
-		////}
-		////cout << "地图匹配完成！" << endl;
-		///*输出匹配路段统计信息至文件：使用历史数据建立匹配路段统计信息时使用*/
-		//outputGridCellBias(gridCellBiasFileName, biasSet);
-		//disposeTrajs();
+		cout << "轨迹文件所在文件夹：" << inputDirectory << endl;
+		cout << "匹配结果所在文件夹：" << outputDirectory << endl;
+		cout << "采样点网格索引粒度：" << pointIndexGranularity << endl;
+		cout << "匹配路段信息统计文件名：" << gridCellBiasFileName << endl;
+		/*单个文件单条轨迹读取方法*/
+		scanTrajFolder(rootFilePath, inputDirectory, trajList, outputFileNames);
+		/*单个文件多条轨迹读取方法*/
+		//TrajReader trajReader(mergedTrajFilePath);
+		//trajReader.readTrajs(trajList);
+		//trajReader.makeOutputFileNames(outputFileNames);
+		//trajReader.outputMatchedEdges(trajList, rootFilePath + "15days\\15days_answer");//输出15天轨迹文件中已匹配答案至一个单独的文件中
+		readGridCellBias(gridCellBiasFileName, biasSet, routeNetwork);//读入已保存的点索引
+		/*使用历史数据建立匹配路段统计信息时使用*/
+		biasStatisticFromResults();
+		//int trajIndex = 0;
+		//cout << "开始地图匹配！" << endl;
+		//for (list<Traj*>::iterator trajIter = trajList.begin(); trajIter != trajList.end(); trajIter++){
+		//	//if (trajIndex == 1365){
+		//	//cout << "轨迹长度：" << (*trajIter)->size() << endl;//调试代码
+		//	/*匹配路段信息统计*/
+		//	//list<Edge*> resultList = MapMatching(*(*trajIter));
+		//	//biasStatistic(*trajIter, resultList);
+		//	/*利用匹配路段统计信息进行地图匹配*/
+		//	//list<Edge*> resultList = MapMatchingUsingBiasStatistic(*(*trajIter));
+		//	/*利用匹配路段统计信息作为后验概率进行地图匹配*/
+		//	list<Edge*> resultList = MapMatchingUsingBiasStatisticAsPriorProb(*(*trajIter));
+		//	//cout << "第" << trajIndex << "条轨迹匹配完毕！" << endl;
+		//	outputMatchedEdges(rootFilePath + outputDirectory + "\\" + outputFileNames[trajIndex], *trajIter, resultList);
+		//	//cout << "第" << trajIndex << "条轨迹匹配路段输出完毕！" << endl;
+		//	//}
+		//	++trajIndex;
+		//}
+		//cout << "地图匹配完成！" << endl;
+		/*输出匹配路段统计信息至文件：使用历史数据建立匹配路段统计信息时使用*/
+		outputGridCellBias(gridCellBiasFileName, biasSet);
+		disposeTrajs();
 	}
 	//system("pause");
 }

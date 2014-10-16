@@ -25,6 +25,9 @@ public:
 	//因为有指针成员，因此一定要写复制构造函数，否则两个实例会共享指针
 	//三法则：如果需要析构函数，则也需要赋值操作符和复制构造函数
 	PointGridIndex(const PointGridIndex& gridIndex);
+	//重载等号操作符
+	//三法则
+	PointGridIndex& operator=(const PointGridIndex& gridIndex);
 	//析构函数
 	~PointGridIndex();
 	//获取给定坐标点所在的单元格坐标

@@ -36,16 +36,48 @@ PointGridIndex::PointGridIndex(const PointGridIndex& gridIndex) :gridHeight(grid
 	}
 }
 
+PointGridIndex& PointGridIndex::operator=(const PointGridIndex& gridIndex){
+	this->gridHeight = gridIndex.gridHeight;
+	this->gridWidth = gridIndex.gridWidth;
+	this->gridSizeDeg = gridIndex.gridSizeDeg;
+	if (this->grid != NULL){
+		for (int i = 0; i < this->gridHeight; ++i){
+			for (int j = 0; j < this->gridWidth; ++j){
+				delete this->grid[i][j];
+			}
+			delete this->grid[i];
+		}
+	}
+	delete this->grid;
+	delete this->area;
+	this->area = new Area(*gridIndex.area);
+	if (gridIndex.grid != NULL){
+		this->grid = new list<GeoPoint*>* *[this->gridHeight];
+		for (int i = 0; i < this->gridHeight; ++i){
+			this->grid[i] = new list<GeoPoint*>*[this->gridWidth];
+			for (int j = 0; j < this->gridWidth; ++j){
+				this->grid[i][j] = new list<GeoPoint*>();
+				for each (auto geoPoint in *gridIndex.grid[i][j])
+				{
+					this->grid[i][j]->push_back(new GeoPoint(*geoPoint));
+				}
+			}
+		}
+	}	
+	return *this;
+}
+
 PointGridIndex::~PointGridIndex(){
-	cout << "PointGridIndex类开始析构" << endl;
 	if (grid != NULL){
 		for (int i = 0; i < gridHeight; ++i){
-			delete[]grid[i];
+			for (int j = 0; j < gridWidth; ++j){
+				delete grid[i][j];
+			}
+			delete grid[i];
 		}
-		delete[]grid;
 	}
+	delete grid;
 	delete area;
-	cout << "PointGridIndex类析构完成" << endl;
 }
 
 pair<int, int> PointGridIndex::getRowCol(GeoPoint* pt)
