@@ -52,7 +52,7 @@ string GetEdgeDirection(Edge* edge){
 void EdgesToJson(list<Traj*> &trajList, vector<Edge*> &edges){
 	ofstream fout("RouteNetworkData.js");
 	fout.precision(11);
-	fout << "data = " << endl;
+	fout << "routeNetwork = " << endl;
 	fout << "{\"city\":\"Singapore\"," << endl;
 	if (trajList.size() > 0){
 		fout << "\"trajs\":[";

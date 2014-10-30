@@ -326,8 +326,8 @@ void RawTrajToJson(string filePath){
 	int timeStamp;
 	double x, y;
 	bool start = true;
-	string city = "Shanghai";
-	fout << "data = {" << endl;
+	string city = "Singapore";
+	fout << "rawTrajs = {" << endl;
 	fout << "\"city\":\"" << city << "\",\"rawTrajsId\":\"" << filePath << "\",\"points\":[" << endl;
 	while (fin >> timeStamp){
 		fin >> y >> x;
