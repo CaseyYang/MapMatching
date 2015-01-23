@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheckResult", "CheckResult\CheckResult.vcxproj", "{966C7ED5-8E3A-482B-9777-E78A70BFB32F}"
 EndProject
@@ -28,6 +28,8 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GridIndexVisualization", "GridIndexVisualization\GridIndexVisualization.vcxproj", "{FF5CC2ED-CF8B-40AF-B76B-A43C6420F6A2}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MapMatchingUsingHMMPublic", "MapMatchingUsingHMMPublic\MapMatchingUsingHMMPublic.vcxproj", "{F97CB6C3-8714-4D1B-BEB8-1A392D4D5C58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DownsamplingForGISCUP2012Data", "DownsamplingForGISCUP2012Data\DownsamplingForGISCUP2012Data.csproj", "{FD968BE5-C7C5-45D5-8E70-246B21F77677}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -256,6 +258,20 @@ Global
 		{F97CB6C3-8714-4D1B-BEB8-1A392D4D5C58}.Release|x64.ActiveCfg = Release|Win32
 		{F97CB6C3-8714-4D1B-BEB8-1A392D4D5C58}.Release|x86.ActiveCfg = Release|Win32
 		{F97CB6C3-8714-4D1B-BEB8-1A392D4D5C58}.Release|x86.Build.0 = Release|Win32
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|Win32.ActiveCfg = Release|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|x64.ActiveCfg = Release|Any CPU
+		{FD968BE5-C7C5-45D5-8E70-246B21F77677}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

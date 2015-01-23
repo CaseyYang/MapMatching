@@ -4,7 +4,7 @@
 #include "FileIO.h"
 using namespace std;
 
-string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
+string rootFilePath = "E:\\MapMatchingProject\\Data\\";
 string inputDirectory = "day1_splited_120s_input";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
 string newInputDirectory = "day1_splited_120s_input";//切割/降低采样率后的轨迹文件所在文件夹路径
 string answerDirectory = "15days\\15days_separated_high_quality_answer";//匹配结果文件所在文件夹路径。匹配文件名与对应的轨迹文件相同
@@ -397,7 +397,7 @@ int main(int argc, char*argv[]){
 		cout << "新轨迹文件所在文件夹：" << newInputDirectory << endl;
 		cout << "原匹配结果文件所在文件夹：" << answerDirectory << endl;
 		cout << "新匹配结果文件所在文件夹：" << newAnswerDirectory << endl;
-		//DegradeInputFloatIntervals(5);
+		DegradeInputFloatIntervals(5);
 		DegradeAnswerFloatIntervals(5);
 	}
 	system("pause");

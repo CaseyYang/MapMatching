@@ -6,7 +6,7 @@
 #include<list>
 using namespace std;
 
-string rootFilePath = "D:\\MapMatchingProject\\Data\\新加坡数据\\";
+string rootFilePath = "E:\\MapMatchingProject\\Data\\";
 string outputDirectory = "15days\\15days_separated_high_quality_120s_output_HMM";//轨迹文件所在文件夹路径。其中包含的轨迹文件名要求：以“input_”开头
 string answerDirectory = "15days\\15days_separated_high_quality_120s_answer";//降低采样率后的轨迹文件所在文件夹路径
 string resultFileName = "null";//检查结果输出文件名
@@ -69,7 +69,7 @@ void Check(){
 	list<string>::iterator fileNameIter = fileNameList.begin();
 	ofstream filePathFout;
 	if (resultFileName != "null"){
-		filePathFout = ofstream("files_sr_60.txt");
+		filePathFout = ofstream(resultFileName);
 	}
 	for (; resultIter != matchedResultList.end(); resultIter++, answerIter++, fileNameIter++){
 		int wrongCount = 0;
@@ -93,6 +93,7 @@ void Check(){
 }
 
 int main(int argc, char* argv[]){
+	cout << "eee" << endl;
 	if (argc != 1 && argc != 3 && argc != 4){
 		cout << "至多应该有三个参数：第一个为匹配结果文件所在文件夹路径，第二个为答案文件所在文件夹路径，第三个为检查结果输出文件名。" << endl;
 	}
@@ -106,8 +107,8 @@ int main(int argc, char* argv[]){
 			answerDirectory = argv[2];
 			resultFileName = argv[3];
 		}
-		cout << "匹配结果文件所在文件夹路径：" << outputDirectory << endl;
-		cout << "答案文件所在文件夹路径：" << answerDirectory << endl;
+		cout << "匹配结果文件所在文件夹路径：" << rootFilePath + outputDirectory << endl;
+		cout << "答案文件所在文件夹路径：" << rootFilePath + answerDirectory << endl;
 		ReadFolder();
 		Check();
 	}
