@@ -18,7 +18,7 @@ Map::Map(string folderDir, int gridWidth)
 
 void Map::open(string folderDir, int gridWidth)
 {
-	/*ÎÄ¼şÄ¿Â¼½á¹¹Îª
+	/*æ–‡ä»¶ç›®å½•ç»“æ„ä¸º
 	* folderDir
 	* |-WA_Nodes.txt
 	* |-WA_EdgeGeometry.txt
@@ -27,8 +27,8 @@ void Map::open(string folderDir, int gridWidth)
 	this->gridWidth = gridWidth;
 	int count = 0;
 	//////////////////////////////////////////////////////////////////////////
-	//¶ÁÈ¡WA_Nodes.txt
-	//¸ñÊ½£ºnodeId lat lon
+	//è¯»å–WA_Nodes.txt
+	//æ ¼å¼ï¼šnodeId lat lon
 	//////////////////////////////////////////////////////////////////////////
 	ifstream nodeIfs(folderDir + "WA_Nodes.txt");
 	if (!nodeIfs)
@@ -61,8 +61,8 @@ void Map::open(string folderDir, int gridWidth)
 	nodeIfs.close();
 
 	//////////////////////////////////////////////////////////////////////////
-	//¶ÁÈ¡WA_EdgeGeometry.txt
-	//¸ñÊ½£ºedgeId^^Highway^1^ÆğÊ¼¶ËµãÎ³¶È^ÆğÊ¼¶Ëµã¾­¶È[^ÖĞ¼äµã1Î³¶È^ÖĞ¼äµã1¾­¶È^ÖĞ¼äµã2Î³¶È^ÖĞ¼äµã2¾­¶È.....]^½áÊø¶ËµãÎ³¶È^½áÊø¶Ëµã¾­¶È    
+	//è¯»å–WA_EdgeGeometry.txt
+	//æ ¼å¼ï¼šedgeId^^Highway^1^èµ·å§‹ç«¯ç‚¹çº¬åº¦^èµ·å§‹ç«¯ç‚¹ç»åº¦[^ä¸­é—´ç‚¹1çº¬åº¦^ä¸­é—´ç‚¹1ç»åº¦^ä¸­é—´ç‚¹2çº¬åº¦^ä¸­é—´ç‚¹2ç»åº¦.....]^ç»“æŸç«¯ç‚¹çº¬åº¦^ç»“æŸç«¯ç‚¹ç»åº¦    
 	//////////////////////////////////////////////////////////////////////////
 	count = 0;
 	std::ifstream geometryIfs(folderDir + "WA_EdgeGeometry.txt");
@@ -168,10 +168,10 @@ void Map::open(string folderDir, int gridWidth)
 	geometryIfs.close();
 
 	//////////////////////////////////////////////////////////////////////////
-	//¶ÁÈ¡WA_Edges.txt
-	//¸ñÊ½£ºedgeId startNodeId endNodeId 1
+	//è¯»å–WA_Edges.txt
+	//æ ¼å¼ï¼šedgeId startNodeId endNodeId 1
 	//////////////////////////////////////////////////////////////////////////
-	//³õÊ¼»¯ÁÚ½Ó±í
+	//åˆå§‹åŒ–é‚»æ¥è¡¨
 	count = 0;
 	int edgesCount = 0;
 	for (int i = 0; i < edges.size(); i++)
@@ -208,12 +208,12 @@ void Map::open(string folderDir, int gridWidth)
 	printf(">> creating grid index finished\n");
 }
 
-//·µ»ØËùÓĞ¾àÀë(lat, lon)µãÑÏ¸ñĞ¡ÓÚthresholdÃ×µÄËùÓĞEdge*
+//è¿”å›æ‰€æœ‰è·ç¦»(lat, lon)ç‚¹ä¸¥æ ¼å°äºthresholdç±³çš„æ‰€æœ‰Edge*
 vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 {
 	//////////////////////////////////////////////////////////////////////////
-	///·µ»Ø(lat, lon)ÖÜÎ§¾àÀëĞ¡ÓÚthresholdÃ×µÄËùÓĞÂ·¶Î
-	///[×¢Òâ]»á²úÉúÄÚ´æĞ¹Â¶
+	///è¿”å›(lat, lon)å‘¨å›´è·ç¦»å°äºthresholdç±³çš„æ‰€æœ‰è·¯æ®µ
+	///[æ³¨æ„]ä¼šäº§ç”Ÿå†…å­˜æ³„éœ²
 	//////////////////////////////////////////////////////////////////////////
 	vector<Edge*> result;
 	vector<Edge*> fail;
@@ -257,11 +257,11 @@ vector<Edge*> Map::getNearEdges(double lat, double lon, double threshold) const
 	return result;
 }
 
-//ÕÒ³öËùÓĞ¾àÀë(lat, lon)µãÑÏ¸ñĞ¡ÓÚthresholdÃ×µÄËùÓĞEdge*£¬±£´æÔÚdestÈİÆ÷ÄÚ
+//æ‰¾å‡ºæ‰€æœ‰è·ç¦»(lat, lon)ç‚¹ä¸¥æ ¼å°äºthresholdç±³çš„æ‰€æœ‰Edge*ï¼Œä¿å­˜åœ¨destå®¹å™¨å†…
 void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& dest)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///·µ»Ø(lat, lon)ÖÜÎ§¾àÀëĞ¡ÓÚthresholdÃ×µÄËùÓĞÂ·¶Î
+	///è¿”å›(lat, lon)å‘¨å›´è·ç¦»å°äºthresholdç±³çš„æ‰€æœ‰è·¯æ®µ
 	//////////////////////////////////////////////////////////////////////////
 	dest.clear();
 	vector<Edge*> fail;
@@ -310,14 +310,14 @@ void Map::getNearEdges(double lat, double lon, double threshold, vector<Edge*>& 
 void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///ÕÒ³öÀë(lat, lon)¾àÀë×î½üµÄk¸ö±ß£¬°´ÕÕ´Ó½üµ½Ô¶µÄ¾àÀë´æÈëdestÖĞ
-	///ËÑË÷·½·¨£º ÏÈÒÔ²éÑ¯µãËùÔÚµÄ¸ñ×ÓÎªÖĞĞÄ£¬gridSearchRangeÎªËÑË÷°ë¾¶½øĞĞËÑË÷¡£
-	///È»ºóÒÔÃ¿´ÎËÑË÷°ë¾¶Ôö¼ÓgridExtendStepµÄ·ù¶ÈÏòÍâÀ©É¢ËÑË÷£¬Ö±µ½candidates¼¯ºÏÖĞÔªËØ¸öÊı
-	///´óÓÚµÈÓÚkÍ£Ö¹ËÑË÷¡£
+	///æ‰¾å‡ºç¦»(lat, lon)è·ç¦»æœ€è¿‘çš„kä¸ªè¾¹ï¼ŒæŒ‰ç…§ä»è¿‘åˆ°è¿œçš„è·ç¦»å­˜å…¥destä¸­
+	///æœç´¢æ–¹æ³•ï¼š å…ˆä»¥æŸ¥è¯¢ç‚¹æ‰€åœ¨çš„æ ¼å­ä¸ºä¸­å¿ƒï¼ŒgridSearchRangeä¸ºæœç´¢åŠå¾„è¿›è¡Œæœç´¢ã€‚
+	///ç„¶åä»¥æ¯æ¬¡æœç´¢åŠå¾„å¢åŠ gridExtendStepçš„å¹…åº¦å‘å¤–æ‰©æ•£æœç´¢ï¼Œç›´åˆ°candidatesé›†åˆä¸­å…ƒç´ ä¸ªæ•°
+	///å¤§äºç­‰äºkåœæ­¢æœç´¢ã€‚
 	//////////////////////////////////////////////////////////////////////////
 	dest.clear();
 	vector<pair<Edge*, double>> candidates;
-	//³õ²½ËÑË÷
+	//åˆæ­¥æœç´¢
 	int gridSearchRange = 3;
 	int rowPt = getRowId(lat);
 	int colPt = getColId(lon);
@@ -345,8 +345,8 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 		}
 	}
 
-	int gridExtendStep = 1; //À©Õ¹²½½ø£¬Ã¿´ÎÏòÍâÀ©1¸ñ	
-	int newRow1, newRow2, newCol1, newCol2; //¼ÇÂ¼ĞÂµÄËÑË÷·¶Î§
+	int gridExtendStep = 1; //æ‰©å±•æ­¥è¿›ï¼Œæ¯æ¬¡å‘å¤–æ‰©1æ ¼	
+	int newRow1, newRow2, newCol1, newCol2; //è®°å½•æ–°çš„æœç´¢èŒƒå›´
 	while (candidates.size() < k)
 	{
 		newRow1 = row1 - gridExtendStep;
@@ -361,7 +361,7 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 		{
 			for (int col = newCol1; col <= newCol2; col++)
 			{
-				if (row >= row1 && row <= row2 && col >= col1 && col <= col2) //ÒÑ¾­ËÑË÷¹ıµÄ¾Í²»ÓÃËÑÁË
+				if (row >= row1 && row <= row2 && col >= col1 && col <= col2) //å·²ç»æœç´¢è¿‡çš„å°±ä¸ç”¨æœäº†
 					continue;
 				for (list<Edge*>::iterator iter = grid[row][col]->begin(); iter != grid[row][col]->end(); iter++)
 				{
@@ -375,8 +375,13 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 
 			}
 		}
-		if (newRow1 == 0 && newRow2 == gridHeight - 1 && newCol1 == 0 && newCol2 == gridWidth - 1)//Èç¹ûËÑË÷È«Í¼»¹Ã»Âú×ã£¬¾ÍÖĞ¶ÏËÑË÷
+		if (newRow1 == 0 && newRow2 == gridHeight - 1 && newCol1 == 0 && newCol2 == gridWidth - 1)//å¦‚æœæœç´¢å…¨å›¾è¿˜æ²¡æ»¡è¶³ï¼Œå°±ä¸­æ–­æœç´¢
 			break;
+		//æ›´æ–°å·²ç»æœç´¢è¿‡çš„ç½‘æ ¼è¾¹ç•Œ
+		row1 = newRow1;
+		row2 = newRow2;
+		col1 = newCol1;
+		col2 = newCol2;
 	}
 	sort(candidates.begin(), candidates.end(), smallerInDist);
 	for (int i = 0; i < k; i++)
@@ -384,7 +389,7 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 		dest.push_back(candidates[i].first);
 	}
 
-	//»¹Ô­ËùÓĞ±ßµÄvisitFlag
+	//è¿˜åŸæ‰€æœ‰è¾¹çš„visitFlag
 	for (int i = 0; i < candidates.size(); i++)
 	{
 		candidates[i].first->visited = false;
@@ -393,16 +398,16 @@ void Map::getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)
 
 }
 
-//·µ»Ø¾àÀë(lat, lon)µã×î½üµÄEdge*
+//è¿”å›è·ç¦»(lat, lon)ç‚¹æœ€è¿‘çš„Edge*
 Edge* Map::getNearestEdge(double lat, double lon, double &shortestDist) {
 	//////////////////////////////////////////////////////////////////////////
-	///·µ»ØÀë(lat, lon)µã×î½üµÄÂ·¶Î
-	///¾ßÌåËã·¨£º
-	///Ê×ÏÈÕÒ³ö(lat, lon)µãËùÔÚµÄµ¥Ôª¸ñ£¬ÒÔ´ËÎªÆğµã°´Õı·½ĞÎÖğ½¥ÍâÀ©£¨¼´range£©¡¢½øĞĞ¹ã¶ÈÓÅÏÈËÑË÷£¬ÕÒµ½µÚÒ»¸öÀëµÃ×î½üµÄÂ·¶Î£¨whileÖĞµÄforÑ­»·£©
-	///°´ÕÒµ½µÄÀëµÃ×î½üµÄÂ·¶Îµ½(lat, lon)µãµÄ¾àÀë¼ÆËã³ö¹ã¶ÈÓÅÏÈËÑË÷µÄ×î´óËÑË÷·¶Î§£¬¼´maxSearchRange£¬¼´×î´óÍâÀ©Õı·½ĞÎ£¨Óï¾äif (currentResultEdge != NULL)£©
-	///µ±ÍâÀ©µÄrangeÖµ´óÓÚµÈÓÚmaxSearchRangeÊ±£¬ÄÜ±£Ö¤ÕÒµ½Ò»¸öÀëµÃ×î½üµÄÂ·¶Î£¬Í¬Ê±Ã»ÓĞÆäËûÂ·¶Î±È¸ÃÂ·¶Î¸ü½ü£¬Ôò½áÊøÑ°ÕÒ¹ı³Ì£¨Óï¾änoNearerEdge = true£©
-	///·ñÔò¾ÍÑ­»·ÍâÀ©£¨Óï¾äwhile (!foundNearsetEdge || !noNearerEdge)£©
-	///×îºó·µ»ØÕÒµ½µÄÂ·¶ÎEdgeÖ¸Õë£¬²¢±£³ÖÏàÓ¦µÄ¾àÀëshortestDist
+	///è¿”å›ç¦»(lat, lon)ç‚¹æœ€è¿‘çš„è·¯æ®µ
+	///å…·ä½“ç®—æ³•ï¼š
+	///é¦–å…ˆæ‰¾å‡º(lat, lon)ç‚¹æ‰€åœ¨çš„å•å…ƒæ ¼ï¼Œä»¥æ­¤ä¸ºèµ·ç‚¹æŒ‰æ­£æ–¹å½¢é€æ¸å¤–æ‰©ï¼ˆå³rangeï¼‰ã€è¿›è¡Œå¹¿åº¦ä¼˜å…ˆæœç´¢ï¼Œæ‰¾åˆ°ç¬¬ä¸€ä¸ªç¦»å¾—æœ€è¿‘çš„è·¯æ®µï¼ˆwhileä¸­çš„forå¾ªç¯ï¼‰
+	///æŒ‰æ‰¾åˆ°çš„ç¦»å¾—æœ€è¿‘çš„è·¯æ®µåˆ°(lat, lon)ç‚¹çš„è·ç¦»è®¡ç®—å‡ºå¹¿åº¦ä¼˜å…ˆæœç´¢çš„æœ€å¤§æœç´¢èŒƒå›´ï¼Œå³maxSearchRangeï¼Œå³æœ€å¤§å¤–æ‰©æ­£æ–¹å½¢ï¼ˆè¯­å¥if (currentResultEdge != NULL)ï¼‰
+	///å½“å¤–æ‰©çš„rangeå€¼å¤§äºç­‰äºmaxSearchRangeæ—¶ï¼Œèƒ½ä¿è¯æ‰¾åˆ°ä¸€ä¸ªç¦»å¾—æœ€è¿‘çš„è·¯æ®µï¼ŒåŒæ—¶æ²¡æœ‰å…¶ä»–è·¯æ®µæ¯”è¯¥è·¯æ®µæ›´è¿‘ï¼Œåˆ™ç»“æŸå¯»æ‰¾è¿‡ç¨‹ï¼ˆè¯­å¥noNearerEdge = trueï¼‰
+	///å¦åˆ™å°±å¾ªç¯å¤–æ‰©ï¼ˆè¯­å¥while (!foundNearsetEdge || !noNearerEdge)ï¼‰
+	///æœ€åè¿”å›æ‰¾åˆ°çš„è·¯æ®µEdgeæŒ‡é’ˆï¼Œå¹¶ä¿æŒç›¸åº”çš„è·ç¦»shortestDist
 	//////////////////////////////////////////////////////////////////////////
 	int rowPt = getRowId(lat);
 	int colPt = getColId(lon);
@@ -455,7 +460,7 @@ Edge* Map::getNearestEdge(double lat, double lon, double &shortestDist) {
 	return currentResultEdge;
 }
 
-//ÕÒ³ö¾àÀë(lat, lon)µã×î½üµÄkÌõÂ·¶Î
+//æ‰¾å‡ºè·ç¦»(lat, lon)ç‚¹æœ€è¿‘çš„kæ¡è·¯æ®µ
 vector<Edge*> Map::getKNearEdges(double lat, double lon, int k){
 	const int rowPt = getRowId(lat);
 	const int colPt = getColId(lon);
@@ -523,29 +528,29 @@ vector<Edge*> Map::getKNearEdges(double lat, double lon, int k){
 	return resultEdges;
 }
 
-//·µ»Ø(lat,lon)µãµ½edgeµÄ¾àÀë£¬µ¥Î»ÎªÃ×
+//è¿”å›(lat,lon)ç‚¹åˆ°edgeçš„è·ç¦»ï¼Œå•ä½ä¸ºç±³
 double Map::distM(double lat, double lon, Edge* edge) const
 {
 	//////////////////////////////////////////////////////////////////////////
-	///·µ»Øµã(lat, lon)µ½±ßedgeµÄ¾«È·¾àÀë
-	///¾àÀë¶¨ÒåÎª£ºmin(µãµ½¿ÉÍ¶Ó°±ßµÄÍ¶Ó°¾àÀë£¬µãµ½ËùÓĞĞÎ×´µãµÄÅ·ÊÏ¾àÀë)
+	///è¿”å›ç‚¹(lat, lon)åˆ°è¾¹edgeçš„ç²¾ç¡®è·ç¦»
+	///è·ç¦»å®šä¹‰ä¸ºï¼šmin(ç‚¹åˆ°å¯æŠ•å½±è¾¹çš„æŠ•å½±è·ç¦»ï¼Œç‚¹åˆ°æ‰€æœ‰å½¢çŠ¶ç‚¹çš„æ¬§æ°è·ç¦»)
 	//////////////////////////////////////////////////////////////////////////
 	double minDist = INF;
-	//±éÀú¶Ëµã¾àÀë
+	//éå†ç«¯ç‚¹è·ç¦»
 	for (Figure::iterator iter = edge->figure->begin(); iter != edge->figure->end(); iter++)
 	{
 		double tmpDist = GeoPoint::distM(lat, lon, (*iter)->lat, (*iter)->lon);
 		if (tmpDist < minDist)
 			minDist = tmpDist;
 	}
-	//±éÀúÍ¶Ó°¾àÀë
+	//éå†æŠ•å½±è·ç¦»
 	Figure::iterator iter = edge->figure->begin();
 	Figure::iterator nextIter = edge->figure->begin();
 	nextIter++;
 	GeoPoint* pt = new GeoPoint(lat, lon);
 	while (nextIter != edge->figure->end())
 	{
-		//ÓĞÍ¶Ó°
+		//æœ‰æŠ•å½±
 		if (cosAngle(pt, (*iter), (*nextIter)) <= 0 && cosAngle(pt, (*nextIter), (*iter)) <= 0)
 		{
 			double A = ((*nextIter)->lat - (*iter)->lat);
@@ -564,13 +569,13 @@ double Map::distM(double lat, double lon, Edge* edge) const
 	return minDist;
 }
 
-//·µ»Ø(lat,lon)µãµ½edgeµÄ¾àÀë£¬µ¥Î»ÎªÃ×£»Í¬Ê±¼ÇÂ¼Í¶Ó°µãµ½edgeÆğµãµÄ¾àÀë´æÈëprjDist£¬ÎŞÍ¶Ó°Ôò¼ÇÎª0
+//è¿”å›(lat,lon)ç‚¹åˆ°edgeçš„è·ç¦»ï¼Œå•ä½ä¸ºç±³ï¼›åŒæ—¶è®°å½•æŠ•å½±ç‚¹åˆ°edgeèµ·ç‚¹çš„è·ç¦»å­˜å…¥prjDistï¼Œæ— æŠ•å½±åˆ™è®°ä¸º0
 double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 {
 	//////////////////////////////////////////////////////////////////////////
-	///·µ»Øµã(lat, lon)µ½±ßedgeµÄ¾«È·¾àÀë
-	///¾àÀë¶¨ÒåÎª£ºmin(µãµ½¿ÉÍ¶Ó°±ßµÄÍ¶Ó°¾àÀë£¬µãµ½ËùÓĞĞÎ×´µãµÄÅ·ÊÏ¾àÀë)
-	///Èç¹ûÓĞÍ¶Ó°µÄ»°£¬prjDist¼ÇÂ¼Í¶Ó°µãµ½¹ì¼£ÆğµãµÄ¾àÀë£¬Ã»ÓĞµÄ»°prjDistÎª0
+	///è¿”å›ç‚¹(lat, lon)åˆ°è¾¹edgeçš„ç²¾ç¡®è·ç¦»
+	///è·ç¦»å®šä¹‰ä¸ºï¼šmin(ç‚¹åˆ°å¯æŠ•å½±è¾¹çš„æŠ•å½±è·ç¦»ï¼Œç‚¹åˆ°æ‰€æœ‰å½¢çŠ¶ç‚¹çš„æ¬§æ°è·ç¦»)
+	///å¦‚æœæœ‰æŠ•å½±çš„è¯ï¼ŒprjDistè®°å½•æŠ•å½±ç‚¹åˆ°è½¨è¿¹èµ·ç‚¹çš„è·ç¦»ï¼Œæ²¡æœ‰çš„è¯prjDistä¸º0
 	//////////////////////////////////////////////////////////////////////////
 	Figure::iterator iter = edge->figure->begin();
 	Figure::iterator nextIter = edge->figure->begin();
@@ -579,7 +584,7 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 	double frontSegmentDist = 0;
 	double tempTotalPrjDist = 0;
 	double minDist = INF;
-	//±éÀú¶Ëµã¾àÀë
+	//éå†ç«¯ç‚¹è·ç¦»
 	while (nextIter != edge->figure->end())
 	{
 		double tmpDist = GeoPoint::distM(lat, lon, (*iter)->lat, (*iter)->lon);
@@ -592,14 +597,14 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 		iter++;
 		nextIter++;
 	}
-	//²¹×îºóÒ»¸öµã
+	//è¡¥æœ€åä¸€ä¸ªç‚¹
 	double tmpDist = GeoPoint::distM(lat, lon, (*iter)->lat, (*iter)->lon);
 	if (tmpDist < minDist)
 	{
 		minDist = tmpDist;
 		tempTotalPrjDist = frontSegmentDist;
 	}
-	//±éÀúÍ¶Ó°¾àÀë
+	//éå†æŠ•å½±è·ç¦»
 	frontSegmentDist = 0;
 	iter = edge->figure->begin();
 	nextIter = edge->figure->begin();
@@ -607,7 +612,7 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 	GeoPoint* pt = new GeoPoint(lat, lon);
 	while (nextIter != edge->figure->end())
 	{
-		//ÓĞÍ¶Ó°		
+		//æœ‰æŠ•å½±		
 		if (cosAngle(pt, (*iter), (*nextIter)) <= 0 && cosAngle(pt, (*nextIter), (*iter)) <= 0)
 		{
 			double A = ((*nextIter)->lat - (*iter)->lat);
@@ -633,7 +638,7 @@ double Map::distM(double lat, double lon, Edge* edge, double& prjDist) const
 	return minDist;
 }
 
-//ÅĞ¶ÏstartNodeIdÓëendNodeIdÖ®¼äÓĞÎŞ±ß,Ã»ÓĞ±ß·µ»Ø-1£¬ÓĞ±ß·µ»ØedgeId
+//åˆ¤æ–­startNodeIdä¸endNodeIdä¹‹é—´æœ‰æ— è¾¹,æ²¡æœ‰è¾¹è¿”å›-1ï¼Œæœ‰è¾¹è¿”å›edgeId
 int Map::hasEdge(int startNodeId, int endNodeId) const
 {
 	AdjNode* current = adjList[startNodeId]->next;
@@ -649,11 +654,11 @@ int Map::hasEdge(int startNodeId, int endNodeId) const
 	return -1;
 }
 
-//ÔÚµ±Ç°Í¼ÖĞ²åÈëµã
+//åœ¨å½“å‰å›¾ä¸­æ’å…¥ç‚¹
 int Map::insertNode(double lat, double lon)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///²åÈëÒ»¸öĞÂ½áµã(lat, lon),²¢Í¬Ê±ÔÚÁÚ½Ó±íÖĞÒ²¶ÔÓ¦²åÈëÒ»¸öÁÚ½Ó±í½áµã,·µ»ØĞÂ½áµãµÄid
+	///æ’å…¥ä¸€ä¸ªæ–°ç»“ç‚¹(lat, lon),å¹¶åŒæ—¶åœ¨é‚»æ¥è¡¨ä¸­ä¹Ÿå¯¹åº”æ’å…¥ä¸€ä¸ªé‚»æ¥è¡¨ç»“ç‚¹,è¿”å›æ–°ç»“ç‚¹çš„id
 	//////////////////////////////////////////////////////////////////////////
 	//if (!inArea(lat, lon))
 	//	return -1;
@@ -666,12 +671,12 @@ int Map::insertNode(double lat, double lon)
 	return nodes.size() - 1;
 }
 
-//ÔÚµ±Ç°Í¼ÖĞ²åÈë±ß
+//åœ¨å½“å‰å›¾ä¸­æ’å…¥è¾¹
 int Map::insertEdge(Figure* figure, int startNodeId, int endNodeId)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///ÒÔfigureÎªÂ·ĞÎ¹¹ÔìÒ»ÌõĞÂ±ß²åÈëµØÍ¼,²¢²åÈëÍø¸ñË÷Òı
-	///[×¢Òâ]²»¿ÉÔÚÃ»ÓĞ½¨Á¢Íø¸ñË÷ÒıÊ±µ÷ÓÃ!
+	///ä»¥figureä¸ºè·¯å½¢æ„é€ ä¸€æ¡æ–°è¾¹æ’å…¥åœ°å›¾,å¹¶æ’å…¥ç½‘æ ¼ç´¢å¼•
+	///[æ³¨æ„]ä¸å¯åœ¨æ²¡æœ‰å»ºç«‹ç½‘æ ¼ç´¢å¼•æ—¶è°ƒç”¨!
 	//////////////////////////////////////////////////////////////////////////
 	Edge* newEdge = new Edge();
 	newEdge->figure = figure;
@@ -681,25 +686,25 @@ int Map::insertEdge(Figure* figure, int startNodeId, int endNodeId)
 	newEdge->id = edges.size();
 	edges.push_back(newEdge);
 	AdjNode* current = adjList[startNodeId];
-	insertEdge(newEdge->id, startNodeId, endNodeId); //¼ÓÈëÁ¬Í¨¹ØÏµ
-	createGridIndexForEdge(newEdge); //¼ÓÈëÍø¸ñË÷Òı
+	insertEdge(newEdge->id, startNodeId, endNodeId); //åŠ å…¥è¿é€šå…³ç³»
+	createGridIndexForEdge(newEdge); //åŠ å…¥ç½‘æ ¼ç´¢å¼•
 	return newEdge->id;
 }
 
 int Map::splitEdge(int edgeId, double lat, double lon)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///½«edgeIdºÅÂ·ÔÚ(lat, lon)µãÇĞ¸î³ÉÁ½¶ÎÂ·,(lat, lon)×÷Îªintersection
-	///ÇĞ¸î±£Ö¤ÊÇ°²È«µÄ,ÎŞ¸±×÷ÓÃµÄ
+	///å°†edgeIdå·è·¯åœ¨(lat, lon)ç‚¹åˆ‡å‰²æˆä¸¤æ®µè·¯,(lat, lon)ä½œä¸ºintersection
+	///åˆ‡å‰²ä¿è¯æ˜¯å®‰å…¨çš„,æ— å‰¯ä½œç”¨çš„
 	//////////////////////////////////////////////////////////////////////////
 	Edge* edge = edges[edgeId];
 	Figure* figure = edge->figure;
 	pair<int, int> result;
 	bool bidirection = false;
-	Edge* edgeR = NULL; //¼ÇÂ¼Ë«ÏòµÀÊ±µÄ·´Ïò¶ÔÓ¦Â·¶Î
-	//ÕÒµ½ÇĞ¸îµã
-	Figure* subFigure1 = new Figure(); //¼ÇÂ¼ÇĞ¸îºóµÄÇ°°ë¶ÎÂ·¶Î
-	Figure* subFigure2 = new Figure(); //¼ÇÂ¼ÇĞ¸îºóµÄºó°ë¶ÎÂ·¶Î
+	Edge* edgeR = NULL; //è®°å½•åŒå‘é“æ—¶çš„åå‘å¯¹åº”è·¯æ®µ
+	//æ‰¾åˆ°åˆ‡å‰²ç‚¹
+	Figure* subFigure1 = new Figure(); //è®°å½•åˆ‡å‰²åçš„å‰åŠæ®µè·¯æ®µ
+	Figure* subFigure2 = new Figure(); //è®°å½•åˆ‡å‰²åçš„ååŠæ®µè·¯æ®µ
 	Figure::iterator iter = figure->begin();
 	Figure::iterator nextIter = figure->begin();
 	nextIter++;
@@ -709,7 +714,7 @@ int Map::splitEdge(int edgeId, double lat, double lon)
 		GeoPoint* pt = (*iter);
 		GeoPoint* nextPt = (*nextIter);
 		subFigure1->push_back(pt);
-		//ÓĞÍ¶Ó°
+		//æœ‰æŠ•å½±
 		double A = (nextPt->lat - pt->lat);
 		double B = -(nextPt->lon - pt->lon);
 		double C = pt->lat * (nextPt->lon - pt->lon)
@@ -719,8 +724,8 @@ int Map::splitEdge(int edgeId, double lat, double lon)
 			newNodeId = insertNode(lat, lon);
 			subFigure1->push_back(nodes[newNodeId]);
 			subFigure2->push_back(nodes[newNodeId]);
-			//·ÖÎö¸ÃÂ·ÊÇ·ñÎªË«ÏòÂ·
-			//±äÁ¿Ãû´øRµÄ´ú±íreverse
+			//åˆ†æè¯¥è·¯æ˜¯å¦ä¸ºåŒå‘è·¯
+			//å˜é‡åå¸¦Rçš„ä»£è¡¨reverse
 			AdjNode* currentAdjNode = adjList[edge->endNodeId]->next;
 			bidirection = false;
 			while (currentAdjNode != NULL && bidirection == false)
@@ -753,34 +758,34 @@ int Map::splitEdge(int edgeId, double lat, double lon)
 		iter++;
 		nextIter++;
 	}
-	if (nextIter == figure->end()) //ÇĞ¸îµã²»ÔÚÂ·ÉÏÔò±¨´íÍË³ö
+	if (nextIter == figure->end()) //åˆ‡å‰²ç‚¹ä¸åœ¨è·¯ä¸Šåˆ™æŠ¥é”™é€€å‡º
 	{
 		cout << "error: split point is not on the edge" << endl;
 		system("pause");
 		exit(0);
 	}
-	//½«ºó°ë¶ÎÑ¹ÈësubFigure2
+	//å°†ååŠæ®µå‹å…¥subFigure2
 	while (iter != figure->end())
 	{
 		subFigure2->push_back(*iter);
 		iter++;
 	}
-	//½«ĞÂ±ß¼ÓÈë,ĞŞ¸ÄÁ¬½Ó¹ØÏµ
-	//½«subFigure2×÷ÎªĞÂ±ß¼ÓÈëµØÍ¼
+	//å°†æ–°è¾¹åŠ å…¥,ä¿®æ”¹è¿æ¥å…³ç³»
+	//å°†subFigure2ä½œä¸ºæ–°è¾¹åŠ å…¥åœ°å›¾
 	Edge* edge2 = edges[insertEdge(subFigure2, newNodeId, edge->endNodeId)];
-	//½«subFigure1Ìæ´úÔ­À´µÄedge
+	//å°†subFigure1æ›¿ä»£åŸæ¥çš„edge
 	delete edge->figure;
 	edge->figure = subFigure1;
 	edge->lengthM = calEdgeLength(subFigure1);
 	edge->endNodeId = newNodeId;
-	//ĞŞ¸ÄÇ°°ë¶ÎµÄÁ¬Í¨¹ØÏµ
+	//ä¿®æ”¹å‰åŠæ®µçš„è¿é€šå…³ç³»
 	AdjNode* current = adjList[edge->startNodeId]->next;
 	while (current->edgeId != edge->id)
 	{
 		current = current->next;
 	}
 	current->endPointId = newNodeId;
-	//´¦ÀíË«ÏòµÀÇé¿ö
+	//å¤„ç†åŒå‘é“æƒ…å†µ
 	if (bidirection)
 	{
 		Figure* subFigure1R = new Figure();
@@ -793,11 +798,11 @@ int Map::splitEdge(int edgeId, double lat, double lon)
 		{
 			subFigure2R->push_front(*iter);
 		}
-		//½«subFigure2RÌæ´úedgeR
+		//å°†subFigure2Ræ›¿ä»£edgeR
 		delete edgeR->figure;
 		edgeR->figure = subFigure2R;
 		edgeR->lengthM = calEdgeLength(subFigure2R);
-		//ÖØĞÂ´´½¨edge2R
+		//é‡æ–°åˆ›å»ºedge2R
 		insertEdge(subFigure2R, edge2->endNodeId, edge2->startNodeId);
 	}
 	return newNodeId;
@@ -805,10 +810,10 @@ int Map::splitEdge(int edgeId, double lat, double lon)
 
 void Map::delEdge(int edgeId)
 {
-	//¡¾×¢Òâ¡¿»á·¢ÉúÄÚ´æĞ¹Â¶
+	//ã€æ³¨æ„ã€‘ä¼šå‘ç”Ÿå†…å­˜æ³„éœ²
 	edges[edgeId] = NULL;
-	//TODO ÁÚ½Ó±íÍü¼ÇÉ¾ÁË._.
-	//Õâ¸ö²»ÄÜÓÃ
+	//TODO é‚»æ¥è¡¨å¿˜è®°åˆ äº†._.
+	//è¿™ä¸ªä¸èƒ½ç”¨
 }
 
 void Map::getMinMaxLatLon(string nodeFilePath)
@@ -841,13 +846,13 @@ void Map::getMinMaxLatLon(string nodeFilePath)
 }
 
 /*
-AÂ·¶ÎÆğµãµ½BÂ·¶ÎÆğµãµÄ×îĞ¡Â·Íø¾àÀë
-²ÎÊı£º
-ID1£ºAÂ·¶ÎÆğµã
-ID2£ºBÂ·¶ÎÆğµã
-dist1£º»ùÓÚÒşÂí¶û¿Æ·òÄ£ĞÍµØÍ¼Æ¥ÅäËã·¨ÖĞ¹ì¼£µãµ½BÂ·¶ÎÆğµãµÄ¾àÀë£¬Ä¬ÈÏÖµÎª0
-dist2£º»ùÓÚÒşÂí¶û¿Æ·òÄ£ĞÍµØÍ¼Æ¥ÅäËã·¨ÖĞ¹ì¼£µãµ½AÂ·¶ÎÆğµãµÄ¾àÀë£¬Ä¬ÈÏÖµÎª0
-deltaT£º»ùÓÚÒşÂí¶û¿Æ·òÄ£ĞÍµØÍ¼Æ¥ÅäËã·¨ÖĞÁ½¹ì¼£µãµÄÊ±¼ä²î£¬Ä¬ÈÏÎªINF
+Aè·¯æ®µèµ·ç‚¹åˆ°Bè·¯æ®µèµ·ç‚¹çš„æœ€å°è·¯ç½‘è·ç¦»
+å‚æ•°ï¼š
+ID1ï¼šAè·¯æ®µèµ·ç‚¹
+ID2ï¼šBè·¯æ®µèµ·ç‚¹
+dist1ï¼šåŸºäºéšé©¬å°”ç§‘å¤«æ¨¡å‹åœ°å›¾åŒ¹é…ç®—æ³•ä¸­è½¨è¿¹ç‚¹åˆ°Bè·¯æ®µèµ·ç‚¹çš„è·ç¦»ï¼Œé»˜è®¤å€¼ä¸º0
+dist2ï¼šåŸºäºéšé©¬å°”ç§‘å¤«æ¨¡å‹åœ°å›¾åŒ¹é…ç®—æ³•ä¸­è½¨è¿¹ç‚¹åˆ°Aè·¯æ®µèµ·ç‚¹çš„è·ç¦»ï¼Œé»˜è®¤å€¼ä¸º0
+deltaTï¼šåŸºäºéšé©¬å°”ç§‘å¤«æ¨¡å‹åœ°å›¾åŒ¹é…ç®—æ³•ä¸­ä¸¤è½¨è¿¹ç‚¹çš„æ—¶é—´å·®ï¼Œé»˜è®¤ä¸ºINF
 */
 double Map::shortestPathLength(int ID1, int ID2, double dist1, double dist2, double deltaT){
 	int maxNodeNum = nodes.size();
@@ -898,7 +903,7 @@ double Map::shortestPathLength(int ID1, int ID2, double dist1, double dist2, dou
 ///private part
 //////////////////////////////////////////////////////////////////////////
 
-//¸ø¶¨ĞĞºÅrowºÍÁĞºÅrow£¬ÕÒ³öÏàÓ¦µ¥Ôª¸ñÖĞÀë(lat,lon)µã×î½üµÄÂ·¶Î£¬±£´æÔÚcurrentResultEdgeÖĞ£¬shortestDist±£´æÏàÓ¦µÄ×î¶Ì¾àÀë
+//ç»™å®šè¡Œå·rowå’Œåˆ—å·rowï¼Œæ‰¾å‡ºç›¸åº”å•å…ƒæ ¼ä¸­ç¦»(lat,lon)ç‚¹æœ€è¿‘çš„è·¯æ®µï¼Œä¿å­˜åœ¨currentResultEdgeä¸­ï¼ŒshortestDistä¿å­˜ç›¸åº”çš„æœ€çŸ­è·ç¦»
 void Map::getNearestEdgeInAGridCell(double lat, double lon, int row, int col, Edge*& currentResultEdge, double &shortestDist){
 	for (list<Edge*>::iterator edgeIter = grid[row][col]->begin(); edgeIter != grid[row][col]->end(); edgeIter++)
 	{
@@ -909,7 +914,7 @@ void Map::getNearestEdgeInAGridCell(double lat, double lon, int row, int col, Ed
 	}
 }
 
-//¸ø¶¨ĞĞºÅrowºÍÁĞºÅrow£¬·µ»ØÏàÓ¦µ¥Ôª¸ñÖĞËùÓĞÂ·¶Î±£´æÔÚresultEdgesÖĞ£¬ÁíÍâ°ÑÏàÓ¦µÄEdgeId±£´æÔÚvisitedEdgeIdSetÖĞ£»Èç¹ûresultEdges¼¯ºÏÓĞ¸Ä±ä£¬Ôò·µ»Øtrue£¬·´Ö®·µ»Øfalse
+//ç»™å®šè¡Œå·rowå’Œåˆ—å·rowï¼Œè¿”å›ç›¸åº”å•å…ƒæ ¼ä¸­æ‰€æœ‰è·¯æ®µä¿å­˜åœ¨resultEdgesä¸­ï¼Œå¦å¤–æŠŠç›¸åº”çš„EdgeIdä¿å­˜åœ¨visitedEdgeIdSetä¸­ï¼›å¦‚æœresultEdgesé›†åˆæœ‰æ”¹å˜ï¼Œåˆ™è¿”å›trueï¼Œåä¹‹è¿”å›false
 bool Map::getEdgesInAGridCell(double lat, double lon, int row, int col, vector<pair<Edge*, double>> &resultEdges, set<int> &visitedEdgeIdSet){
 	bool result = false;
 	for (list<Edge*>::iterator edgeIter = grid[row][col]->begin(); edgeIter != grid[row][col]->end(); edgeIter++)
@@ -927,9 +932,9 @@ bool Map::getEdgesInAGridCell(double lat, double lon, int row, int col, vector<p
 double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold) const
 {
 	//////////////////////////////////////////////////////////////////////////
-	///·µ»Øµã(lat, lon)µ½±ßedgeµÄ¾àÀëÉÏ½ç ¡¾×¢Òâ¡¿²»¿ÉÓÃÓÚ¼ÆËã¾«È·¾àÀë£¡
-	///¾àÀë¶¨ÒåÎª£ºmin(µãµ½¿ÉÍ¶Ó°±ßµÄÍ¶Ó°¾àÀë£¬µãµ½ËùÓĞĞÎ×´µãµÄÅ·ÊÏ¾àÀë)
-	///Èç¹û¸üĞÂÉÏ½çÊ±·¢ÏÖÒÑ¾­µÍÓÚthreshold(µ¥Î»Ã×)ÔòÖ±½Ó·µ»Ø
+	///è¿”å›ç‚¹(lat, lon)åˆ°è¾¹edgeçš„è·ç¦»ä¸Šç•Œ ã€æ³¨æ„ã€‘ä¸å¯ç”¨äºè®¡ç®—ç²¾ç¡®è·ç¦»ï¼
+	///è·ç¦»å®šä¹‰ä¸ºï¼šmin(ç‚¹åˆ°å¯æŠ•å½±è¾¹çš„æŠ•å½±è·ç¦»ï¼Œç‚¹åˆ°æ‰€æœ‰å½¢çŠ¶ç‚¹çš„æ¬§æ°è·ç¦»)
+	///å¦‚æœæ›´æ–°ä¸Šç•Œæ—¶å‘ç°å·²ç»ä½äºthreshold(å•ä½ç±³)åˆ™ç›´æ¥è¿”å›
 	//////////////////////////////////////////////////////////////////////////
 	double minDist = INF;
 	if (edge == NULL)
@@ -942,7 +947,7 @@ double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold
 		cout << "edge->figure = NULL";
 		system("pause");
 	}
-	//±éÀú¶Ëµã¾àÀë
+	//éå†ç«¯ç‚¹è·ç¦»
 	for (Figure::iterator iter = edge->figure->begin(); iter != edge->figure->end(); iter++)
 	{
 		if (*iter == NULL)
@@ -961,14 +966,14 @@ double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold
 		if (tmpDist < minDist)
 			minDist = tmpDist;
 	}
-	//±éÀúÍ¶Ó°¾àÀë
+	//éå†æŠ•å½±è·ç¦»
 	Figure::iterator iter = edge->figure->begin();
 	Figure::iterator nextIter = edge->figure->begin();
 	nextIter++;
 	GeoPoint* pt = new GeoPoint(lat, lon);
 	while (nextIter != edge->figure->end())
 	{
-		//ÓĞÍ¶Ó°
+		//æœ‰æŠ•å½±
 		if (cosAngle(pt, (*iter), (*nextIter)) <= 0 && cosAngle(pt, (*nextIter), (*iter)) <= 0)
 		{
 			double A = ((*nextIter)->lat - (*iter)->lat);
@@ -994,7 +999,7 @@ double Map::distM_withThres(double lat, double lon, Edge* edge, double threshold
 double Map::calEdgeLength(Figure* figure) const
 {
 	//////////////////////////////////////////////////////////////////////////
-	///¼ÆËãÂ·¶ÎµÄ³¤¶È£¬µ¥Î»Îªm
+	///è®¡ç®—è·¯æ®µçš„é•¿åº¦ï¼Œå•ä½ä¸ºm
 	//////////////////////////////////////////////////////////////////////////
 	double lengthM = 0;
 	Figure::iterator ptIter = figure->begin(), nextPtIter = ptIter;
@@ -1081,7 +1086,7 @@ void Map::test()
 void Map::createGridIndex()
 {
 	//////////////////////////////////////////////////////////////////////////
-	///¶ÔÈ«Í¼½¨Á¢Íø¸ñË÷Òı
+	///å¯¹å…¨å›¾å»ºç«‹ç½‘æ ¼ç´¢å¼•
 	//////////////////////////////////////////////////////////////////////////
 	//initialization
 	gridHeight = int((maxLat - minLat) / (maxLon - minLon) * double(gridWidth)) + 1;
@@ -1108,8 +1113,8 @@ void Map::createGridIndex()
 void Map::insertEdgeIntoGrid(Edge* edge, int row, int col)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///½«Â·¶Îedge¼ÓÈëgrid[row][col]ÖĞË÷Òı£¬Èç¹ûÒÑ¾­¼ÓÈë¹ıÔò²»Ìí¼Ó
-	///¸Äº¯ÊıÒ»¶¨ÔÚ¶ÔÄ³Ìõedge½¨Á¢Ë÷ÒıÊ±µ÷ÓÃ,ËùÒÔ¼ÓÈë¹ıµÄgridÖĞ×îºóÒ»¸öÒ»¶¨ÊÇedge
+	///å°†è·¯æ®µedgeåŠ å…¥grid[row][col]ä¸­ç´¢å¼•ï¼Œå¦‚æœå·²ç»åŠ å…¥è¿‡åˆ™ä¸æ·»åŠ 
+	///æ”¹å‡½æ•°ä¸€å®šåœ¨å¯¹æŸæ¡edgeå»ºç«‹ç´¢å¼•æ—¶è°ƒç”¨,æ‰€ä»¥åŠ å…¥è¿‡çš„gridä¸­æœ€åä¸€ä¸ªä¸€å®šæ˜¯edge
 	//////////////////////////////////////////////////////////////////////////
 	if (row >= gridHeight || row < 0 || col >= gridWidth || col < 0)
 		return;
@@ -1122,7 +1127,7 @@ void Map::insertEdgeIntoGrid(Edge* edge, int row, int col)
 void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///¶ÔedgeÂ·ÖĞµÄfromPt->toPt¶Î²åÈëÍø¸ñË÷Òı£¬¾­¹ıµÄÍø¸ñ¶¼¼ÓÈëÆäÖ¸Õë£¬Èç¹ûÓëÍø¸ñÏà½»³¤¶È¹ıĞ¡Ôò²»¼ÓÈëÍø¸ñ
+	///å¯¹edgeè·¯ä¸­çš„fromPt->toPtæ®µæ’å…¥ç½‘æ ¼ç´¢å¼•ï¼Œç»è¿‡çš„ç½‘æ ¼éƒ½åŠ å…¥å…¶æŒ‡é’ˆï¼Œå¦‚æœä¸ç½‘æ ¼ç›¸äº¤é•¿åº¦è¿‡å°åˆ™ä¸åŠ å…¥ç½‘æ ¼
 	//////////////////////////////////////////////////////////////////////////
 	if (edge == NULL)
 		return;
@@ -1151,7 +1156,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 		cout << "inarea = " << inArea(pt2->lat, pt2->lon) << endl;
 		cout << "maxRow = " << gridHeight - 1 << " maxCol = " << gridWidth - 1 << endl;
 		//system("pause");
-		//TODO£ºÕâÒ»ÛçÃ»ÓĞ×ĞÏ¸Ïë¹ıÄÜ²»ÄÜÕâÃ´Ğ´
+		//TODOï¼šè¿™ä¸€å¨æ²¡æœ‰ä»”ç»†æƒ³è¿‡èƒ½ä¸èƒ½è¿™ä¹ˆå†™
 		/*if (row1 >= gridHeight)	row1 = gridHeight;
 		if (row2 >= gridHeight)	row2 = gridHeight;
 		if (col1 >= gridWidth)	col1 = gridWidth;
@@ -1165,49 +1170,49 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double B = -(x2 - x1);
 	double C = -B * y1 - A * x1;
 	int i, j;
-	//pt1,pt2¶¼ÔÚÒ»¸öcellÖĞ
+	//pt1,pt2éƒ½åœ¨ä¸€ä¸ªcellä¸­
 	if (row1 == row2 && col1 == col2)
 	{
 		insertEdgeIntoGrid(edge, row1, col1);
 		return;
 	}
-	//Ö»´©Ô½ºáÏò¸ñ×Ó
+	//åªç©¿è¶Šæ¨ªå‘æ ¼å­
 	if (row1 == row2)
 	{
-		//Í·
+		//å¤´
 		double headDist = ((min(col1, col2) + 1) * gridSizeDeg - min(x1, x2)) / gridSizeDeg;
 		if (headDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, row1, min(col1, col2));
-		//ÖĞ¼ä
+		//ä¸­é—´
 		for (i = min(col1, col2) + 1; i < max(col1, col2); i++)
 		{
 			insertEdgeIntoGrid(edge, row1, i);
 		}
-		//Î²
+		//å°¾
 		double tailDist = (max(x1, x2) - max(col1, col2) * gridSizeDeg) / gridSizeDeg;
 		if (tailDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, row1, max(col1, col2));
 		return;
 	}
-	//Ö»´©Ô½×İÏò¸ñ×Ó
+	//åªç©¿è¶Šçºµå‘æ ¼å­
 	if (col1 == col2)
 	{
-		//Í·
+		//å¤´
 		double headDist = ((min(row1, row2) + 1) * gridSizeDeg - min(y1, y2)) / gridSizeDeg;
 		if (headDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, min(row1, row2), col1);
-		//ÖĞ¼ä
+		//ä¸­é—´
 		for (i = min(row1, row2) + 1; i < max(row1, row2); i++)
 		{
 			insertEdgeIntoGrid(edge, i, col1);
 		}
-		//Î²
+		//å°¾
 		double tailDist = (max(y1, y2) - max(row1, row2) * gridSizeDeg) / gridSizeDeg;
 		if (tailDist / gridSizeDeg > strictThreshold)
 			insertEdgeIntoGrid(edge, max(row1, row2), col1);
 		return;
 	}
-	//Ğ±Ïò´©Ô½
+	//æ–œå‘ç©¿è¶Š
 	simplePoint pts[1000];
 	int n_pts = 0;
 	for (i = min(row1, row2) + 1; i <= max(row1, row2); i++)
@@ -1236,20 +1241,20 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 	double yL = leftPt->lat - minLat;
 	double yR = rightPt->lat - minLat;
 
-	//Í·
+	//å¤´
 	double headDist = sqrt((xL - pts[0].first)*(xL - pts[0].first) + (yL - pts[0].second)*(yL - pts[0].second));
 	if (headDist / gridSizeDeg > strictThreshold)
 	{
 		insertEdgeIntoGrid(edge, (int)(yL / gridSizeDeg), (int)(xL / gridSizeDeg));
 	}
-	//ÖĞ¼ä
+	//ä¸­é—´
 	for (i = 0; i < n_pts - 1; i++)
 	{
 		double dist = sqrt((pts[i].first - pts[i + 1].first)*(pts[i].first - pts[i + 1].first) + (pts[i].second - pts[i + 1].second)*(pts[i].second - pts[i + 1].second));
 		if (dist / gridSizeDeg > strictThreshold)
 			//insertEdgeIntoGrid(edge, getRowId(pts[i], pts[i + 1]), getColId(pts[i], pts[i + 1]));
 		{
-			//¼Ó1e-9ÊÇÎªÁË½â¾ödoubleµÄ¾«¶ÈÎó²î,±ÈÈçÔ­±¾rowÓ¦¸ÃÊÇ13µÄ,ÒòÎª¾«¶ÈÎó²î¶øËã³É12.99999999,È¡Õûºó±ä³É12
+			//åŠ 1e-9æ˜¯ä¸ºäº†è§£å†³doubleçš„ç²¾åº¦è¯¯å·®,æ¯”å¦‚åŸæœ¬rowåº”è¯¥æ˜¯13çš„,å› ä¸ºç²¾åº¦è¯¯å·®è€Œç®—æˆ12.99999999,å–æ•´åå˜æˆ12
 			int pts_i_row = (int)(pts[i].second / gridSizeDeg + 1e-9);
 			int pts_i_col = (int)(pts[i].first / gridSizeDeg + 1e-9);
 			int pts_i_plus_1_row = (int)(pts[i + 1].second / gridSizeDeg + 1e-9);
@@ -1259,7 +1264,7 @@ void Map::createGridIndexForSegment(Edge *edge, GeoPoint* fromPT, GeoPoint* toPt
 			insertEdgeIntoGrid(edge, row, col);
 		}
 	}
-	//Î²
+	//å°¾
 	double tailDist = sqrt((xR - pts[n_pts - 1].first)*(xR - pts[n_pts - 1].first) + (yR - pts[n_pts - 1].second)*(yR - pts[n_pts - 1].second));
 	if (tailDist / gridSizeDeg > strictThreshold)
 	{
@@ -1285,8 +1290,8 @@ void Map::createGridIndexForEdge(Edge *edge)
 void Map::insertEdge(int edgeId, int startNodeId, int endNodeId)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///ÏòÁÚ½Ó±íadjListÖĞ²åÈëÒ»Ìõ±ßµÄÁ¬Í¨¹ØÏµ£¬³õ´Î¹¹½¨Í¼Ê±Ê¹ÓÃ£¬Ë½ÓĞ°æ±¾£¬²»ÔÊĞíÍâ²¿µ÷ÓÃ
-	///TODO: ¿ÉÄÜ»áÓĞÎÊÌâ@Line1047µÄwhile
+	///å‘é‚»æ¥è¡¨adjListä¸­æ’å…¥ä¸€æ¡è¾¹çš„è¿é€šå…³ç³»ï¼Œåˆæ¬¡æ„å»ºå›¾æ—¶ä½¿ç”¨ï¼Œç§æœ‰ç‰ˆæœ¬ï¼Œä¸å…è®¸å¤–éƒ¨è°ƒç”¨
+	///TODO: å¯èƒ½ä¼šæœ‰é—®é¢˜@Line1047çš„while
 	//////////////////////////////////////////////////////////////////////////
 	/*if (startNodeId == -1)
 	{
@@ -1381,7 +1386,7 @@ void Map::split(const string& src, const char& separator, vector<string>& dest)
 bool smallerInX(simplePoint& pt1, simplePoint& pt2)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///½«Ö±ÏßÓëÍø¸ñ½»µãÍ³Ò»°´ÕÕxÖáµİÔö·½ÏòÅÅÁĞ
+	///å°†ç›´çº¿ä¸ç½‘æ ¼äº¤ç‚¹ç»Ÿä¸€æŒ‰ç…§xè½´é€’å¢æ–¹å‘æ’åˆ—
 	//////////////////////////////////////////////////////////////////////////
 	return pt1.first < pt2.first;
 }
@@ -1389,7 +1394,7 @@ bool smallerInX(simplePoint& pt1, simplePoint& pt2)
 bool smallerInDist(pair<Edge*, double>& c1, pair<Edge*, double>& c2)
 {
 	//////////////////////////////////////////////////////////////////////////
-	///void getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)º¯ÊıÖĞÊ¹ÓÃµ½µÄ±È½Ïº¯Êı
+	///void getNearEdges(double lat, double lon, int k, vector<Edge*>& dest)å‡½æ•°ä¸­ä½¿ç”¨åˆ°çš„æ¯”è¾ƒå‡½æ•°
 	//////////////////////////////////////////////////////////////////////////
 	return c1.second < c2.second;
 }
